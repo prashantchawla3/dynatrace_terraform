@@ -1,0 +1,18 @@
+resource "dynatrace_slo_v2" "example_slo" {
+  name               = var.slo_name
+  enabled            = var.slo_enabled
+  custom_description = var.slo_description
+  evaluation_type    = var.slo_evaluation_type
+  evaluation_window  = var.slo_evaluation_window
+  filter             = var.slo_filter
+  metric_expression  = var.slo_metric_expression
+  metric_name        = var.slo_metric_name
+  target_success     = var.slo_target_success
+  target_warning     = var.slo_target_warning
+  legacy_id          = var.slo_legacy_id
+
+  error_budget_burn_rate {
+    burn_rate_visualization_enabled = var.burn_rate_visualization_enabled
+    fast_burn_threshold             = var.fast_burn_threshold
+  }
+}
