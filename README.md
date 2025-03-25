@@ -242,7 +242,6 @@ This module manages IAM resources and includes a reference to the management zon
 
 By linking the `management_zone_id` from the `management_zone` module to the IAM module, you ensure that the IAM policies and permissions are associated with the specific management zone created.
 
-
 # Code Promotion PR Process from Dev to QA to Prod for Terraform Modules
 
 ## Introduction
@@ -255,17 +254,23 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Code Review**: Create a Pull Request (PR) for code review. Team members review the code for quality and adherence to standards.
 - **Unit Testing**: Ensure all unit tests pass before merging the PR.
 
+!Development Stage
+
 ### 2. Merge to Dev Branch
 - **Merge PR**: Once the code review is approved, merge the PR into the `dev` branch.
 - **Integration Testing**: Run integration tests to ensure the new code works well with existing code.
 - **Terraform Deployment Test**: Deploy the updated Terraform modules in a test environment to verify their functionality.
 - **Automated Builds**: Trigger automated builds to verify the integration.
 
+!Merge to Dev Branch
+
 ### 3. Promotion to QA
 - **Create PR for QA**: Create a PR to merge the `dev` branch into the `qa` branch.
 - **QA Review**: QA team reviews the PR and may run additional tests.
 - **Acceptance Testing**: Conduct acceptance testing to validate the functionality.
 - **Merge to QA**: Once approved, merge the PR into the `qa` branch.
+
+!Promotion to QA
 
 ### 4. Promotion to Production
 - **Create PR for Prod**: Create a PR to merge the `qa` branch into the `prod` branch.
@@ -274,13 +279,19 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Smoke Testing**: Perform smoke testing in a staging environment to catch any last-minute issues.
 - **Merge to Prod**: Once everything is verified and approved, merge the PR into the `prod` branch.
 
+!Promotion to Production
+
 ### 5. Post-Deployment
 - **Monitoring**: Monitor the production environment for any issues.
 - **Rollback Plan**: Have a rollback plan in place in case of critical issues.
 
+!Post-Deployment
+
 ## Flowchart
 
 Here’s a simple flowchart to visualize the process:
+
+!Flowchart
 
 ```plaintext
 Start
@@ -356,6 +367,15 @@ End
 ### Security
 - Implement security best practices, such as using IAM roles and policies, to protect your infrastructure and data.
 - Regularly review and update security policies to address new threats.
+
+### Code Promotion PR Process
+- **Follow the Code Promotion PR Process**: It is good to follow the code promotion PR process when an update in the modules is made because it ensures that all changes are thoroughly tested and reviewed before being made available to customers. This helps maintain the quality and stability of the modules.
+- **Benefits**:
+  - **Quality Assurance**: Ensures that the code meets quality standards and adheres to best practices.
+  - **Collaboration**: Facilitates collaboration among team members through code reviews and approvals.
+  - **Testing**: Provides multiple stages of testing (unit, integration, acceptance) to catch issues early.
+  - **Approval**: Requires approval from the team that controls the public-facing Terraform repository, ensuring that only vetted changes are deployed.
+  - **Monitoring**: Includes post-deployment monitoring to quickly identify and address any issues.
 
 ## Conclusion
 Following this process ensures that updates to Terraform modules are thoroughly tested and reviewed before being made available to customers. This helps maintain the quality and stability of the modules.
