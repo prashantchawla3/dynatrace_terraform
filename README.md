@@ -242,3 +242,134 @@ This module manages IAM resources and includes a reference to the management zon
 
 By linking the `management_zone_id` from the `management_zone` module to the IAM module, you ensure that the IAM policies and permissions are associated with the specific management zone created.
 
+
+# Code Promotion PR Process from Dev to QA to Prod
+
+## Introduction
+This guide outlines the process for promoting code changes from Development (Dev) to Quality Assurance (QA) to Production (Prod) for Terraform modules. The process ensures that updates are thoroughly tested and reviewed before being made available to customers.
+
+## Steps to Use Terraform Modules
+
+### 1. Development Stage
+- **Code Development**: Developers write and commit code to the feature branch.
+- **Code Review**: Create a Pull Request (PR) for code review. Team members review the code for quality and adherence to standards.
+- **Unit Testing**: Ensure all unit tests pass before merging the PR.
+
+### 2. Merge to Dev Branch
+- **Merge PR**: Once the code review is approved, merge the PR into the `dev` branch.
+- **Integration Testing**: Run integration tests to ensure the new code works well with existing code.
+- **Terraform Deployment Test**: Deploy the updated Terraform modules in a test environment to verify their functionality.
+- **Automated Builds**: Trigger automated builds to verify the integration.
+
+### 3. Promotion to QA
+- **Create PR for QA**: Create a PR to merge the `dev` branch into the `qa` branch.
+- **QA Review**: QA team reviews the PR and may run additional tests.
+- **Acceptance Testing**: Conduct acceptance testing to validate the functionality.
+- **Merge to QA**: Once approved, merge the PR into the `qa` branch.
+
+### 4. Promotion to Production
+- **Create PR for Prod**: Create a PR to merge the `qa` branch into the `prod` branch.
+- **Final Review**: Conduct a final review to ensure everything is ready for production.
+- **Approval from Public Facing Terraform Repo Team**: Obtain approval from the team that controls the public-facing Terraform repository.
+- **Smoke Testing**: Perform smoke testing in a staging environment to catch any last-minute issues.
+- **Merge to Prod**: Once everything is verified and approved, merge the PR into the `prod` branch.
+
+### 5. Post-Deployment
+- **Monitoring**: Monitor the production environment for any issues.
+- **Rollback Plan**: Have a rollback plan in place in case of critical issues.
+
+## Flowchart
+
+Here’s a simple flowchart to visualize the process:
+
+```plaintext
+Start
+  |
+  v
+Code Development (Dev)
+  |
+  v
+Create PR for Code Review
+  |
+  v
+Code Review & Unit Testing
+  |
+  v
+Merge PR to Dev Branch
+  |
+  v
+Integration Testing & Automated Builds
+  |
+  v
+Terraform Deployment Test
+  |
+  v
+Create PR for QA
+  |
+  v
+QA Review & Acceptance Testing
+  |
+  v
+Merge PR to QA Branch
+  |
+  v
+Create PR for Prod
+  |
+  v
+Final Review & Smoke Testing
+  |
+  v
+Approval from Public Facing Terraform Repo Team
+  |
+  v
+Merge PR to Prod Branch
+  |
+  v
+Post-Deployment Monitoring
+  |
+  v
+End
+```
+
+## Detailed Steps
+
+### 1. Development Stage
+- **Code Development**: Developers work on the feature branch, making necessary updates to the Terraform modules.
+- **Code Review**: A PR is created for code review. Team members review the code to ensure it meets quality standards and adheres to best practices.
+- **Unit Testing**: All unit tests must pass before the PR can be merged.
+
+### 2. Merge to Dev Branch
+- **Merge PR**: After approval, the PR is merged into the `dev` branch.
+- **Integration Testing**: Integration tests are run to ensure the new code integrates well with existing code.
+- **Terraform Deployment Test**: The updated Terraform modules are deployed in a test environment to verify their functionality.
+- **Automated Builds**: Automated builds are triggered to verify the integration.
+
+### 3. Promotion to QA
+- **Create PR for QA**: A PR is created to merge the `dev` branch into the `qa` branch.
+- **QA Review**: The QA team reviews the PR and may run additional tests to ensure the code is ready for production.
+- **Acceptance Testing**: Acceptance testing is conducted to validate the functionality.
+- **Merge to QA**: Once approved, the PR is merged into the `qa` branch.
+
+### 4. Promotion to Production
+- **Create PR for Prod**: A PR is created to merge the `qa` branch into the `prod` branch.
+- **Final Review**: A final review is conducted to ensure everything is ready for production.
+- **Approval from Public Facing Terraform Repo Team**: Approval is obtained from the team that controls the public-facing Terraform repository.
+- **Smoke Testing**: Smoke testing is performed in a staging environment to catch any last-minute issues.
+- **Merge to Prod**: Once everything is verified and approved, the PR is merged into the `prod` branch.
+
+### 5. Post-Deployment
+- **Monitoring**: The production environment is monitored for any issues.
+- **Rollback Plan**: A rollback plan is in place in case of critical issues.
+
+## Best Practices
+- **Version Control**: Use version control for your Terraform configuration files to track changes and collaborate with team members.
+- **State Management**: Use remote state storage (e.g., AWS S3, Terraform Cloud) to manage your state file securely and collaboratively.
+- **Modularization**: Break down your Terraform configuration into reusable modules to improve maintainability and scalability.
+- **Testing**: Regularly test your Terraform configurations using tools like `terraform validate` and `terraform plan`.
+- **Documentation**: Maintain clear and comprehensive documentation for your Terraform modules and processes to ensure consistency and ease of use.
+- **Security**: Implement security best practices, such as using IAM roles and policies, to protect your infrastructure and data.
+
+## Conclusion
+Following this process ensures that updates to Terraform modules are thoroughly tested and reviewed before being made available to customers. This helps maintain the quality and stability of the modules.
+```
+
