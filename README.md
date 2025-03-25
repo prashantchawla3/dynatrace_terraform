@@ -243,7 +243,7 @@ This module manages IAM resources and includes a reference to the management zon
 By linking the `management_zone_id` from the `management_zone` module to the IAM module, you ensure that the IAM policies and permissions are associated with the specific management zone created.
 
 
-# Code Promotion PR Process from Dev to QA to Prod
+# Code Promotion PR Process from Dev to QA to Prod for Terraform Modules
 
 ## Introduction
 This guide outlines the process for promoting code changes from Development (Dev) to Quality Assurance (QA) to Production (Prod) for Terraform modules. The process ensures that updates are thoroughly tested and reviewed before being made available to customers.
@@ -251,7 +251,7 @@ This guide outlines the process for promoting code changes from Development (Dev
 ## Code Promotion Process
 
 ### 1. Development Stage
-- **Code Development**: Developers write and commit code to the feature branch.
+- **Code Development**: Developers write and commit code to the feature branch. This includes updates or additions to Terraform modules.
 - **Code Review**: Create a Pull Request (PR) for code review. Team members review the code for quality and adherence to standards.
 - **Unit Testing**: Ensure all unit tests pass before merging the PR.
 
@@ -331,13 +331,31 @@ Post-Deployment Monitoring
 End
 ```
 
-## Best Practices
-- **Version Control**: Use version control for your Terraform configuration files to track changes and collaborate with team members.
-- **State Management**: Use remote state storage (e.g., AWS S3, Terraform Cloud) to manage your state file securely and collaboratively.
-- **Modularization**: Break down your Terraform configuration into reusable modules to improve maintainability and scalability.
-- **Testing**: Regularly test your Terraform configurations using tools like `terraform validate` and `terraform plan`.
-- **Documentation**: Maintain clear and comprehensive documentation for your Terraform modules and processes to ensure consistency and ease of use.
-- **Security**: Implement security best practices, such as using IAM roles and policies, to protect your infrastructure and data.
+## Best Practices for Updating Terraform Modules
+
+### Version Control
+- Use version control for your Terraform configuration files to track changes and collaborate with team members.
+- Ensure that all changes are committed to the feature branch before creating a PR.
+
+### State Management
+- Use remote state storage (e.g., AWS S3, Terraform Cloud) to manage your state file securely and collaboratively.
+- Regularly back up your state file to prevent data loss.
+
+### Modularization
+- Break down your Terraform configuration into reusable modules to improve maintainability and scalability.
+- Ensure that each module has a clear purpose and is well-documented.
+
+### Testing
+- Regularly test your Terraform configurations using tools like `terraform validate` and `terraform plan`.
+- Conduct thorough integration and acceptance testing to ensure that updates do not introduce any issues.
+
+### Documentation
+- Maintain clear and comprehensive documentation for your Terraform modules and processes to ensure consistency and ease of use.
+- Update documentation to reflect any changes or additions to the modules.
+
+### Security
+- Implement security best practices, such as using IAM roles and policies, to protect your infrastructure and data.
+- Regularly review and update security policies to address new threats.
 
 ## Conclusion
 Following this process ensures that updates to Terraform modules are thoroughly tested and reviewed before being made available to customers. This helps maintain the quality and stability of the modules.
