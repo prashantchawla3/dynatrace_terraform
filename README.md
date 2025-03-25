@@ -248,7 +248,7 @@ By linking the `management_zone_id` from the `management_zone` module to the IAM
 ## Introduction
 This guide outlines the process for promoting code changes from Development (Dev) to Quality Assurance (QA) to Production (Prod) for Terraform modules. The process ensures that updates are thoroughly tested and reviewed before being made available to customers.
 
-## Steps to Use Terraform Modules
+## Code Promotion Process
 
 ### 1. Development Stage
 - **Code Development**: Developers write and commit code to the feature branch.
