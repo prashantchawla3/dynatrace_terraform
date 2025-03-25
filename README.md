@@ -331,36 +331,6 @@ Post-Deployment Monitoring
 End
 ```
 
-## Detailed Steps
-
-### 1. Development Stage
-- **Code Development**: Developers work on the feature branch, making necessary updates to the Terraform modules.
-- **Code Review**: A PR is created for code review. Team members review the code to ensure it meets quality standards and adheres to best practices.
-- **Unit Testing**: All unit tests must pass before the PR can be merged.
-
-### 2. Merge to Dev Branch
-- **Merge PR**: After approval, the PR is merged into the `dev` branch.
-- **Integration Testing**: Integration tests are run to ensure the new code integrates well with existing code.
-- **Terraform Deployment Test**: The updated Terraform modules are deployed in a test environment to verify their functionality.
-- **Automated Builds**: Automated builds are triggered to verify the integration.
-
-### 3. Promotion to QA
-- **Create PR for QA**: A PR is created to merge the `dev` branch into the `qa` branch.
-- **QA Review**: The QA team reviews the PR and may run additional tests to ensure the code is ready for production.
-- **Acceptance Testing**: Acceptance testing is conducted to validate the functionality.
-- **Merge to QA**: Once approved, the PR is merged into the `qa` branch.
-
-### 4. Promotion to Production
-- **Create PR for Prod**: A PR is created to merge the `qa` branch into the `prod` branch.
-- **Final Review**: A final review is conducted to ensure everything is ready for production.
-- **Approval from Public Facing Terraform Repo Team**: Approval is obtained from the team that controls the public-facing Terraform repository.
-- **Smoke Testing**: Smoke testing is performed in a staging environment to catch any last-minute issues.
-- **Merge to Prod**: Once everything is verified and approved, the PR is merged into the `prod` branch.
-
-### 5. Post-Deployment
-- **Monitoring**: The production environment is monitored for any issues.
-- **Rollback Plan**: A rollback plan is in place in case of critical issues.
-
 ## Best Practices
 - **Version Control**: Use version control for your Terraform configuration files to track changes and collaborate with team members.
 - **State Management**: Use remote state storage (e.g., AWS S3, Terraform Cloud) to manage your state file securely and collaboratively.
