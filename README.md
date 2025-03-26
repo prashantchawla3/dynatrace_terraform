@@ -196,11 +196,6 @@ Terraform maintains the state of your infrastructure in a `terraform.tfstate` fi
 ### 9. Destroy the Infrastructure (if needed)
 If you need to tear down the infrastructure, run `terraform destroy`.
 
-## Best Practices
-- **Version Control**: Use version control for your Terraform configuration files to track changes and collaborate with team members.
-- **State Management**: Use remote state storage (e.g., AWS S3, Terraform Cloud) to manage your state file securely and collaboratively.
-- **Modularization**: Break down your Terraform configuration into reusable modules to improve maintainability and scalability.
-- **Testing**: Regularly test your Terraform configurations using tools like `terraform validate` and `terraform plan`.
 
 ## Diagram
 
@@ -254,7 +249,7 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Code Review**: Create a Pull Request (PR) for code review. Team members review the code for quality and adherence to standards.
 - **Unit Testing**: Ensure all unit tests pass before merging the PR.
 
-!Development Stage
+Development Stage
 
 ### 2. Merge to Dev Branch
 - **Merge PR**: Once the code review is approved, merge the PR into the `dev` branch.
@@ -262,7 +257,7 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Terraform Deployment Test**: Deploy the updated Terraform modules in a test environment to verify their functionality.
 - **Automated Builds**: Trigger automated builds to verify the integration.
 
-!Merge to Dev Branch
+Merge to Dev Branch
 
 ### 3. Promotion to QA
 - **Create PR for QA**: Create a PR to merge the `dev` branch into the `qa` branch.
@@ -270,7 +265,7 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Acceptance Testing**: Conduct acceptance testing to validate the functionality.
 - **Merge to QA**: Once approved, merge the PR into the `qa` branch.
 
-!Promotion to QA
+Promotion to QA
 
 ### 4. Promotion to Production
 - **Create PR for Prod**: Create a PR to merge the `qa` branch into the `prod` branch.
@@ -279,13 +274,13 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Smoke Testing**: Perform smoke testing in a staging environment to catch any last-minute issues.
 - **Merge to Prod**: Once everything is verified and approved, merge the PR into the `prod` branch.
 
-!Promotion to Production
+Promotion to Production
 
 ### 5. Post-Deployment
 - **Monitoring**: Monitor the production environment for any issues.
 - **Rollback Plan**: Have a rollback plan in place in case of critical issues.
 
-!Post-Deployment
+Post-Deployment
 
 ## Flowchart
 
