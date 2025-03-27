@@ -249,7 +249,6 @@ This guide outlines the process for promoting code changes from Development (Dev
 - **Code Review**: Create a Pull Request (PR) for code review. Team members review the code for quality and adherence to standards.
 - **Unit Testing**: Ensure all unit tests pass before merging the PR.
 
-Development Stage
 
 ### 2. Merge to Dev Branch
 - **Merge PR**: Once the code review is approved, merge the PR into the `dev` branch.
@@ -257,7 +256,6 @@ Development Stage
 - **Terraform Deployment Test**: Deploy the updated Terraform modules in a test environment to verify their functionality.
 - **Automated Builds**: Trigger automated builds to verify the integration.
 
-Merge to Dev Branch
 
 ### 3. Promotion to QA
 - **Create PR for QA**: Create a PR to merge the `dev` branch into the `qa` branch.
@@ -265,7 +263,6 @@ Merge to Dev Branch
 - **Acceptance Testing**: Conduct acceptance testing to validate the functionality.
 - **Merge to QA**: Once approved, merge the PR into the `qa` branch.
 
-Promotion to QA
 
 ### 4. Promotion to Production
 - **Create PR for Prod**: Create a PR to merge the `qa` branch into the `prod` branch.
@@ -274,13 +271,11 @@ Promotion to QA
 - **Smoke Testing**: Perform smoke testing in a staging environment to catch any last-minute issues.
 - **Merge to Prod**: Once everything is verified and approved, merge the PR into the `prod` branch.
 
-Promotion to Production
 
 ### 5. Post-Deployment
 - **Monitoring**: Monitor the production environment for any issues.
 - **Rollback Plan**: Have a rollback plan in place in case of critical issues.
 
-Post-Deployment
 
 ## Flowchart
 
