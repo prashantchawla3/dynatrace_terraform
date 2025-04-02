@@ -1,10 +1,10 @@
 # Guide on How to Use Terraform Modules
 
 ## Introduction
-This guide provides a step-by-step process for using Terraform modules to manage your infrastructure. Management Zone modules is used as example to demonstrate the process.
+This guide provides a step-by-step process for using Terraform modules to manage your infrastructure. Management Zone module is used as example to demonstrate the process.
 
 ## Project Structure
-The project consists of a root module that calls the child module for the management zone. Each child module has its own `main.tf`, `variables.tf`, `terraform.tfvars`, `outputs.tf`, and `provider.tf` files.
+The project consists of a root module that calls the child module for the management zone. The child module has its own `main.tf`, `variables.tf`, `terraform.tfvars`, `outputs.tf`, and `provider.tf` files.
 ```
 project-directory/
 ├── README.md
@@ -123,10 +123,6 @@ Root Module
 ### Management Zone Module
 This module creates a management zone using the provided variables (`zone_name`, `zone_description`, `zone_legacy_id`, `entity_selector`).
 
-### IAM Module
-This module manages IAM resources and includes a reference to the management zone created by the `management_zone` module. The `management_zone_id` variable in the IAM module is set to the ID of the management zone created by the `management_zone` module (`module.management_zone.management_zone_id`).
-
-By linking the `management_zone_id` from the `management_zone` module to the IAM module, you ensure that the IAM policies and permissions are associated with the specific management zone created.
 
 # Code Promotion PR Process from Dev to QA to Prod for Terraform Modules
 
