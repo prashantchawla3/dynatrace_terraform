@@ -148,3 +148,7 @@ The following resources are created by this module:
 | `user_group_ldap_groups` | LDAP groups of the user group | `list(string)` | `["ldap-group1", "ldap-group2"]` |
 | `user_group_sso_groups` | SSO groups of the user group | `list(string)` | `["sso-group1", "sso-group2"]` |
 | `user_group_permission` | Permission of the user group | `string` | `"
+
+To utilize this resource, please define the environment variables DT_CLIENT_ID, DT_CLIENT_SECRET, DT_ACCOUNT_ID with an OAuth client including the following permissions: Allow read access for identity resources (users and groups) (account-idm-read) and Allow write access for identity resources (users and groups) (account-idm-write).
+
+ Allow IAM policy configuration for environments (iam-policies-management) and View environments (account-env-read).
