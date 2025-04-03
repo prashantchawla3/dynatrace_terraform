@@ -124,7 +124,9 @@ module "dynatrace_credentials" {
   credentials_username = var.credentials_username
   credentials_password = var.credentials_password
 }
+```
 
+---
 
 ## API Token Scopes
 This resource requires the API token scopes:
