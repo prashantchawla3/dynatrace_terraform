@@ -1,48 +1,53 @@
 variable "auto_language" {
-  description = "Language - use browser default"
+  description = "Automatically detect language"
   type        = bool
-}
-
-variable "auto_region" {
-  description = "Region - use browser default"
-  type        = bool
-}
-
-variable "auto_theme" {
-  description = "Theme - use browser default"
-  type        = bool
-}
-
-variable "auto_timezone" {
-  description = "Timezone - use browser default"
-  type        = bool
-}
-
-variable "scope" {
-  description = "The scope of this setting (user, userdefaults)"
-  type        = string
+  default     = true
 }
 
 variable "language" {
-  description = "Language"
+  description = "Language setting"
   type        = string
   default     = "en"
 }
 
+variable "auto_region" {
+  description = "Automatically detect region"
+  type        = bool
+  default     = true
+}
+
 variable "region" {
-  description = "Region"
+  description = "Region setting"
   type        = string
   default     = "auto"
+}
+
+variable "auto_theme" {
+  description = "Automatically detect theme"
+  type        = bool
+  default     = true
 }
 
 variable "theme" {
-  description = "Theme"
+  description = "Theme setting"
   type        = string
   default     = "auto"
 }
 
+variable "auto_timezone" {
+  description = "Automatically detect timezone"
+  type        = bool
+  default     = true
+}
+
 variable "timezone" {
-  description = "Timezone"
+  description = "Timezone setting"
   type        = string
   default     = "UTC"
+}
+
+variable "scope" {
+  description = "Scope of the user settings"
+  type        = string
+  default     = "user-terraform@dynatrace.com"
 }
