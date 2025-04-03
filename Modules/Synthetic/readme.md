@@ -1,9 +1,9 @@
 # Dynatrace Terraform Module
 
+## Introduction
 This Terraform module manages Dynatrace resources for calculated synthetic metrics, synthetic availability, and synthetic locations. It includes configurations for these resources along with necessary variables and outputs.
 
 ## Table of Contents
-
 - Dynatrace Terraform Module
   - Table of Contents
   - Usage
@@ -15,13 +15,10 @@ This Terraform module manages Dynatrace resources for calculated synthetic metri
   - Example
 
 ## Usage
-
 To use this module, include it in your Terraform configuration and provide the necessary variables. Below is an example of how to use this module:
-
 ```hcl
 module "dynatrace_synthetic" {
   source = "./path_to_module"
-
   calculated_synthetic_metric_name = var.calculated_synthetic_metric_name
   calculated_synthetic_metric_enabled = var.calculated_synthetic_metric_enabled
   calculated_synthetic_metric_metric = var.calculated_synthetic_metric_metric
@@ -44,26 +41,31 @@ module "dynatrace_synthetic" {
 ```
 
 ## Requirements
-
 - Terraform >= 0.12
 - Dynatrace provider >= 1.0
 
 ## Providers
+The module requires the following provider:
 
-| Name      | Version |
-|-----------|---------|
-| dynatrace | ~> 1.0  |
+```hcl
+terraform {
+  required_providers {
+    dynatrace = {
+      source  = "dynatrace-oss/dynatrace"
+      version = "~> 1.0"
+    }
+  }
+}
+```
 
 ## Resources
+The following resources are created by this module:
 
-| Name                                                                 | Type     |
-|----------------------------------------------------------------------|----------|
-| dynatrace_calculated_synthetic_metric.example | Resource |
-| dynatrace_synthetic_availability.example  | Resource |
-| dynatrace_synthetic_location.example          | Resource |
+- `dynatrace_calculated_synthetic_metric`
+- `dynatrace_synthetic_availability`
+- `dynatrace_synthetic_location`
 
 ### Calculated Synthetic Metric
-
 ```hcl
 resource "dynatrace_calculated_synthetic_metric" "example" {
   name = var.calculated_synthetic_metric_name
@@ -75,7 +77,6 @@ resource "dynatrace_calculated_synthetic_metric" "example" {
 ```
 
 ### Synthetic Availability
-
 ```hcl
 resource "dynatrace_synthetic_availability" "example" {
   exclude_maintenance_windows = var.synthetic_availability_exclude_maintenance_windows
@@ -83,7 +84,6 @@ resource "dynatrace_synthetic_availability" "example" {
 ```
 
 ### Synthetic Location
-
 ```hcl
 resource "dynatrace_synthetic_location" "example" {
   name = var.synthetic_location_name
@@ -102,42 +102,38 @@ resource "dynatrace_synthetic_location" "example" {
 ```
 
 ## Inputs
-
-| Name                                          | Description                                                                 | Type         | Default             |
-|-----------------------------------------------|-----------------------------------------------------------------------------|--------------|---------------------|
-| calculated_synthetic_metric_name              | The displayed name of the calculated synthetic metric                       | `string`     | `"example_metric"`  |
-| calculated_synthetic_metric_enabled           | The metric is enabled (true) or disabled (false)                            | `bool`       | `true`              |
-| calculated_synthetic_metric_metric            | The type of the synthetic metric                                            | `string`     | `"ResourceCount"`   |
-| calculated_synthetic_metric_metric_key        | The unique key of the calculated synthetic metric                           | `string`     | `"calc:synthetic.browser.example_metric"` |
-| calculated_synthetic_metric_monitor_identifier | The Dynatrace entity ID of the monitor to which the metric belongs          | `string`     | `"SYNTHETIC_TEST-147CFF44DDB25C05"` |
-| synthetic_availability_exclude_maintenance_windows | Exclude periods with maintenance windows from availability calculation      | `bool`       | `true`              |
-| synthetic_location_name                       | The name of the location                                                    | `string`     | `"example_location"`|
-| synthetic_location_auto_update_chromium       | Auto upgrade of Chromium is enabled (true) or disabled (false)              | `bool`       | `true`              |
-| synthetic_location_availability_location_outage | The alerting of location outage is enabled (true) or disabled (false)       | `bool`       | `true`              |
-| synthetic_location_availability_node_outage   | The alerting of node outage is enabled (true) or disabled (false)           | `bool`       | `true`              |
-| synthetic_location_availability_notifications_enabled | The notifications of location and node outage is enabled (true) or disabled (false) | `bool`       | `true`              |
-| synthetic_location_city                       | The city of the location                                                    | `string`     | `"San Francisco de Asis"` |
-| synthetic_location_country_code               | The country code of the location                                            | `string`     | `"VE"`              |
-| synthetic_location_deployment_type            | The deployment type of the location                                         | `string`     | `"STANDARD"`        |
-| synthetic_location_latitude                   | The latitude of the location in DDD.dddd format                             | `number`     | `10.0758`           |
-| synthetic_location_location_node_outage_delay_in_minutes | Alert if the location or node outage lasts longer than X minutes            | `number`     | `3`                 |
-| synthetic_location_longitude                  | The longitude of the location in DDD.dddd format                            | `number`     | `-67.5442`          |
-| synthetic_location_region_code                | The region code of the location                                             | `string`     | `"04"`              |
+| Name | Description | Type | Default |
+|------|-------------|------|---------|
+| `calculated_synthetic_metric_name` | The displayed name of the calculated synthetic metric | `string` | `"example_metric"` |
+| `calculated_synthetic_metric_enabled` | The metric is enabled (true) or disabled (false) | `bool` | `true` |
+| `calculated_synthetic_metric_metric` | The type of the synthetic metric | `string` | `"ResourceCount"` |
+| `calculated_synthetic_metric_metric_key` | The unique key of the calculated synthetic metric | `string` | `"calc:synthetic.browser.example_metric"` |
+| `calculated_synthetic_metric_monitor_identifier` | The Dynatrace entity ID of the monitor to which the metric belongs | `string` | `"SYNTHETIC_TEST-147CFF44DDB25C05"` |
+| `synthetic_availability_exclude_maintenance_windows` | Exclude periods with maintenance windows from availability calculation | `bool` | `true` |
+| `synthetic_location_name` | The name of the location | `string` | `"example_location"` |
+| `synthetic_location_auto_update_chromium` | Auto upgrade of Chromium is enabled (true) or disabled (false) | `bool` | `true` |
+| `synthetic_location_availability_location_outage` | The alerting of location outage is enabled (true) or disabled (false) | `bool` | `true` |
+| `synthetic_location_availability_node_outage` | The alerting of node outage is enabled (true) or disabled (false) | `bool` | `true` |
+| `synthetic_location_availability_notifications_enabled` | The notifications of location and node outage is enabled (true) or disabled (false) | `bool` | `true` |
+| `synthetic_location_city` | The city of the location | `string` | `"San Francisco de Asis"` |
+| `synthetic_location_country_code` | The country code of the location | `string` | `"VE"` |
+| `synthetic_location_deployment_type` | The deployment type of the location | `string` | `"STANDARD"` |
+| `synthetic_location_latitude` | The latitude of the location in DDD.dddd format | `number` | `10.0758` |
+| `synthetic_location_location_node_outage_delay_in_minutes` | Alert if the location or node outage lasts longer than X minutes | `number` | `3` |
+| `synthetic_location_longitude` | The longitude of the location in DDD.dddd format | `number` | `-67.5442` |
+| `synthetic_location_region_code` | The region code of the location | `string` | `"04"` |
 
 ## Outputs
-
-| Name                                 | Description                                               |
-|--------------------------------------|-----------------------------------------------------------|
-| calculated_synthetic_metric_id       | The ID of the calculated synthetic metric resource        |
-| synthetic_availability_id            | The ID of the synthetic availability resource             |
-| synthetic_location_id                | The ID of the synthetic location resource                 |
+| Name | Description |
+|------|-------------|
+| `calculated_synthetic_metric_id` | The ID of the calculated synthetic metric resource |
+| `synthetic_availability_id` | The ID of the synthetic availability resource |
+| `synthetic_location_id` | The ID of the synthetic location resource |
 
 ## Example
-
 ```hcl
 module "dynatrace_synthetic" {
   source = "./path_to_module"
-
   calculated_synthetic_metric_name = "example_metric"
   calculated_synthetic_metric_enabled = true
   calculated_synthetic_metric_metric = "ResourceCount"
@@ -159,3 +155,12 @@ module "dynatrace_synthetic" {
 }
 ```
 
+## API Token Scopes
+This resource requires the API token scopes:
+- Read configuration (`ReadConfig`)
+- Write configuration (`WriteConfig`)
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+- Create and read synthetic monitors, locations, and nodes (`ExternalSyntheticIntegration`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace synthetic resources.
