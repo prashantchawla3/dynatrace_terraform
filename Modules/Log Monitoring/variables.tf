@@ -1,5 +1,5 @@
-variable "log_agent_scope" {
-  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment."
+variable "scope" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP)."
   type        = string
 }
 
@@ -14,468 +14,441 @@ variable "journald_log_detector" {
   default     = false
 }
 
-variable "log_buckets_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+variable "enabled_buckets" {
+  description = "This setting is enabled (true) or disabled (false) for log buckets."
   type        = bool
-  default     = true
 }
 
-variable "log_buckets_bucket_name" {
-  description = "A 'bucket' is the length of time your logs will be stored. Select the bucket that's best for you."
+variable "bucket_name" {
+  description = "A 'bucket' is the length of time your logs will be stored."
   type        = string
 }
 
-variable "log_buckets_matcher" {
-  description = "Matcher (DQL)"
+variable "matcher_buckets" {
+  description = "Matcher (DQL) for log buckets."
   type        = string
 }
 
-variable "log_buckets_rule_name" {
-  description = "Rule name"
+variable "rule_name_buckets" {
+  description = "Rule name for log buckets."
   type        = string
 }
 
-variable "log_buckets_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "insert_after_buckets" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for log buckets."
   type        = string
   default     = null
 }
 
-variable "log_custom_attribute_sidebar" {
-  description = "Show attribute values in side bar"
+variable "sidebar_custom_attribute" {
+  description = "Show attribute values in side bar for custom attribute."
   type        = bool
-  default     = false
 }
 
-variable "log_custom_attribute_key" {
-  description = "The attribute key is case sensitive in log data ingestion."
+variable "key_custom_attribute" {
+  description = "The attribute key is case sensitive in log data ingestion for custom attribute."
   type        = string
 }
 
-variable "log_custom_source_name" {
-  description = "Name"
+variable "name_custom_source" {
+  description = "Name of the custom log source."
   type        = string
 }
 
-variable "log_custom_source_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+variable "enabled_custom_source" {
+  description = "This setting is enabled (true) or disabled (false) for custom log source."
   type        = bool
-  default     = false
 }
 
-variable "log_custom_source_scope" {
-  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment."
+variable "scope_custom_source" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP) for custom log source."
   type        = string
 }
 
-variable "log_custom_source_type" {
-  description = "Possible Values: LOG_PATH_PATTERN, WINDOWS_EVENT_LOG"
+variable "custom_log_source_type" {
+  description = "Type of the custom log source (LOG_PATH_PATTERN, WINDOWS_EVENT_LOG)."
   type        = string
 }
 
-variable "log_custom_source_path" {
-  description = "Values"
+variable "custom_log_source_path" {
+  description = "Path for the custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_type_1" {
-  description = "Possible Values: Attribute"
+variable "enrichment_type_custom_source" {
+  description = "Type of the enrichment (attribute) for custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_key_1" {
-  description = "Enrichment key 1"
+variable "enrichment_key1_custom_source" {
+  description = "Key for the first enrichment attribute for custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_value_1" {
-  description = "Enrichment value 1"
+variable "enrichment_value1_custom_source" {
+  description = "Value for the first enrichment attribute for custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_type_2" {
-  description = "Possible Values: Attribute"
+variable "enrichment_key2_custom_source" {
+  description = "Key for the second enrichment attribute for custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_key_2" {
-  description = "Enrichment key 2"
+variable "enrichment_value2_custom_source" {
+  description = "Value for the second enrichment attribute for custom log source."
   type        = string
 }
 
-variable "log_custom_source_enrichment_value_2" {
-  description = "Enrichment value 2"
-  type        = string
-}
-
-variable "log_debug_settings_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+variable "enabled_debug_settings" {
+  description = "This setting is enabled (true) or disabled (false) for debug settings."
   type        = bool
-  default     = false
 }
 
-variable "log_events_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+variable "enabled_events" {
+  description = "This setting is enabled (true) or disabled (false) for log events."
   type        = bool
-  default     = false
 }
 
-variable "log_events_query" {
-  description = "Log query"
+variable "query_events" {
+  description = "Log query for log events."
   type        = string
 }
 
-variable "log_events_summary" {
-  description = "The textual summary of the log event entry"
+variable "summary_events" {
+  description = "The textual summary of the log event entry."
   type        = string
 }
 
-variable "log_events_description" {
+variable "event_description" {
   description = "The description of the event to trigger."
   type        = string
 }
 
-variable "log_events_event_type" {
-  description = "Possible Values: AVAILABILITY, CUSTOM_ALERT, CUSTOM_ANNOTATION, CUSTOM_CONFIGURATION, CUSTOM_DEPLOYMENT, ERROR, INFO, MARKED_FOR_TERMINATION, RESOURCE, SLOWDOWN"
+variable "event_type" {
+  description = "The type of the event to trigger."
   type        = string
 }
 
-variable "log_events_title" {
+variable "event_title" {
   description = "The title of the event to trigger."
   type        = string
 }
 
-variable "log_events_metadata_key_1" {
-  description = "Metadata key 1"
+variable "metadata_key" {
+  description = "Key for the metadata item."
   type        = string
 }
 
-variable "log_events_metadata_value_1" {
-  description = "Metadata value 1"
+variable "metadata_value" {
+  description = "Value for the metadata item."
   type        = string
 }
 
-variable "log_metrics_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+variable "enabled_metrics" {
+  description = "This setting is enabled (true) or disabled (false) for log metrics."
   type        = bool
-  default     = true
 }
 
-variable "log_metrics_dimensions" {
-  description = "Dimensions"
+variable "dimensions_metrics" {
+  description = "To enable splitting on your metric, add desired dimensions."
   type        = list(string)
 }
 
-variable "log_metrics_key" {
-  description = "Key"
+variable "key_metrics" {
+  description = "Metric key for log metrics."
   type        = string
 }
 
-variable "log_metrics_measure" {
-  description = "Measure"
+variable "measure_metrics" {
+  description = "Measure type (OCCURRENCE, ATTRIBUTE) for log metrics."
   type        = string
 }
 
-variable "log_metrics_measure_attribute" {
-  description = "Measure attribute"
+variable "measure_attribute_metrics" {
+  description = "Attribute for the measure for log metrics."
   type        = string
 }
 
-variable "log_metrics_query" {
-  description = "Query"
+variable "query_metrics" {
+  description = "Matcher query for log metrics."
   type        = string
 }
 
-variable "log_oneagent_container_timezone_heuristic_enabled" {
-  description = "Enable OneAgent to use container timezone heuristic."
+variable "container_timezone_heuristic_enabled" {
+  description = "Enables automatic detection of timezone in container's logs if it is not explicitly defined in content or configured."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_containers_logs_detection_enabled" {
-  description = "Enable OneAgent to detect container logs."
+variable "containers_logs_detection_enabled" {
+  description = "Allows detection of log messages written to the containerized application's stdout/stderr streams."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_date_search_limit_bytes" {
-  description = "Date search limit in bytes."
+variable "date_search_limit_bytes" {
+  description = "Defines the number of characters in every log line (starting from the first character in the line) where the timestamp is searched."
   type        = number
-  default     = 1024
 }
 
-variable "log_oneagent_default_timezone" {
-  description = "Default timezone for OneAgent."
+variable "default_timezone" {
+  description = "Default timezone for agent if more specific configurations is not defined."
   type        = string
-  default     = "UTC"
 }
 
-variable "log_oneagent_event_log_query_timeout_sec" {
-  description = "Event log query timeout in seconds."
+variable "event_log_query_timeout_sec" {
+  description = "Defines the maximum timeout value, in seconds, for the query extracting Windows Event Logs."
   type        = number
-  default     = 30
 }
 
-variable "log_oneagent_iisdetection_enabled" {
-  description = "Enable IIS detection."
+variable "iisdetection_enabled" {
+  description = "Allows detection of logs and event logs written by IIS server."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_log_scanner_linux_nfs_enabled" {
-  description = "Enable log scanner for Linux NFS."
+variable "log_scanner_linux_nfs_enabled" {
+  description = "Allows detection of logs written to mounted network storage drives. Applies only to Linux hosts."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_max_lgis_per_entity_count" {
-  description = "Max LGIs per entity count."
+variable "max_lgis_per_entity_count" {
+  description = "Defines the maximum number of log group instances per entity after which, the new automatic ones wouldn't be added."
   type        = number
-  default     = 100
 }
 
-variable "log_oneagent_min_binary_detection_limit_bytes" {
-  description = "Min binary detection limit in bytes."
+variable "min_binary_detection_limit_bytes" {
+  description = "Defines the minimum number of bytes in log file required for binary detection."
   type        = number
-  default     = 512
 }
 
-variable "log_oneagent_monitor_own_logs_enabled" {
-  description = "Enable monitoring of OneAgent's own logs."
+variable "monitor_own_logs_enabled" {
+  description = "Enabling this option may affect your licensing costs."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_open_log_files_detection_enabled" {
-  description = "Enable detection of open log files."
+variable "open_log_files_detection_enabled" {
+  description = "Automatically detect logs written by important processes."
   type        = bool
-  default     = true
 }
 
-variable "log_oneagent_scope" {
-  description = "Scope for OneAgent settings."
+variable "scope_oneagent" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP) for OneAgent."
   type        = string
 }
 
-variable "log_oneagent_severity_detection_limit_bytes" {
-  description = "Severity detection limit in bytes."
+variable "severity_detection_limit_bytes" {
+  description = "Defines the number of characters in every log line (starting from the first character in the line) where severity is searched."
   type        = number
-  default     = 2048
 }
 
-variable "log_oneagent_severity_detection_lines_limit" {
-  description = "Severity detection lines limit."
+variable "severity_detection_lines_limit" {
+  description = "Defines the number of the first lines of every log entry where severity is searched."
   type        = number
-  default     = 100
 }
 
-variable "log_oneagent_system_logs_detection_enabled" {
-  description = "Enable system logs detection."
+variable "system_logs_detection_enabled" {
+  description = "Linux: syslog, message log Windows: system, application, security event logs."
   type        = bool
-  default     = true
 }
 
-variable "log_processing_enabled" {
-  description = "Enable log processing."
+variable "enabled_processing" {
+  description = "This setting is enabled (true) or disabled (false) for log processing."
   type        = bool
-  default     = true
 }
 
-variable "log_processing_query" {
-  description = "Log processing query."
+variable "query_processing" {
+  description = "Matcher query for log processing."
   type        = string
 }
 
-variable "log_processing_rule_name" {
-  description = "Log processing rule name."
+variable "rule_name_processing" {
+  description = "Rule name for log processing."
   type        = string
 }
 
-variable "log_processing_rule" {
-  description = "Log processing rule."
+variable "processor_rule" {
+  description = "Processor definition rule."
   type        = string
 }
 
-variable "log_processing_sample_log" {
-  description = "Sample log for rule testing."
+variable "sample_log_processing" {
+  description = "Sample log in JSON format for log processing."
   type        = string
 }
 
-variable "log_processing_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "insert_after_processing" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for log processing."
   type        = string
   default     = null
 }
 
-variable "log_security_context_query" {
-  description = "Log security context query."
+variable "query_security_context" {
+  description = "Matcher query for log security context."
   type        = string
 }
 
-variable "log_security_context_rule_name" {
-  description = "Log security context rule name."
+variable "rule_name_security_context" {
+  description = "Rule name for log security context."
   type        = string
 }
 
-variable "log_security_context_value_source" {
-  description = "Log security context value source."
+variable "value_source_security_context" {
+  description = "Possible values: FIELD, LITERAL for log security context."
   type        = string
 }
 
-variable "log_security_context_value_source_field" {
-  description = "Log security context value source field."
+variable "value_source_field_security_context" {
+  description = "Name of field used to copy value for log security context."
   type        = string
 }
 
-variable "log_security_context_value" {
-  description = "Log security context value."
-  type        = string
-}
-
-variable "log_security_context_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "value_security_context" {
+  description = "Literal value to be set for log security context."
   type        = string
   default     = null
 }
 
-variable "log_sensitive_data_masking_name" {
+variable "insert_after_security_context" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for log security context."
+  type        = string
+  default     = null
+}
+
+variable "name_sensitive_data_masking" {
   description = "Name of the sensitive data masking rule."
   type        = string
 }
 
-variable "log_sensitive_data_masking_enabled" {
-  description = "Enable sensitive data masking."
+variable "enabled_sensitive_data_masking" {
+  description = "This setting is enabled (true) or disabled (false) for sensitive data masking."
   type        = bool
-  default     = true
 }
 
-variable "log_sensitive_data_masking_scope" {
-  description = "Scope for sensitive data masking."
+variable "scope_sensitive_data_masking" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP) for sensitive data masking."
   type        = string
 }
 
-variable "log_sensitive_data_masking_type" {
-  description = "Type of sensitive data masking."
+variable "masking_type_sensitive_data_masking" {
+  description = "Type of masking (SHA1, STRING) for sensitive data masking."
   type        = string
 }
 
-variable "log_sensitive_data_masking_expression" {
-  description = "Expression for sensitive data masking."
+variable "expression_sensitive_data_masking" {
+  description = "Expression to be masked for sensitive data masking."
   type        = string
 }
 
-variable "log_sensitive_data_masking_replacement" {
-  description = "Replacement text for sensitive data."
-  type        = string
-}
-
-variable "log_sensitive_data_masking_attribute" {
-  description = "Attribute for sensitive data masking."
-  type        = string
-}
-
-variable "log_sensitive_data_masking_operator" {
-  description = "Operator for sensitive data masking."
-  type        = string
-}
-
-variable "log_sensitive_data_masking_values" {
-  description = "Values for sensitive data masking."
-  type        = list(string)
-}
-
-variable "log_sensitive_data_masking_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "replacement_sensitive_data_masking" {
+  description = "The string to replace the masked expression with. Irrelevant if type is SHA1 for sensitive data masking."
   type        = string
   default     = null
 }
 
-variable "log_storage_name" {
-  description = "Name of the log storage."
+variable "matcher_attribute_sensitive_data_masking" {
+  description = "Attribute for the matcher for sensitive data masking."
   type        = string
 }
 
-variable "log_storage_enabled" {
-  description = "Enable log storage."
-  type        = bool
-  default     = true
-}
-
-variable "log_storage_scope" {
-  description = "Scope for log storage."
+variable "matcher_operator_sensitive_data_masking" {
+  description = "Operator for the matcher (MATCHES) for sensitive data masking."
   type        = string
 }
 
-variable "log_storage_send_to_storage" {
-  description = "Send logs to storage."
-  type        = bool
-  default     = true
-}
-
-variable "log_storage_attribute" {
-  description = "Attribute for log storage."
-  type        = string
-}
-
-variable "log_storage_operator" {
-  description = "Operator for log storage."
-  type        = string
-}
-
-variable "log_storage_values" {
-  description = "Values for log storage."
+variable "matcher_values_sensitive_data_masking" {
+  description = "Values for the matcher for sensitive data masking."
   type        = list(string)
 }
 
-variable "log_storage_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "insert_after_sensitive_data_masking" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for sensitive data masking."
   type        = string
   default     = null
 }
 
-variable "log_timestamp_enabled" {
-  description = "Enable log timestamp."
-  type        = bool
-  default     = true
-}
-
-variable "log_timestamp_config_item_title" {
-  description = "Title of the log timestamp configuration item."
+variable "name_storage" {
+  description = "Name of the log storage rule."
   type        = string
 }
 
-variable "log_timestamp_date_time_pattern" {
+variable "enabled_storage" {
+  description = "This setting is enabled (true) or disabled (false) for log storage."
+  type        = bool
+}
+
+variable "scope_storage" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP) for log storage."
+  type        = string
+}
+
+variable "send_to_storage" {
+  description = "If true, matching logs will be included in storage. If false, matching logs will be excluded from storage."
+  type        = bool
+}
+
+variable "matcher_attribute_storage" {
+  description = "Attribute for the matcher for log storage."
+  type        = string
+}
+
+variable "matcher_operator_storage" {
+  description = "Operator for the matcher (MATCHES) for log storage."
+  type        = string
+}
+
+variable "matcher_values_storage" {
+  description = "Values for the matcher for log storage."
+  type        = list(string)
+}
+
+variable "insert_after_storage" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for log storage."
+  type        = string
+  default     = null
+}
+
+variable "enabled_timestamp" {
+  description = "This setting is enabled (true) or disabled (false) for log timestamp."
+  type        = bool
+}
+
+variable "config_item_title_timestamp" {
+  description = "Name of the log timestamp configuration item."
+  type        = string
+}
+
+variable "date_time_pattern_timestamp" {
   description = "Date-time pattern for log timestamp."
   type        = string
 }
 
-variable "log_timestamp_scope" {
-  description = "Scope for log timestamp."
+variable "scope_timestamp" {
+  description = "The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP) for log timestamp."
   type        = string
 }
 
-variable "log_timestamp_timezone" {
+variable "timezone_timestamp" {
   description = "Timezone for log timestamp."
   type        = string
 }
 
-variable "log_timestamp_attribute" {
-  description = "Attribute for log timestamp."
+variable "matcher_attribute_timestamp" {
+  description = "Attribute for the matcher for log timestamp."
   type        = string
 }
 
-variable "log_timestamp_operator" {
-  description = "Operator for log timestamp."
+variable "matcher_operator_timestamp" {
+  description = "Operator for the matcher (MATCHES) for log timestamp."
   type        = string
 }
 
-variable "log_timestamp_values" {
-  description = "Values for log timestamp."
+variable "matcher_values_timestamp" {
+  description = "Values for the matcher for log timestamp."
   type        = list(string)
 }
 
-variable "log_timestamp_insert_after" {
-  description = "Specify the ID of the resource instance that comes before this instance regarding order."
+variable "insert_after_timestamp" {
+  description = "Specify the ID of the resource instance that comes before this instance regarding order for log timestamp."
   type        = string
   default     = null
 }
+

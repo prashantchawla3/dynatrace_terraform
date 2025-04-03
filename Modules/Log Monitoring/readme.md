@@ -52,89 +52,97 @@ The following resources are created by this module:
 ### Log Agent Feature Flags Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_agent_scope` | The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment. | `string` | `"HOST-1234567890000000"` |
+| `scope` | The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment. | `string` | `"HOST-1234567890000000"` |
 | `new_container_log_detector` | Enable OneAgent to collect all container logs in Kubernetes environments. | `bool` | `true` |
 | `journald_log_detector` | Enable OneAgent to collect logs from Journald on Linux systems. | `bool` | `false` |
 
 ### Log Buckets Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_buckets_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `true` |
-| `log_buckets_bucket_name` | A 'bucket' is the length of time your logs will be stored. Select the bucket that's best for you. | `string` | `"default_logs"` |
-| `log_buckets_matcher` | Matcher (DQL) | `string` | `"matchesPhrase(content, \"error\")"` |
-| `log_buckets_rule_name` | Rule name | `string` | `"example_rule"` |
-| `log_buckets_insert_after` | Specify the ID of the resource instance that comes before this instance regarding order. | `string` | `null` |
+| `enabled_buckets` | This setting is enabled (true) or disabled (false) | `bool` | `true` |
+| `bucket_name` | A 'bucket' is the length of time your logs will be stored. Select the bucket that's best for you. | `string` | `"default_logs"` |
+| `matcher_buckets` | Matcher (DQL) | `string` | `"matchesPhrase(content, \"error\")"` |
+| `rule_name_buckets` | Rule name | `string` | `"example_rule"` |
+| `insert_after_buckets` | Specify the ID of the resource instance that comes before this instance regarding order. | `string` | `null` |
 
 ### Log Custom Attribute Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_custom_attribute_sidebar` | Show attribute values in side bar | `bool` | `false` |
-| `log_custom_attribute_key` | The attribute key is case sensitive in log data ingestion. | `string` | `"example_key"` |
+| `sidebar_custom_attribute` | Show attribute values in side bar | `bool` | `false` |
+| `key_custom_attribute` | The attribute key is case sensitive in log data ingestion. | `string` | `"example_key"` |
 
 ### Log Custom Source Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_custom_source_name` | Name | `string` | `"example_custom_source"` |
-| `log_custom_source_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
-| `log_custom_source_scope` | The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment. | `string` | `"HOST_GROUP-1234567890000000"` |
-| `log_custom_source_type` | Possible Values: LOG_PATH_PATTERN, WINDOWS_EVENT_LOG | `string` | `"WINDOWS_EVENT_LOG"` |
-| `log_custom_source_path` | Values | `string` | `"/terraform"` |
-| `log_custom_source_enrichment_type_1` | Possible Values: Attribute | `string` | `"attribute"` |
-| `log_custom_source_enrichment_key_1` | Enrichment key 1 | `string` | `"key1"` |
-| `log_custom_source_enrichment_value_1` | Enrichment value 1 | `string` | `"value1"` |
-| `log_custom_source_enrichment_type_2` | Possible Values: Attribute | `string` | `"attribute"` |
-| `log_custom_source_enrichment_key_2` | Enrichment key 2 | `string` | `"key2"` |
-| `log_custom_source_enrichment_value_2` | Enrichment value 2 | `string` | `"value2"` |
+| `name_custom_source` | Name | `string` | `"example_name"` |
+| `enabled_custom_source` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
+| `scope_custom_source` | The scope of this setting (HOST, KUBERNETES_CLUSTER, HOST_GROUP). Omit this property if you want to cover the whole environment. | `string` | `"HOST_GROUP-1234567890000000"` |
+| `custom_log_source_type` | Possible Values: LOG_PATH_PATTERN, WINDOWS_EVENT_LOG | `string` | `"WINDOWS_EVENT_LOG"` |
+| `custom_log_source_path` | Values | `string` | `"/terraform"` |
+| `enrichment_type_custom_source` | Possible Values: Attribute | `string` | `"attribute"` |
+| `enrichment_key1_custom_source` | Enrichment key 1 | `string` | `"key1"` |
+| `enrichment_value1_custom_source` | Enrichment value 1 | `string` | `"value1"` |
+| `enrichment_key2_custom_source` | Enrichment key 2 | `string` | `"key2"` |
+| `enrichment_value2_custom_source` | Enrichment value 2 | `string` | `"value2"` |
 
 ### Log Debug Settings Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_debug_settings_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
+| `enabled_debug_settings` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
 
 ### Log Events Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_events_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
-| `log_events_query` | Log query | `string` | `"matchesPhrase(content, \"terratest\")"` |
-| `log_events_summary` | The textual summary of the log event entry | `string` | `"Created by Terraform"` |
-| `log_events_description` | The description of the event to trigger. | `string` | `"Created by Terraform"` |
-| `log_events_event_type` | Possible Values: AVAILABILITY, CUSTOM_ALERT, CUSTOM_ANNOTATION, CUSTOM_CONFIGURATION, CUSTOM_DEPLOYMENT, ERROR, INFO, MARKED_FOR_TERMINATION, RESOURCE, SLOWDOWN | `string` | `"INFO"` |
-| `log_events_title` | The title of the event to trigger. | `string` | `"{content}"` |
-| `log_events_metadata_key_1` | Metadata key 1 | `string` | `"terraform.key"` |
-| `log_events_metadata_value_1` | Metadata value 1 | `string` | `"terraform.value"` |
+| `enabled_events` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
+| `query_events` | Log query | `string` | `"matchesPhrase(content, \"terratest\")"` |
+| `summary_events` | The textual summary of the log event entry | `string` | `"Created by Terraform"` |
+| `event_description` | The description of the event to trigger. | `string` | `"Created by Terraform"` |
+| `event_type` | Possible Values: AVAILABILITY, CUSTOM_ALERT, CUSTOM_ANNOTATION, CUSTOM_CONFIGURATION, CUSTOM_DEPLOYMENT, ERROR, INFO, MARKED_FOR_TERMINATION, RESOURCE, SLOWDOWN | `string` | `"INFO"` |
+| `event_title` | The title of the event to trigger. | `string` | `"{content}"` |
+| `metadata_key` | Metadata key 1 | `string` | `"terraform.key"` |
+| `metadata_value` | Metadata value 1 | `string` | `"terraform.value"` |
 
 ### Log Metrics Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_metrics_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `true` |
-| `log_metrics_dimensions` | Dimensions | `list(string)` | `["dt.os.type", "dt.entity.process_group"]` |
-| `log_metrics_key` | Key | `string` | `"log.terraformexample3"` |
-| `log_metrics_measure` | Measure | `string` | `"ATTRIBUTE"` |
-| `log_metrics_measure_attribute` | Measure attribute | `string` | `"dt.entity.host"` |
-| `log_metrics_query` | Query | `string` | `"matchesPhrase(content, \"terratest\")"` |
+| `enabled_metrics` | This setting is enabled (true) or disabled (false) | `bool` | `true` |
+| `dimensions_metrics` | Dimensions | `list(string)` | `["dt.os.type", "dt.entity.process_group"]` |
+| `key_metrics` | Key | `string` | `"log.terraformexample3"` |
+| `measure_metrics` | Measure | `string` | `"ATTRIBUTE"` |
+| `measure_attribute_metrics` | Measure attribute | `string` | `"dt.entity.host"` |
+| `query_metrics` | Query | `string` | `"matchesPhrase(content, \"terratest\")"` |
 
 ### Log OneAgent Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_oneagent_container_timezone_heuristic_enabled` | Enable OneAgent to use container timezone heuristic. | `bool` | `true` |
-| `log_oneagent_containers_logs_detection_enabled` | Enable OneAgent to detect container logs. | `bool` | `true` |
-| `log_oneagent_date_search_limit_bytes` | Date search limit in bytes. | `number` | `1024` |
-| `log_oneagent_default_timezone` | Default timezone for OneAgent. | `string` | `"UTC"` |
-| `log_oneagent_event_log_query_timeout_sec` | Event log query timeout in seconds. | `number` | `30` |
-| `log_oneagent_iisdetection_enabled` | Enable IIS detection. | `bool` | `true` |
-| `log_oneagent_log_scanner_linux_nfs_enabled` | Enable log scanner for Linux NFS. | `bool` | `true` |
-| `log_oneagent_max_lgis_per_entity_count` | Max LGIs per entity count. | `number` | `100` |
-| `log_oneagent_min_binary_detection_limit_bytes` | Min binary detection limit in bytes. | `number` | `512` |
-| `log_oneagent_monitor_own_logs_enabled` | Enable monitoring of OneAgent's own logs. | `bool` | `true` |
-| `log_oneagent_open_log_files_detection_enabled` | Enable detection of open log files. | `bool` | `true` |
-| `log_oneagent_scope` | Scope for OneAgent settings. | `string` | `"environment"` |
-| `log_oneagent_severity_detection_limit_bytes` | Severity detection limit in bytes. | `number` | `2048` |
-| `log_oneagent_severity_detection_lines_limit` | Severity detection lines limit. | `number` | `100` |
-| `log_oneagent_system_logs_detection_enabled` | Enable system logs detection. | `bool` | `true` |
+| `container_timezone_heuristic_enabled` | Enable OneAgent to use container timezone heuristic. | `bool` | `true` |
+| `containers_logs_detection_enabled` | Enable OneAgent to detect container logs. | `bool` | `true` |
+| `date_search_limit_bytes` | Date search limit in bytes. | `number` | `64` |
+| `default_timezone` | Default timezone for OneAgent. | `string` | `"Local time zone"` |
+| `event_log_query_timeout_sec` | Event log query timeout in seconds. | `number` | `5` |
+| `iisdetection_enabled` | Enable IIS detection. | `bool` | `true` |
+| `log_scanner_linux_nfs_enabled` | Enable log scanner for Linux NFS. | `bool` | `false` |
+| `max_lgis_per_entity_count` | Max LGIs per entity count. | `number` | `200` |
+| `min_binary_detection_limit_bytes` | Min binary detection limit in bytes. | `number` | `512` |
+| `monitor_own_logs_enabled` | Enable monitoring of OneAgent's own logs. | `bool` | `false` |
+| `open_log_files_detection_enabled` | Enable detection of open log files. | `bool` | `true` |
+| `scope_oneagent` | Scope for OneAgent settings. | `string` | `"environment"` |
+| `severity_detection_limit_bytes` | Severity detection limit in bytes. | `number` | `100` |
+| `severity_detection_lines_limit` | Severity detection lines limit. | `number` | `2` |
+| `system_logs_detection_enabled` | Enable system logs detection. | `bool` | `true` |
 
 ### Log Processing Variables
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
-| `log_processing_enabled` | Enable log processing. | `bool` | `true` |
-| `log_processing_query` | Log processing query. | `string` | `"matchesPhrase(content, \"terratest\")"` |
-|
+| `enabled_processing` | Enable log processing. | `bool` | `false` |
+| `query_processing` | Log processing query. | `string` | `"matchesPhrase(content, \"terratest\")"` |
+| `rule_name_processing` | Rule name for log processing. | `string` | `"example_rule"` |
+| `processor_rule` | Processor definition rule. | `string` | `<<-EOT\n PARSE(content,\"LD 'total: ' INT:total '; failed: ' INT:failed\")\n \n FIELDS_ADD(failed.percentage: 100.0 * failed / total + '%')\n \n FIELDS_REMOVE(total, failed)\nEOT` |
+| `sample_log_processing` | Sample log in JSON format for log processing. | `string`
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
