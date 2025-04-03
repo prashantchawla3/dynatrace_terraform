@@ -139,3 +139,10 @@ The following resources are created by this module:
 | `rule_name_processing` | Rule name for log processing. | `string` | `"example_rule"` |
 | `processor_rule` | Processor definition rule. | `string` | `<<-EOT\n PARSE(content,\"LD 'total: ' INT:total '; failed: ' INT:failed\")\n \n FIELDS_ADD(failed.percentage: 100.0 * failed / total + '%')\n \n FIELDS_REMOVE(total, failed)\nEOT` |
 | `sample_log_processing` | Sample log in JSON format for log processing. | `string`
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
