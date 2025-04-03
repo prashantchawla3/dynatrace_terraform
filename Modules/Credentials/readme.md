@@ -124,5 +124,15 @@ module "dynatrace_credentials" {
   credentials_username = var.credentials_username
   credentials_password = var.credentials_password
 }
-```
+
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read configuration (`ReadConfig`)
+- Write configuration (`WriteConfig`)
+- Read credential vault entries (`credentialVault.read`)
+- Write credential vault entries (`credentialVault.write`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
+
 
