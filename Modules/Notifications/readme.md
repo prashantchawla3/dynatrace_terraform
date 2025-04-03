@@ -148,3 +148,12 @@ The following resources are created by this module:
 | Name | Description | Type | Default |
 |------|-------------|------|---------|
 | `victor_ops_active` | Whether the VictorOps notification is
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+This resource requires the Jira for Workflows app to be installed via the Dynatrace Hub.
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
