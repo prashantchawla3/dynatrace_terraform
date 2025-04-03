@@ -12,7 +12,6 @@ This repository contains a Terraform module for deploying and managing JSON dash
 - Outputs
 - Usage
 
-
 ## Requirements
 - Terraform >= 0.12
 - Dynatrace account
@@ -71,4 +70,13 @@ module "dynatrace_dashboard" {
   metric_name = var.metric_name
 }
 ```
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read configuration (`ReadConfig`)
+- Write configuration (`WriteConfig`)
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace JSON dashboards.
 

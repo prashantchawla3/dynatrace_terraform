@@ -1,6 +1,7 @@
 resource "dynatrace_alerting" "example" {
   name            = var.alerting_name
   management_zone = var.alerting_management_zone
+
   rules {
     rule {
       include_mode     = "INCLUDE_ALL"
@@ -48,6 +49,7 @@ resource "dynatrace_connectivity_alerts" "example" {
 
 resource "dynatrace_maintenance" "example" {
   enabled = var.maintenance_enabled
+
   general_properties {
     name              = var.maintenance_name
     description       = var.maintenance_description
@@ -55,14 +57,18 @@ resource "dynatrace_maintenance" "example" {
     disable_synthetic = var.maintenance_disable_synthetic
     suppression       = var.maintenance_suppression
   }
+
   schedule {
     type = var.maintenance_schedule_type
+
     weekly_recurrence {
       day_of_week = var.maintenance_weekly_day_of_week
+
       recurrence_range {
         end_date   = var.maintenance_weekly_end_date
         start_date = var.maintenance_weekly_start_date
       }
+
       time_window {
         end_time   = var.maintenance_weekly_end_time
         start_time = var.maintenance_weekly_start_time
@@ -70,3 +76,4 @@ resource "dynatrace_maintenance" "example" {
       }
     }
   }
+}
