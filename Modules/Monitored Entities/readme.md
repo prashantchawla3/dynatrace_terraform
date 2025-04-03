@@ -82,4 +82,9 @@ module "dynatrace_custom_device" {
   ui_based = var.ui_based
 }
 ```
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`entities.read`)
+- Write settings (`entities.write`)
 
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
