@@ -136,4 +136,9 @@ module "dynatrace_network_monitor_outage" {
   network_monitor_outage_scope = var.network_monitor_outage_scope
 }
 ```
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
 
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
