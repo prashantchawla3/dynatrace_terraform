@@ -149,7 +149,7 @@ This resource requires the API token scopes:
 - Write settings (`settings.write`)
 
 
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace synthetic resources.
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
 
 ## Exporting Configuration for Different Resources
 You can export configurations for different resources using the `terraform-provider-dynatrace -export` command. For example, to export all existing web application anomaly detection configurations, use `terraform-provider-dynatrace -export dynatrace_web_app_anomalies`. The resource name for this operation is `dynatrace_web_app_anomalies`.
