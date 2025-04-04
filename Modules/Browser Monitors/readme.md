@@ -118,3 +118,11 @@ The following resources are created by this module:
 | `load_spike_minutes_abnormal_state` | Minutes in abnormal state for load spike detection | `number` | `1` |
 | `response_time_enabled` | Enable or disable response time detection | `bool` | `true` |
 | `response_time_detection_mode` | Detection
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+- Create and read synthetic monitors, locations, and nodes (`ExternalSyntheticIntegration`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace synthetic resources.
