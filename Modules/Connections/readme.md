@@ -188,3 +188,11 @@ resource "dynatrace_servicenow_connection" "example" {
 | ms365_email_connection_client_secret          | Client secret of your app registered in Microsoft Azure App registrations.  | `string`     | `"your-ms365-client-secret"` |
 | ms365_email_connection_from_address           | The email address from which the messages will be sent.                     | `string`     | `"random.email@terraform.com"` |
 | msentraid_connection_name                     | The name of the Microsoft Entra Identity Developer connection.              | `string`     | `"example
+
+
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
