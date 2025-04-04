@@ -175,4 +175,9 @@ module "dynatrace_kubernetes_enrichment" {
   rule_target_2 = var.rule_target_2
 }
 ```
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
 
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
