@@ -112,4 +112,10 @@ module "dynatrace_metric_query" {
   metric_query_metric_selector = var.metric_query_metric_selector
 }
 ```
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
 
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
