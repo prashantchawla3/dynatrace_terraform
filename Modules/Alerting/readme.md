@@ -129,3 +129,11 @@ module "dynatrace_alerting" {
   alerting_rule_5_severity_level = var.alerting_rule_5_severity_level
   alerting_rule_6_tags = var.alerting_rule_6_tags
   alerting_rule_6_delay_in_minutes = var.alerting
+```
+## API Token Scopes
+This resource requires the API token scopes:
+- Read settings (`settings.read`)
+- Write settings (`settings.write`)
+
+
+Make sure your API token includes these scopes to successfully create and manage the Dynatrace synthetic resources.
