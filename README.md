@@ -81,7 +81,7 @@ Create a `terraform.tfvars` file to set the values for these variables. For exam
 zone_name = "example_zone"
 zone_description = "This is an example management zone"
 zone_legacy_id = "legacy-id-example"
-entity_selector = ""
+entity_selector = "type(\"HOST\"
 ```
 
 ### 6. Plan the Infrastructure
