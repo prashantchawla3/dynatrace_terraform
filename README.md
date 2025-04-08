@@ -28,7 +28,7 @@ project-directory/
 ## Steps to Use Terraform Modules
 
 ### 1. Set Up Your Project Directory
-Create a new directory for your Terraform project. Inside this directory, create a `main.tf` file where you will define your infrastructure.
+Create a new directory for your Terraform project. Inside this directory, create a `main.tf` file where you will define your infrastructure. Ensure you have set dyntrace api token and url in environment variables or define them in tfvars and api token has the correct scope(permissions)
 
 ### 2. Initialize the Directory
 Run `terraform init` in your project directory to initialize the directory and download necessary provider plugins.

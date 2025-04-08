@@ -1,6 +1,6 @@
 module "Management_Zone" {
   source = "../Management_Zone"
-  zone_name = "module.Management_Zone.management_zone_name"
+  zone_name = "module.Management_Zone.management_zone_id"
   
 }
 
