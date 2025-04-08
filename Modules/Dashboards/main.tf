@@ -1,12 +1,18 @@
+module "Management_Zone" {
+  source = "../Management_Zone"
+  zone_name = "module.Management_Zone.management_zone_name"
+  
+}
+
 resource "dynatrace_json_dashboard" "example" {
   contents = jsonencode(
     {
       "dashboardMetadata" : {
-        "name" : var.dashboard_name,
-        "shared" : var.dashboard_shared,
-        "owner" : var.dashboard_owner,
-        "tags" : var.dashboard_tags,
-        "preset" : var.dashboard_preset
+        "name" : "Example Dashboard",
+        "shared" : true,
+        "owner" : "owner@example.com",
+        "tags" : ["example", "dashboard"],
+        "preset" : false
       },
       "tiles" : [
         {
@@ -28,7 +34,7 @@ resource "dynatrace_json_dashboard" "example" {
               "type" : "TIMESERIES",
               "series" : [
                 {
-                  "metric" : var.metric_name,
+                  "metric" : "example.metric",
                   "aggregation" : "SUM",
                   "type" : "LINE",
                   "entityType" : "IOT",
@@ -43,7 +49,8 @@ resource "dynatrace_json_dashboard" "example" {
                   "aggregationRate" : "TOTAL"
                 }
               ]
-            }
+            },
+            "managementZone" : module.Management_Zone.management_zone_id  # Embed the management zone filter
           }
         }
       ]
