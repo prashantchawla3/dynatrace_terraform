@@ -95,3 +95,17 @@ enabled               = true
 recurrence            = "ONCE"
 once_recurrence_end   = "2023-12-31T23:59:59Z"
 once_recurrence_start = "2023-01-01T00:00:00Z"
+
+slo_name                        = "example_slo"
+slo_enabled                     = true
+slo_description                 = "Terraform Test"
+slo_evaluation_type             = "AGGREGATE"
+slo_evaluation_window           = "-1w"
+slo_filter                      = "type(SERVICE),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)"
+slo_metric_expression           = "100*(builtin:service.requestCount.server:splitBy())/(builtin:service.requestCount.server:splitBy())"
+slo_metric_name                 = "terraform_test"
+slo_target_success              = 95
+slo_target_warning              = 98
+slo_legacy_id                   = ""
+burn_rate_visualization_enabled = false
+fast_burn_threshold             = null
