@@ -109,3 +109,9 @@ slo_target_warning              = 98
 slo_legacy_id                   = ""
 burn_rate_visualization_enabled = false
 fast_burn_threshold             = null
+
+
+enable_copilot                  = true
+enable_tenant_aware_data_mining = true
+blocklist_name                  = "example-blocklist"
+blocklist_type                  = "BUCKET"

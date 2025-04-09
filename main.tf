@@ -121,3 +121,13 @@ module "Service_level_Objective" {
   burn_rate_visualization_enabled = var.burn_rate_visualization_enabled
   fast_burn_threshold             = var.fast_burn_threshold
 }
+
+
+module "Service_settings" {
+  source                          = "./Modules/Service_settings"
+  enable_copilot                  = var.enable_copilot
+  enable_tenant_aware_data_mining = var.enable_tenant_aware_data_mining
+  blocklist_name                  = var.blocklist_name
+  blocklist_type                  = var.blocklist_type
+}
+
