@@ -57,9 +57,9 @@ module "Dashboards" {
 }
 
 module "Tags" {
-  source             = "./Modules/Tags"
-  autotag_name       = var.autotag_name
-  entity_selector    = var.entity_selector                       # Add the required argument
+  source          = "./Modules/Tags"
+  autotag_name    = var.autotag_name
+  entity_selector = var.entity_selector # Add the required argument
 
 }
 
@@ -88,4 +88,18 @@ module "Topology_Model" {
   generic_types_rules_sources_source_type     = var.generic_types_rules_sources_source_type
   grail_security_context_entity_type          = var.grail_security_context_entity_type
   grail_security_context_destination_property = var.grail_security_context_destination_property
+}
+
+module "Updates" {
+  source                = "./Modules/Updates"
+  auto_update           = var.auto_update
+  scope_activegate      = var.scope_activegate
+  scope_oneagent        = var.scope_oneagent
+  target_version        = var.target_version
+  update_mode           = var.update_mode
+  name                  = var.name
+  enabled               = var.enabled
+  recurrence            = var.recurrence
+  once_recurrence_end   = var.once_recurrence_end
+  once_recurrence_start = var.once_recurrence_start
 }
