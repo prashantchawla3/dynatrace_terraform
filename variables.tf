@@ -1,3 +1,4 @@
+
 variable "zone_name" {
   description = "Name of the management zone"
   type        = string
@@ -19,12 +20,7 @@ variable "entity_selector" {
 }
 
 variable "alerting_name" {
-  description = "Name of the alerting configuration"
-  type        = string
-}
-
-variable "alerting_management_zone" {
-  description = "Management zone for alerting"
+  description = "Name of the alerting profile"
   type        = string
 }
 
@@ -119,18 +115,13 @@ variable "alerting_rule_6_severity_level" {
 }
 
 variable "connectivity_alerts" {
-  description = "Connectivity alerts configuration"
+  description = "Enable or disable connectivity alerts"
   type        = bool
 }
 
 variable "process_group_id" {
-  description = "Process group ID"
+  description = "ID of the process group"
   type        = string
-}
-
-variable "maintenance_enabled" {
-  description = "Enable or disable maintenance"
-  type        = bool
 }
 
 variable "maintenance_name" {
@@ -144,7 +135,7 @@ variable "maintenance_description" {
 }
 
 variable "maintenance_type" {
-  description = "Type of maintenance"
+  description = "Type of the maintenance window"
   type        = string
 }
 
@@ -154,12 +145,12 @@ variable "maintenance_disable_synthetic" {
 }
 
 variable "maintenance_suppression" {
-  description = "Suppression configuration during maintenance"
-  type        = string
+  description = "Enable or disable alert suppression during maintenance"
+  type        = bool
 }
 
 variable "maintenance_schedule_type" {
-  description = "Type of maintenance schedule"
+  description = "Type of the maintenance schedule"
   type        = string
 }
 
@@ -194,12 +185,12 @@ variable "maintenance_weekly_time_zone" {
 }
 
 variable "maintenance_filter_entity_type" {
-  description = "Entity type filter for maintenance"
+  description = "Entity type for maintenance filter"
   type        = string
 }
 
 variable "maintenance_filter_entity_tags" {
-  description = "Entity tags filter for maintenance"
+  description = "Entity tags for maintenance filter"
   type        = list(string)
 }
 
@@ -209,7 +200,7 @@ variable "dashboard_name" {
 }
 
 variable "dashboard_shared" {
-  description = "Whether the dashboard is shared"
+  description = "Enable or disable dashboard sharing"
   type        = bool
 }
 
@@ -224,7 +215,7 @@ variable "dashboard_tags" {
 }
 
 variable "dashboard_preset" {
-  description = "Preset configuration for the dashboard"
+  description = "Enable or disable dashboard preset"
   type        = bool
 }
 
@@ -232,8 +223,156 @@ variable "metric_name" {
   description = "Name of the metric"
   type        = string
 }
+
 variable "autotag_name" {
-  description = "The name of the autotag"
+  description = "Name of the auto tag"
   type        = string
 }
 
+variable "generic_relationships_enabled" {
+  description = "Enable or disable the generic relationships resource"
+  type        = bool
+  default     = true
+}
+
+variable "generic_relationships_created_by" {
+  description = "The user or extension that created this relationship"
+  type        = string
+  default     = "Terraform"
+}
+
+variable "generic_relationships_from_role" {
+  description = "Specify a role for the source entity"
+  type        = string
+  default     = "terraformrole"
+}
+
+variable "generic_relationships_from_type" {
+  description = "Define an entity type as the source of the relationship"
+  type        = string
+  default     = "os:service"
+}
+
+variable "generic_relationships_to_role" {
+  description = "Specify a role for the destination entity"
+  type        = string
+  default     = "terraformrole"
+}
+
+variable "generic_relationships_to_type" {
+  description = "Define an entity type as the destination of the relationship"
+  type        = string
+  default     = "terraformdestination"
+}
+
+variable "generic_relationships_type_of_relation" {
+  description = "Type of the relationship"
+  type        = string
+  default     = "PART_OF"
+}
+
+variable "generic_relationships_sources_condition" {
+  description = "Condition for the source"
+  type        = string
+  default     = "$eq(terraform)"
+}
+
+variable "generic_relationships_sources_source_type" {
+  description = "Source type for the relationship"
+  type        = string
+  default     = "Metrics"
+}
+
+variable "generic_types_name" {
+  description = "The entity type name"
+  type        = string
+  default     = "terraform:type"
+}
+
+variable "generic_types_enabled" {
+  description = "Enable or disable the generic types resource"
+  type        = bool
+  default     = true
+}
+
+variable "generic_types_created_by" {
+  description = "The user or extension that created this type"
+  type        = string
+  default     = "Terraform"
+}
+
+variable "generic_types_display_name" {
+  description = "The human readable type name for this entity type"
+  type        = string
+  default     = "TerraformTest"
+}
+
+variable "generic_types_rules_icon_pattern" {
+  description = "Pattern for the icon attribute"
+  type        = string
+  default     = "{TerraformIcon}"
+}
+
+variable "generic_types_rules_id_pattern" {
+  description = "Pattern for the ID attribute"
+  type        = string
+  default     = "{TerraformPlaceholder}"
+}
+
+variable "generic_types_rules_instance_name_pattern" {
+  description = "Pattern for the instance name attribute"
+  type        = string
+  default     = "{TerraformInstance}"
+}
+
+variable "generic_types_rules_attributes_key" {
+  description = "Key for the attribute"
+  type        = string
+  default     = "TerraformAttribute"
+}
+
+variable "generic_types_rules_attributes_pattern" {
+  description = "Pattern for the attribute"
+  type        = string
+  default     = "{TerraformExtraction}"
+}
+
+variable "generic_types_rules_required_dimensions_key" {
+  description = "Key for the required dimension"
+  type        = string
+  default     = "TerraformDimension"
+}
+
+variable "generic_types_rules_sources_condition" {
+  description = "Condition for the source"
+  type        = string
+  default     = "$eq(TerraformCondition)"
+}
+
+variable "generic_types_rules_sources_source_type" {
+  description = "Source type for the rule"
+  type        = string
+  default     = "Events"
+}
+
+variable "grail_security_context_entity_type" {
+  description = "Type of the entity whose security context to override"
+  type        = string
+  default     = "exampletype"
+}
+
+variable "grail_security_context_destination_property" {
+  description = "The case-sensitive name of a property of the destination type"
+  type        = string
+  default     = "exampleproperty"
+}
+
+variable "alerting_management_zone" {
+  description = "Management zone for alerting"
+  type        = string
+}
+
+variable "maintenance_enabled" {
+  description = "Enable or disable maintenance"
+  type        = bool
+}
