@@ -232,3 +232,8 @@ variable "metric_name" {
   description = "Name of the metric"
   type        = string
 }
+variable "autotag_name" {
+  description = "The name of the autotag"
+  type        = string
+}
+

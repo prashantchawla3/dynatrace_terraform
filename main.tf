@@ -55,3 +55,10 @@ module "Dashboards" {
   dashboard_preset = var.dashboard_preset
   metric_name      = var.metric_name
 }
+
+module "Tags" {
+  source = "./Modules/Tags"
+  autotag_name = var.autotag_name
+  entity_selector = var.entity_selector  # Add the required argument
+  
+}
