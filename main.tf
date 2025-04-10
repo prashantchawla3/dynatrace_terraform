@@ -209,11 +209,25 @@ module "Ownership" {
 }
 
 module "virtualization" {
-  source    = "./Modules/Virtualization"
-  enabled_vmware   = var.enabled_vmware
-  ipaddress = var.ipaddress
-  label     = var.label
-  password  = var.password
-  username  = var.username
-  filter    = var.filter
+  source         = "./Modules/Virtualization"
+  enabled_vmware = var.enabled_vmware
+  ipaddress      = var.ipaddress
+  label          = var.label
+  password       = var.password
+  username       = var.username
+  filter         = var.filter
+}
+
+module "session_replay" {
+  source = "./Modules/session_replay"
+
+  application_id                                    = var.application_id
+  enable_resource_capturing                         = var.enable_resource_capturing
+  resource_capture_url_exclusion_pattern_list       = var.resource_capture_url_exclusion_pattern_list
+  enable_opt_in_mode                                = var.enable_opt_in_mode
+  url_exclusion_pattern_list                        = var.url_exclusion_pattern_list
+  playback_masking_preset                           = var.playback_masking_preset
+  recording_masking_preset                          = var.recording_masking_preset
+  recording_masking_allow_list_rules_css_expression = var.recording_masking_allow_list_rules_css_expression
+  recording_masking_allow_list_rules_target         = var.recording_masking_allow_list_rules_target
 }
