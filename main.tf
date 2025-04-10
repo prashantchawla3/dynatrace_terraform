@@ -131,3 +131,17 @@ module "Service_settings" {
   blocklist_type                  = var.blocklist_type
 }
 
+
+module "Metrics" {
+  source                                           = "./Modules/Metrics"
+  custom_units_name                                = var.custom_units_name
+  custom_units_description                         = var.custom_units_description
+  custom_units_plural_name                         = var.custom_units_plural_name
+  custom_units_symbol                              = var.custom_units_symbol
+  histogram_metrics_enable_histogram_bucket_ingest = var.histogram_metrics_enable_histogram_bucket_ingest
+  metric_metadata_display_name                     = var.metric_metadata_display_name
+  metric_metadata_metric_id                        = var.metric_metadata_metric_id
+  metric_metadata_unit                             = var.metric_metadata_unit
+  metric_query_metric_id                           = var.metric_query_metric_id
+  metric_query_metric_selector                     = var.metric_query_metric_selector
+}
