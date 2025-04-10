@@ -202,8 +202,18 @@ module "Ownership" {
   contact_url                     = var.contact_url
   link_type                       = var.link_type
   link_url                        = var.link_url
-  supplementary_identifier        = var.supplementary_identifier 
-#Note: The contact_integration_type is set to 'JIRA' in this example.
-# You can set it to any supported integration type such as 'SLACK' or 'MS_TEAMS' as needed.
-# The other contact methods (MS Teams, Slack, URL) are included as supplementary contact details.
+  supplementary_identifier        = var.supplementary_identifier
+  #Note: The contact_integration_type is set to 'JIRA' in this example.
+  # You can set it to any supported integration type such as 'SLACK' or 'MS_TEAMS' as needed.
+  # The other contact methods (MS Teams, Slack, URL) are included as supplementary contact details.
+}
+
+module "virtualization" {
+  source    = "./Modules/Virtualization"
+  enabled_vmware   = var.enabled_vmware
+  ipaddress = var.ipaddress
+  label     = var.label
+  password  = var.password
+  username  = var.username
+  filter    = var.filter
 }

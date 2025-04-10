@@ -1,4 +1,4 @@
-variable "enabled" {
+variable "enabled_vmware" {
   description = "This setting is enabled (true) or disabled (false)"
   type        = bool
 }

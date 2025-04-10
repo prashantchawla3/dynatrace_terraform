@@ -184,3 +184,10 @@ contact_url                     = "https://www.example.com/contact"
 link_type                       = "URL"
 link_url                        = "https://www.google.com"
 supplementary_identifier        = "supplementary-id-example"
+
+enabled_vmware = false
+ipaddress      = "vcenter01"
+label          = "example"
+password       = "your-password-here"
+username       = "terraform"
+filter         = "$contains(Terraform)"
