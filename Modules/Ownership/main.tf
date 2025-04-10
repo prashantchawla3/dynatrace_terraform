@@ -23,7 +23,6 @@ resource "dynatrace_ownership_teams" "example_team" {
   contact_details {
     contact_detail {
       integration_type = var.contact_integration_type
-      email            = var.contact_email
       ms_teams         = var.contact_ms_teams
       slack_channel    = var.contact_slack_channel
       url              = var.contact_url
