@@ -1,11 +1,12 @@
 
+
 # Guide on How to Use Terraform Modules
 
 ## Introduction
 This guide provides a step-by-step process for using Terraform modules to manage your infrastructure. Management Zone module is used as an example to demonstrate the process.
 
 ## Project Structure
-The project consists of a root module that calls the child module for the management zone. The child module has its own `main.tf`, `variables.tf`, and `outputs.tf` files.
+The project consists of a root module that calls the child module for the management zone. The child module has its own `main.tf`, `variables.tf`, `outputs.tf`, and `provider.tf` files.
 ```
 project-directory/
 ├── README.md
@@ -21,6 +22,7 @@ project-directory/
 │ │ ├── main.tf
 │ │ ├── variables.tf
 │ │ ├── outputs.tf
+│ │ ├── provider.tf
 │ ├── ...
 ```
 
@@ -112,6 +114,7 @@ Root Module
  │ │ ├── main.tf
  │ │ ├── variables.tf
  │ │ ├── outputs.tf
+ │ │ ├── provider.tf
  │ ├── ...
 ```
 
@@ -227,3 +230,4 @@ End
   - **Monitoring**: Includes post-deployment monitoring to quickly identify and address any issues.
 
 ---
+
