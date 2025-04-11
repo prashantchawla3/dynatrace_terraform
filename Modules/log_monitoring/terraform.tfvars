@@ -26,8 +26,6 @@ enrichment_value1_custom_source     = "value1"
 enrichment_key2_custom_source       = "key2"
 enrichment_value2_custom_source     = "value2"
 
-# Variables for dynatrace_log_debug_settings
-enabled_debug_settings = false
 
 # Variables for dynatrace_log_events
 enabled_events          = false

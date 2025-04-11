@@ -14,9 +14,6 @@ output "log_custom_source_id" {
   value = dynatrace_log_custom_source.example.id
 }
 
-output "log_debug_settings_id" {
-  value = dynatrace_log_debug_settings.example.id
-}
 
 output "log_events_id" {
   value = dynatrace_log_events.example.id

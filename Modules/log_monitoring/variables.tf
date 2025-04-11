@@ -100,10 +100,6 @@ variable "enrichment_value2_custom_source" {
   type        = string
 }
 
-variable "enabled_debug_settings" {
-  description = "This setting is enabled (true) or disabled (false) for debug settings."
-  type        = bool
-}
 
 variable "enabled_events" {
   description = "This setting is enabled (true) or disabled (false) for log events."
