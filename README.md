@@ -1,10 +1,11 @@
+
 # Guide on How to Use Terraform Modules
 
 ## Introduction
-This guide provides a step-by-step process for using Terraform modules to manage your infrastructure. Management Zone module is used as example to demonstrate the process.
+This guide provides a step-by-step process for using Terraform modules to manage your infrastructure. Management Zone module is used as an example to demonstrate the process.
 
 ## Project Structure
-The project consists of a root module that calls the child module for the management zone. The child module has its own `main.tf`, `variables.tf`, `terraform.tfvars`, `outputs.tf`, and `provider.tf` files.
+The project consists of a root module that calls the child module for the management zone. The child module has its own `main.tf`, `variables.tf`, and `outputs.tf` files.
 ```
 project-directory/
 ├── README.md
@@ -19,16 +20,14 @@ project-directory/
 │ │ ├── README.md
 │ │ ├── main.tf
 │ │ ├── variables.tf
-│ │ ├── terraform.tfvars
 │ │ ├── outputs.tf
-│ │ ├── provider.tf
 │ ├── ...
 ```
 
 ## Steps to Use Terraform Modules
 
 ### 1. Set Up Your Project Directory
-Create a new directory for your Terraform project. Inside this directory, create a `main.tf` file where you will define your infrastructure. Ensure you have set dyntrace api token and url in environment variables or define them in tfvars and api token has the correct scope(permissions)
+Create a new directory for your Terraform project. Inside this directory, create a `main.tf` file where you will define your infrastructure. Ensure you have set Dynatrace API token and URL in environment variables or define them in `tfvars` and API token has the correct scope (permissions).
 
 ### 2. Initialize the Directory
 Run `terraform init` in your project directory to initialize the directory and download necessary provider plugins.
@@ -39,11 +38,11 @@ In your `main.tf` file, define the modules you want to use. For example, to use 
 #### Management Zone Module
 ```hcl
 module "management_zone" {
- source = "./modules/management_zone"
- zone_name = var.zone_name
- zone_description = var.zone_description
- zone_legacy_id = var.zone_legacy_id
- entity_selector = var.entity_selector
+  source = "./modules/management_zone"
+  zone_name = var.zone_name
+  zone_description = var.zone_description
+  zone_legacy_id = var.zone_legacy_id
+  entity_selector = var.entity_selector
 }
 ```
 **Purpose**: This module is used to create a management zone.
@@ -58,20 +57,20 @@ module "management_zone" {
 Create a `variables.tf` file and define the variables required by the modules. For example:
 ```hcl
 variable "zone_name" {
- description = "The name of the management zone"
- type = string
+  description = "The name of the management zone"
+  type = string
 }
 variable "zone_description" {
- description = "The description of the management zone"
- type = string
+  description = "The description of the management zone"
+  type = string
 }
 variable "zone_legacy_id" {
- description = "The legacy ID of the management zone"
- type = string
+  description = "The legacy ID of the management zone"
+  type = string
 }
 variable "entity_selector" {
- description = "The entity selector for the management zone rules"
- type = string
+  description = "The entity selector for the management zone rules"
+  type = string
 }
 ```
 
@@ -81,7 +80,7 @@ Create a `terraform.tfvars` file to set the values for these variables. For exam
 zone_name = "example_zone"
 zone_description = "This is an example management zone"
 zone_legacy_id = "legacy-id-example"
-entity_selector = "type(\"HOST\"
+entity_selector = "type(\"HOST\")"
 ```
 
 ### 6. Plan the Infrastructure
@@ -112,9 +111,7 @@ Root Module
  │ │ ├── README.md
  │ │ ├── main.tf
  │ │ ├── variables.tf
- │ │ ├── terraform.tfvars
  │ │ ├── outputs.tf
- │ │ ├── provider.tf
  │ ├── ...
 ```
 
@@ -122,7 +119,6 @@ Root Module
 
 ### Management Zone Module
 This module creates a management zone using the provided variables (`zone_name`, `zone_description`, `zone_legacy_id`, `entity_selector`).
-
 
 # Code Promotion PR Process from Dev to QA to Prod for Terraform Modules
 
@@ -163,49 +159,34 @@ This guide outlines the process for promoting code changes from Development (Dev
 Here’s a simple flowchart to visualize the process:
 ```plaintext
 Start
-
  v
 Code Development (Dev)
-
  v
 Create PR for Code Review
-
  v
 Code Review & Unit Testing
-
  v
 Merge PR to Dev Branch
-
  v
 Integration Testing & Automated Builds
-
  v
 Terraform Deployment Test
-
  v
 Create PR for QA
-
  v
 QA Review & Acceptance Testing
-
  v
 Merge PR to QA Branch
-
  v
 Create PR for Prod
-
  v
 Final Review & Smoke Testing
-
  v
 Approval from Public Facing Terraform Repo Team
-
  v
 Merge PR to Prod Branch
-
  v
 Post-Deployment Monitoring
-
  v
 End
 ```
@@ -239,8 +220,10 @@ End
 ### Code Promotion PR Process
 - **Follow the Code Promotion PR Process**: It is good to follow the code promotion PR process when an update in the modules is made because it ensures that all changes are thoroughly tested and reviewed before being made available to customers. This helps maintain the quality and stability of the modules.
 - **Benefits**:
- - **Quality Assurance**: Ensures that the code meets quality standards and adheres to best practices.
- - **Collaboration**: Facilitates collaboration among team members through code reviews and approvals.
- - **Testing**: Provides multiple stages of testing (unit, integration, acceptance) to catch issues early.
- - **Approval**: Requires approval from the team that controls the public-facing Terraform repository, ensuring that only vetted changes are deployed.
- - **Monitoring**: Includes post-deployment monitoring to quickly identify and address any issues.
+  - **Quality Assurance**: Ensures that the code meets quality standards and adheres to best practices.
+  - **Collaboration**: Facilitates collaboration among team members through code reviews and approvals.
+  - **Testing**: Provides multiple stages of testing (unit, integration, acceptance) to catch issues early.
+  - **Approval**: Requires approval from the team that controls the public-facing Terraform repository, ensuring that only vetted changes are deployed.
+  - **Monitoring**: Includes post-deployment monitoring to quickly identify and address any issues.
+
+---
