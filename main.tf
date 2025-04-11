@@ -340,3 +340,12 @@ module "log_monitoring" {
   matcher_values_timestamp = var.matcher_values_timestamp
   insert_after_timestamp = var.insert_after_timestamp
 }
+
+module "Access_token" {
+  source = "./modules/Access_token"
+
+  activegate_token_config = var.activegate_token_config
+  ag_token_config = var.ag_token_config
+  api_token_config = var.api_token_config
+  token_settings_config = var.token_settings_config
+}

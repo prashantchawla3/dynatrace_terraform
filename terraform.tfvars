@@ -329,3 +329,25 @@ matcher_attribute_timestamp = "container.name"
 matcher_operator_timestamp  = "MATCHES"
 matcher_values_timestamp    = ["terraform"]
 insert_after_timestamp      = null
+
+activegate_token_config = {
+  auth_token_enforcement_manually_enabled = false
+  expiring_token_notifications_enabled    = true
+}
+
+ag_token_config = {
+  type            = "ENVIRONMENT"
+  expiration_date = "now+3d"
+  name            = "example_ag_token"
+}
+
+api_token_config = {
+  name    = "example_api_token"
+  enabled = false
+  scopes  = ["geographicRegions.read"]
+}
+
+token_settings_config = {
+  new_token_format = true
+  personal_tokens  = true
+}
