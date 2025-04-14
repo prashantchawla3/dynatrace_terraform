@@ -350,9 +350,6 @@ module "Access_token" {
   token_settings_config = var.token_settings_config
 }
 
-provider "aws" {
-  region = "us-west-2"
-}
 
 module "Anomaly_Detection" {
   source = "./Modules/Anomaly_Detection"
@@ -380,4 +377,25 @@ module "Anomaly_Detection" {
   web_app_scope                     = var.web_app_scope
 }
 
+
+
+module "Integrations" {
+  source = "./Modules/Integrations"
+
+  issue_tracking_enabled         = var.issue_tracking_enabled
+  issue_tracking_issuelabel      = var.issue_tracking_issuelabel
+  issue_tracking_issuequery      = var.issue_tracking_issuequery
+  issue_tracking_issuetheme      = var.issue_tracking_issuetheme
+  issue_tracking_issuetrackersystem = var.issue_tracking_issuetrackersystem
+  issue_tracking_token           = var.issue_tracking_token
+  issue_tracking_url             = var.issue_tracking_url
+  issue_tracking_username        = var.issue_tracking_username
+  issue_tracking_insert_after    = var.issue_tracking_insert_after
+  issue_tracking_password        = var.issue_tracking_password
+
+  remote_environment_name        = var.remote_environment_name
+  remote_environment_network_scope = var.remote_environment_network_scope
+  remote_environment_token       = var.remote_environment_token
+  remote_environment_uri         = var.remote_environment_uri
+}
 
