@@ -349,3 +349,35 @@ module "Access_token" {
   api_token_config = var.api_token_config
   token_settings_config = var.token_settings_config
 }
+
+provider "aws" {
+  region = "us-west-2"
+}
+
+module "Anomaly_Detection" {
+  source = "./Modules/Anomaly_Detection"
+  
+  aws_anomalies_name                = var.aws_anomalies_name
+  custom_app_scope                  = var.custom_app_scope
+  custom_app_crash_rate_scope       = var.custom_app_crash_rate_scope
+  database_anomalies_scope          = var.database_anomalies_scope
+  davis_anomaly_detectors_name      = var.davis_anomaly_detectors_name
+  disk_anomalies_scope              = var.disk_anomalies_scope
+  disk_anomaly_rules_name           = var.disk_anomaly_rules_name
+  disk_edge_anomaly_detectors_name  = var.disk_edge_anomaly_detectors_name
+  disk_specific_anomalies_disk_id   = var.disk_specific_anomalies_disk_id
+  host_anomalies_scope              = var.host_anomalies_scope
+  k8s_cluster_anomalies_scope       = var.k8s_cluster_anomalies_scope
+  k8s_namespace_anomalies_scope     = var.k8s_namespace_anomalies_scope
+  k8s_node_anomalies_scope          = var.k8s_node_anomalies_scope
+  k8s_pvc_anomalies_scope           = var.k8s_pvc_anomalies_scope
+  k8s_workload_anomalies_scope      = var.k8s_workload_anomalies_scope
+  metric_events_name                = var.metric_events_name
+  mobile_app_scope                  = var.mobile_app_scope
+  mobile_app_crash_rate_application_id = var.mobile_app_crash_rate_application_id
+  service_anomalies_scope           = var.service_anomalies_scope
+  vmware_anomalies_name             = var.vmware_anomalies_name
+  web_app_scope                     = var.web_app_scope
+}
+
+
