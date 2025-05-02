@@ -1,3 +1,4 @@
+
 custom_device_id = "customDeviceId"
 display_name     = "customDevicename"
 config_url       = "https://config.url"
@@ -9,6 +10,3 @@ listen_ports     = [80, 443]
 props            = "key1=value1,key2=value2"
 type             = "customType"
 ui_based         = true
-
-dynatrace_api_url   = "https://yourenv.live.dynatrace.com/api"
-dynatrace_api_token = "your-api-token"

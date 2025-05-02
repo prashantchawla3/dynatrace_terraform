@@ -1,3 +1,4 @@
+
 variable "custom_device_id" {
   description = "The unique ID of the custom device"
   type        = string
@@ -51,15 +52,4 @@ variable "type" {
 variable "ui_based" {
   description = "Whether the device was created via UI"
   type        = bool
-}
-
-variable "dynatrace_api_url" {
-  description = "Dynatrace API URL"
-  type        = string
-}
-
-variable "dynatrace_api_token" {
-  description = "Dynatrace API token"
-  type        = string
-  sensitive   = true
 }

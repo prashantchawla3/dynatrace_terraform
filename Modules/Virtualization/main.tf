@@ -1,9 +1,10 @@
+resource "dynatrace_vmware" "this" {
+  for_each = var.vmware_configs
 
-resource "dynatrace_vmware" "example" {
-  enabled   = var.enabled_vmware
-  ipaddress = var.ipaddress
-  label     = var.label
-  password  = var.password
-  username  = var.username
-  filter    = var.filter
+  enabled   = each.value.enabled
+  ipaddress = each.value.ipaddress
+  label     = each.value.label
+  password  = each.value.password
+  username  = each.value.username
+  filter    = each.value.filter
 }

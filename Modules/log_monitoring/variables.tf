@@ -1,47 +1,23 @@
-output "log_agent_feature_flags_id" {
-  value = dynatrace_log_agent_feature_flags.example.id
-}
+variable "scope" { description = "Scope (HOST, HOST_GROUP, etc.)"; type = string }
+variable "new_container_log_detector" { description = "Detect all container logs"; type = bool }
+variable "journald_log_detector" { description = "Enable journald logs"; type = bool }
 
-output "log_buckets_id" {
-  value = dynatrace_log_buckets.example.id
-}
+variable "enabled_buckets" { description = "Enable log bucket"; type = bool }
+variable "bucket_name" { description = "Bucket name"; type = string }
+variable "matcher_buckets" { description = "DQL matcher"; type = string }
+variable "rule_name_buckets" { description = "Rule name"; type = string }
+variable "insert_after_buckets" { description = "Insert order ID"; type = string }
 
-output "log_custom_attribute_id" {
-  value = dynatrace_log_custom_attribute.example.id
-}
+variable "sidebar_custom_attribute" { description = "Enable sidebar for custom attr"; type = bool }
+variable "key_custom_attribute" { description = "Key for custom attr"; type = string }
 
-output "log_custom_source_id" {
-  value = dynatrace_log_custom_source.example.id
-}
-
-output "log_events_id" {
-  value = dynatrace_log_events.example.id
-}
-
-output "log_metrics_id" {
-  value = dynatrace_log_metrics.example.id
-}
-
-output "log_oneagent_id" {
-  value = dynatrace_log_oneagent.example.id
-}
-
-output "log_processing_id" {
-  value = dynatrace_log_processing.example.id
-}
-
-output "log_security_context_id" {
-  value = dynatrace_log_security_context.example.id
-}
-
-output "log_sensitive_data_masking_id" {
-  value = dynatrace_log_sensitive_data_masking.example.id
-}
-
-output "log_storage_id" {
-  value = dynatrace_log_storage.example.id
-}
-
-output "log_timestamp_id" {
-  value = dynatrace_log_timestamp.example.id
-}
+variable "name_custom_source" { description = "Name of custom source"; type = string }
+variable "enabled_custom_source" { description = "Enable source"; type = bool }
+variable "scope_custom_source" { description = "Scope of source"; type = string }
+variable "custom_log_source_type" { description = "Source type"; type = string }
+variable "custom_log_source_path" { description = "Log path"; type = string }
+variable "enrichment_type_custom_source" { description = "Type of enrichment"; type = string }
+variable "enrichment_key1_custom_source" { description = "Enrichment key 1"; type = string }
+variable "enrichment_value1_custom_source" { description = "Enrichment value 1"; type = string }
+variable "enrichment_key2_custom_source" { description = "Enrichment key 2"; type = string }
+variable "enrichment_value2_custom_source" { description = "Enrichment value 2"; type = string }
