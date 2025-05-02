@@ -1,3 +1,4 @@
+
 variable "application_id" {
   description = "Application or environment scope."
   type        = string
@@ -40,14 +41,14 @@ variable "recording_masking_preset" {
   default     = "ALLOW_LIST"
 }
 
-variable "recording_masking_allow_list_rules_css_expression" {
-  description = "CSS expression for allow list rule."
-  type        = string
-  default     = "selector.example"
-}
-
-variable "recording_masking_allow_list_rules_target" {
-  description = "Target for allow list rule."
-  type        = string
-  default     = "ELEMENT"
+variable "recording_masking_allow_list_rules" {
+  description = "List of allow list rules for masking."
+  type = list(object({
+    css_expression = string
+    target         = string
+  }))
+  default = [{
+    css_expression = "selector.example"
+    target         = "ELEMENT"
+  }]
 }
