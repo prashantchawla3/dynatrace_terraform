@@ -1,4 +1,3 @@
-
 api_color = "#336699"
 api_name = "ExampleAPI"
 third_party_api = true
