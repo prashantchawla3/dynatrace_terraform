@@ -1,3 +1,4 @@
+
 output "slo_id" {
   value       = dynatrace_slo_v2.example.id
   description = "The ID of the created SLO"
