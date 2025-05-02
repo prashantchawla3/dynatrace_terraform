@@ -3,12 +3,13 @@ environment_url         = "https://your-env.live.dynatrace.com"
 dynatrace_client_id     = "your-client-id"
 dynatrace_client_secret = "your-client-secret"
 
-auto_language = true
+auto_language = false
+auto_region   = false
+auto_theme    = false
+auto_timezone = false
+
 language      = "en"
-auto_region   = true
 region        = "auto"
-auto_theme    = true
-theme         = "auto"
-auto_timezone = true
+theme         = "dark"
 timezone      = "UTC"
 scope         = "user-terraform@dynatrace.com"
