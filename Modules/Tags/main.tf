@@ -1,41 +1,32 @@
-
 resource "dynatrace_autotag_v2" "example" {
   name                         = var.autotag_name
   rules_maintained_externally = true
 
-  rules {
-    rule {
-      type                = "ME"
-      enabled             = true
-      value_format        = "{ProcessGroup:Environment:keptn_stage}"
-      value_normalization = "Leave text as-is"
-      attribute_rule {
-        entity_type                  = "SERVICE"
-        service_to_host_propagation = false
-        service_to_pgpropagation    = true
-        conditions {
-          condition {
-            dynamic_key        = "keptn_stage"
-            dynamic_key_source = "ENVIRONMENT"
-            key                = "PROCESS_GROUP_CUSTOM_METADATA"
-            operator           = "EXISTS"
-          }
-        }
-      }
-    }
+  dynamic "rules" {
+    for_each = var.autotag_rules
+    content {
+      rule {
+        type                = rules.value.type
+        enabled             = rules.value.enabled
+        value_format        = rules.value.value_format
+        value_normalization = rules.value.value_normalization
 
-    rule {
-      type                = "ME"
-      enabled             = true
-      value_format        = "prod"
-      value_normalization = "Leave text as-is"
-      attribute_rule {
-        entity_type = "SYNTHETIC_TEST"
-        conditions {
-          condition {
-            key      = "BROWSER_MONITOR_TAGS"
-            operator = "TAG_KEY_EQUALS"
-            tag      = "prod"
+        attribute_rule {
+          entity_type                  = rules.value.entity_type
+          service_to_host_propagation = rules.value.service_to_host_propagation
+          service_to_pgpropagation    = rules.value.service_to_pgpropagation
+
+          dynamic "conditions" {
+            for_each = rules.value.conditions
+            content {
+              condition {
+                dynamic_key        = conditions.value.dynamic_key
+                dynamic_key_source = conditions.value.dynamic_key_source
+                key                = conditions.value.key
+                operator           = conditions.value.operator
+                tag                = lookup(conditions.value, "tag", null)
+              }
+            }
           }
         }
       }
@@ -46,13 +37,16 @@ resource "dynatrace_autotag_v2" "example" {
 resource "dynatrace_autotag_rules" "example" {
   auto_tag_id = dynatrace_autotag_v2.example.id
 
-  rules {
-    rule {
-      type                = "SELECTOR"
-      enabled             = true
-      entity_selector     = "type(SERVICE),tag(sample)"
-      value_format        = "disabled"
-      value_normalization = "Leave text as-is"
+  dynamic "rules" {
+    for_each = var.autotag_selector_rules
+    content {
+      rule {
+        type                = rules.value.type
+        enabled             = rules.value.enabled
+        entity_selector     = rules.value.entity_selector
+        value_format        = rules.value.value_format
+        value_normalization = rules.value.value_normalization
+      }
     }
   }
 }
@@ -60,24 +54,14 @@ resource "dynatrace_autotag_rules" "example" {
 resource "dynatrace_custom_tags" "example" {
   entity_selector = var.entity_selector
 
-  tags {
-    filter {
-      context = "CONTEXTLESS"
-      key     = "KeyExampleA"
-    }
-    filter {
-      context = "CONTEXTLESS"
-      key     = "KeyExampleA"
-      value   = "ValueExample1"
-    }
-    filter {
-      context = "CONTEXTLESS"
-      key     = "KeyExampleB"
-    }
-    filter {
-      context = "CONTEXTLESS"
-      key     = "KeyExampleC"
-      value   = "ValueExample2"
+  dynamic "tags" {
+    for_each = var.custom_tags
+    content {
+      filter {
+        context = tags.value.context
+        key     = tags.value.key
+        value   = lookup(tags.value, "value", null)
+      }
     }
   }
 }
