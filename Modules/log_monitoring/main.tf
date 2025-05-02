@@ -43,7 +43,6 @@ resource "dynatrace_log_custom_source" "example" {
   }
 }
 
-
 resource "dynatrace_log_events" "example" {
   enabled = var.enabled_events
   query   = var.query_events

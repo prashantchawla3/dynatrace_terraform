@@ -1,3 +1,4 @@
+
 resource "dynatrace_activegate_token" "example" {
   auth_token_enforcement_manually_enabled = var.activegate_token_config.auth_token_enforcement_manually_enabled
   expiring_token_notifications_enabled    = var.activegate_token_config.expiring_token_notifications_enabled
@@ -20,10 +21,8 @@ resource "dynatrace_token_settings" "example" {
   personal_tokens  = var.token_settings_config.personal_tokens
 }
 
-data "dynatrace_api_token" "example" {
+data "dynatrace_api_token" "by_name" {
   name = var.api_token_config.name
 }
 
-data "dynatrace_api_tokens" "example" {
-  # Configuration to retrieve all API tokens
-}
+data "dynatrace_api_tokens" "all" {}

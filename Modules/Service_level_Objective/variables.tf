@@ -17,7 +17,7 @@ variable "slo_description" {
 
 variable "slo_evaluation_type" {
   description = "Evaluation type"
-  type        = string
+  type        = map(string)
   default     = "AGGREGATE"
 }
 
