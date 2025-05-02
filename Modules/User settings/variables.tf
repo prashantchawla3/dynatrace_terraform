@@ -1,3 +1,17 @@
+
+variable "environment_url" {
+  type = string
+}
+
+variable "dynatrace_client_id" {
+  type = string
+}
+
+variable "dynatrace_client_secret" {
+  type = string
+  sensitive = true
+}
+
 variable "auto_language" {
   description = "Automatically detect language"
   type        = bool

@@ -1,4 +1,3 @@
-
 resource "dynatrace_api_detection" "example" {
   api_color       = var.api_color
   api_name        = var.api_name
@@ -128,16 +127,4 @@ resource "dynatrace_url_based_sampling" "example" {
       value_is_undefined = var.query_parameter_value_is_undefined
     }
   }
-}
-
-data "dynatrace_calculated_service_metric" "example" {
-  name = var.metric_name
-}
-
-data "dynatrace_request_attribute" "example" {
-  name = var.request_attribute_name
-}
-
-data "dynatrace_request_naming" "example" {
-  name = var.naming_pattern
 }

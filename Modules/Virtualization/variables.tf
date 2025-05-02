@@ -1,31 +1,36 @@
+
+variable "environment_url" { type = string }
+variable "dynatrace_client_id" { type = string }
+variable "dynatrace_client_secret" { type = string, sensitive = true }
+
 variable "enabled_vmware" {
-  description = "This setting is enabled (true) or disabled (false)"
+  description = "Enable or disable the VMware integration"
   type        = bool
 }
 
 variable "ipaddress" {
-  description = "Specify the IP address or name of the vCenter or standalone ESXi host"
+  description = "IP address or hostname of vCenter or standalone ESXi"
   type        = string
 }
 
 variable "label" {
-  description = "Name this connection"
+  description = "Label for the connection"
   type        = string
 }
 
 variable "password" {
-  description = "Provide the password for the vCenter or standalone ESXi host"
+  description = "Password for vCenter or ESXi"
   type        = string
   sensitive   = true
 }
 
 variable "username" {
-  description = "Provide user credentials for the vCenter or standalone ESXi host"
+  description = "Username for vCenter or ESXi"
   type        = string
 }
 
 variable "filter" {
-  description = "Filter string for the VMware resource"
+  description = "Optional filter string"
   type        = string
   default     = ""
 }

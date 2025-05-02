@@ -1,6 +1,8 @@
+
 resource "dynatrace_autotag_v2" "example" {
-  name                        = var.autotag_name
+  name                         = var.autotag_name
   rules_maintained_externally = true
+
   rules {
     rule {
       type                = "ME"
@@ -8,7 +10,7 @@ resource "dynatrace_autotag_v2" "example" {
       value_format        = "{ProcessGroup:Environment:keptn_stage}"
       value_normalization = "Leave text as-is"
       attribute_rule {
-        entity_type                 = "SERVICE"
+        entity_type                  = "SERVICE"
         service_to_host_propagation = false
         service_to_pgpropagation    = true
         conditions {
@@ -21,6 +23,7 @@ resource "dynatrace_autotag_v2" "example" {
         }
       }
     }
+
     rule {
       type                = "ME"
       enabled             = true
@@ -42,6 +45,7 @@ resource "dynatrace_autotag_v2" "example" {
 
 resource "dynatrace_autotag_rules" "example" {
   auto_tag_id = dynatrace_autotag_v2.example.id
+
   rules {
     rule {
       type                = "SELECTOR"
@@ -55,6 +59,7 @@ resource "dynatrace_autotag_rules" "example" {
 
 resource "dynatrace_custom_tags" "example" {
   entity_selector = var.entity_selector
+
   tags {
     filter {
       context = "CONTEXTLESS"
