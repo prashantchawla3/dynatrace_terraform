@@ -1,5 +1,4 @@
-
-output "user_settings_id" {
-  description = "The ID of the user settings resource"
-  value       = dynatrace_user_settings.example.id
+output "user_settings_ids" {
+  description = "Map of created user settings resource IDs"
+  value = { for k, v in dynatrace_user_settings.this : k => v.id }
 }
