@@ -12,8 +12,11 @@ resource "dynatrace_slo_v2" "example" {
   target_warning     = var.slo_target_warning
   legacy_id          = var.slo_legacy_id
 
-  error_budget_burn_rate {
-    burn_rate_visualization_enabled = var.burn_rate_visualization_enabled
-    fast_burn_threshold             = var.fast_burn_threshold
+  dynamic "error_budget_burn_rate" {
+    for_each = var.burn_rate_visualization_enabled != null ? [1] : []
+    content {
+      burn_rate_visualization_enabled = var.burn_rate_visualization_enabled
+      fast_burn_threshold             = var.fast_burn_threshold
+    }
   }
 }
