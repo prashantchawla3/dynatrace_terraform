@@ -1,3 +1,4 @@
+
 custom_device_id = "customDeviceId"
 display_name     = "customDevicename"
 config_url       = "https://config.url"
