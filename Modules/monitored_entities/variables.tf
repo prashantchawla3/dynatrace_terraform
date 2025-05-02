@@ -1,3 +1,4 @@
+
 variable "custom_device_id" {
   description = "The ID of the custom device"
   type        = string
