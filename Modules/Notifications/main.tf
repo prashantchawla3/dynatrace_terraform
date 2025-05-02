@@ -1,3 +1,7 @@
+resource "dynatrace_alerting" "Default" {
+  name = var.alerting_name
+}
+
 resource "dynatrace_ansible_tower_notification" "ansible_tower" {
   active           = var.ansible_tower_active
   name             = var.ansible_tower_name
@@ -118,7 +122,7 @@ resource "dynatrace_webhook_notification" "webhook" {
       secret_value = var.webhook_header_value_02
     }
   }
-  use_oauth_2            = var.webhook_use_oauth_2
+  use_oauth_2 = var.webhook_use_oauth_2
   oauth_2_credentials {
     access_token_url = var.webhook_access_token_url
     client_id        = var.webhook_client_id
@@ -143,8 +147,4 @@ resource "dynatrace_xmatters_notification" "xmatters" {
       secret_value = var.xmatters_header_value_02
     }
   }
-}
-
-resource "dynatrace_alerting" "Default" {
-  name = var.alerting_name
 }

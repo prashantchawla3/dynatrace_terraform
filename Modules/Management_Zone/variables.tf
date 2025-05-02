@@ -20,3 +20,14 @@ variable "entity_selector" {
   type        = string
   default     = ""
 }
+
+variable "dynatrace_api_url" {
+  description = "Dynatrace API URL"
+  type        = string
+}
+
+variable "dynatrace_api_token" {
+  description = "Dynatrace API token"
+  type        = string
+  sensitive   = true
+}

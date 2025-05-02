@@ -1,3 +1,11 @@
+variable "dynatrace_api_url" {
+  type = string
+}
+variable "dynatrace_api_token" {
+  type = string
+  sensitive = true
+}
+
 variable "enable_copilot" {
   description = "Enable Davis CoPilot."
   type        = bool
@@ -17,4 +25,3 @@ variable "blocklist_type" {
   description = "Type of the blocklist entry (BUCKET, TABLE)."
   type        = string
 }
-

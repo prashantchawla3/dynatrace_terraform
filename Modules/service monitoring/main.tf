@@ -128,3 +128,15 @@ resource "dynatrace_url_based_sampling" "example" {
     }
   }
 }
+
+data "dynatrace_calculated_service_metric" "example" {
+  name = var.metric_name
+}
+
+data "dynatrace_request_attribute" "example" {
+  name = var.request_attribute_name
+}
+
+data "dynatrace_request_naming" "example" {
+  name = var.naming_pattern
+}

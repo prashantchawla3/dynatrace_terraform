@@ -1,0 +1,11 @@
+iam_group_name                = "example-group"
+iam_group_permission_scope    = "global"
+iam_permission_group          = "example-group"
+iam_permission_account        = "example-account"
+iam_policy_name               = "example-policy"
+iam_policy_statement_query    = "example-query"
+iam_policy_account            = "example-account"
+iam_policy_description        = "example-description"
+iam_policy_tags               = ["tag1", "tag2"]
+iam_user_email                = "user@example.com"
+iam_user_groups               = ["group1", "group2"]
