@@ -8,6 +8,7 @@ scope_activegate      = "environment"
 scope_oneagent        = "environment"
 target_version        = "latest"
 update_mode           = "AUTOMATIC"
+
 name                  = "example"
 enabled               = true
 recurrence            = "ONCE"
