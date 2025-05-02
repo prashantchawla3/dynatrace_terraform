@@ -1,26 +1,43 @@
+variable "environment_url" { type = string }
+variable "dynatrace_client_id" { type = string }
+variable "dynatrace_client_secret" { type = string, sensitive = true }
 
-variable "environment_url" {
-  type        = string
-  description = "Dynatrace environment URL"
+variable "autotag_name" { type = string }
+variable "entity_selector" { type = string }
+
+variable "autotag_rules" {
+  type = list(object({
+    type                        = string
+    enabled                     = bool
+    value_format                = string
+    value_normalization         = string
+    entity_type                 = string
+    service_to_host_propagation = bool
+    service_to_pgpropagation    = bool
+    conditions = list(object({
+      dynamic_key        = string
+      dynamic_key_source = string
+      key                = string
+      operator           = string
+      tag                = optional(string)
+    }))
+  }))
 }
 
-variable "dynatrace_client_id" {
-  type        = string
-  description = "Dynatrace OAuth client ID"
+variable "autotag_selector_rules" {
+  type = list(object({
+    type                = string
+    enabled             = bool
+    entity_selector     = string
+    value_format        = string
+    value_normalization = string
+  }))
 }
 
-variable "dynatrace_client_secret" {
-  type        = string
-  description = "Dynatrace OAuth client secret"
-  sensitive   = true
-}
-
-variable "autotag_name" {
-  type        = string
-  description = "The name of the auto tag"
-}
-
-variable "entity_selector" {
-  type        = string
-  description = "Entity selector string for custom tags"
+variable "custom_tags" {
+  type = list(object({
+    context = string
+    key     = string
+    value   = optional(string)
+  }))
 }
