@@ -1,59 +1,20 @@
-module "Management_Zone" {
-  source = "../Management_Zone"
-  zone_name = "module.Management_Zone.management_zone_id"
-  
-}
+resource "dynatrace_json_dashboard" "this" {
+  count = length(var.dashboards)
 
-resource "dynatrace_json_dashboard" "example" {
-  contents = jsonencode(
-    {
-      "dashboardMetadata" : {
-        "name" : "Example Dashboard",
-        "shared" : true,
-        "owner" : "owner@example.com",
-        "tags" : ["example", "dashboard"],
-        "preset" : false
-      },
-      "tiles" : [
-        {
-          "name" : "Custom chart",
-          "tileType" : "CUSTOM_CHARTING",
-          "configured" : true,
-          "bounds" : {
-            "top" : 0,
-            "left" : 0,
-            "width" : 342,
-            "height" : 304
-          },
-          "filterConfig" : {
-            "type" : "MIXED",
-            "customName" : "Example Chart",
-            "defaultName" : "Custom chart",
-            "chartConfig" : {
-              "legendShown" : true,
-              "type" : "TIMESERIES",
-              "series" : [
-                {
-                  "metric" : "example.metric",
-                  "aggregation" : "SUM",
-                  "type" : "LINE",
-                  "entityType" : "IOT",
-                  "dimensions" : [
-                    {
-                      "id" : "0",
-                      "name" : "dt.entity.custom_device",
-                      "entityDimension" : true
-                    }
-                  ],
-                  "sortColumn" : true,
-                  "aggregationRate" : "TOTAL"
-                }
-              ]
-            },
-            "managementZone" : module.Management_Zone.management_zone_id  # Embed the management zone filter
-          }
-        }
-      ]
-    }
-  )
+  name           = var.dashboards[count.index].name
+  description    = var.dashboards[count.index].description
+  dashboard_id   = var.dashboards[count.index].dashboard_id
+  layout_type    = var.dashboards[count.index].layout_type
+  sharing        = var.dashboards[count.index].sharing
+  management_zone = var.dashboards[count.index].management_zone
+
+  widgets {
+    count = length(var.dashboards[count.index].widgets)
+
+    name      = var.dashboards[count.index].widgets[count.index].name
+    type      = var.dashboards[count.index].widgets[count.index].type
+    size      = var.dashboards[count.index].widgets[count.index].size
+    position  = var.dashboards[count.index].widgets[count.index].position
+    settings  = var.dashboards[count.index].widgets[count.index].settings
+  }
 }

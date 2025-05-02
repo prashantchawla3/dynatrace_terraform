@@ -1,19 +1,26 @@
-variable "segment_name" {
-  description = "The name of the Dynatrace segment."
-  type        = string
+variable "segments" {
+  description = "List of segments to be created."
+  type = list(object({
+    name        = string
+    description = string
+    is_public   = bool
+    includes    = list(object({
+      data_object       = string
+      filter            = string
+      relationship_name = string
+      relationship_target = string
+    }))
+  }))
 }
 
-variable "segment_description" {
-  description = "The description of the Dynatrace segment."
+variable "variables_type" {
+  description = "Type of the variable used in the segment."
   type        = string
+  default     = "query"
 }
 
-variable "is_public" {
-  description = "Indicates if the filter-segment is publicly accessible within the tenant."
-  type        = bool
-}
-
-variable "cluster_name" {
-  description = "The name of the Kubernetes cluster."
+variable "variables_value" {
+  description = "Value of the variable used in the segment."
   type        = string
+  default     = "fetch dt.entity.kubernetes_cluster | fields cluster = entity.name | sort cluster"
 }

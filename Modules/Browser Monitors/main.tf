@@ -1,127 +1,121 @@
-resource "dynatrace_browser_monitor" "example" {
-  name                   = var.browser_monitor_name
-  frequency              = var.browser_monitor_frequency
-  locations              = var.browser_monitor_locations
-  manually_assigned_apps = var.browser_monitor_manually_assigned_apps
-  anomaly_detection {
-    loading_time_thresholds {
-      enabled = var.browser_monitor_loading_time_thresholds_enabled
-    }
-    outage_handling {
-      global_outage  = var.browser_monitor_outage_handling_global_outage
-      retry_on_error = var.browser_monitor_outage_handling_retry_on_error
-      global_outage_policy {
-        consecutive_runs = var.browser_monitor_outage_handling_global_outage_policy_consecutive_runs
-      }
+# Create one browser monitor for each entry in var.browser_monitors
+resource "dynatrace_browser_monitor" "monitor" {
+  for_each = { for bm in var.browser_monitors : bm.name => bm }
+
+  name        = each.key
+  enabled     = lookup(each.value, "enabled", true)
+  frequency   = each.value.frequency
+  locations   = lookup(each.value, "locations", [])
+  tags        = lookup(each.value, "tags", [])
+  # Set device profile (screen width, height, etc.) if specified
+  dynamic "device_profile" {
+    for_each = lookup(each.value, "device_profile", []) 
+    content {
+      screen_width  = device_profile.value.screen_width
+      screen_height = device_profile.value.screen_height
+      user_agent    = device_profile.value.user_agent
+      # additional fields if any
     }
   }
-  key_performance_metrics {
-    load_action_kpm = var.browser_monitor_load_action_kpm
-    xhr_action_kpm  = var.browser_monitor_xhr_action_kpm
-  }
-  script {
-    type = var.browser_monitor_script_type
-    configuration {
-      bypass_csp = var.browser_monitor_script_configuration_bypass_csp
-      user_agent = var.browser_monitor_script_configuration_user_agent
-      bandwidth {
-        network_type = var.browser_monitor_script_configuration_bandwidth_network_type
-      }
-      device {
-        name        = var.browser_monitor_script_configuration_device_name
-        orientation = var.browser_monitor_script_configuration_device_orientation
-      }
-      headers {
-        header {
-          name  = var.browser_monitor_script_configuration_headers_name
-          value = var.browser_monitor_script_configuration_headers_value
-        }
-      }
-      ignored_error_codes {
-        status_codes = var.browser_monitor_script_configuration_ignored_error_codes_status_codes
-      }
-      javascript_setttings {
-        timeout_settings {
-          action_limit  = var.browser_monitor_script_configuration_javascript_settings_timeout_settings_action_limit
-          total_timeout = var.browser_monitor_script_configuration_javascript_settings_timeout_settings_total_timeout
-        }
-        visually_complete_options {
-          image_size_threshold = var.browser_monitor_script_configuration_javascript_settings_visually_complete_options_image_size_threshold
-          inactivity_timeout   = var.browser_monitor_script_configuration_javascript_settings_visually_complete_options_inactivity_timeout
-          mutation_timeout     = var.browser_monitor_script_configuration_javascript_settings_visually_complete_options_mutation_timeout
-        }
-      }
+  # Key performance metrics block (non-repeatable)
+  dynamic "key_performance_metrics" {
+    for_each = lookup(each.value, "key_performance_metrics", []) 
+    content {
+      load_action_kpm = key_performance_metrics.value.load_action_kpm
+      xhr_action_kpm  = key_performance_metrics.value.xhr_action_kpm
+      # Can add more KPM fields if supported
     }
-    events {
-      event {
-        description = var.browser_monitor_script_events_description
-        navigate {
-          url = var.browser_monitor_script_events_navigate_url
-          authentication {
-            type  = var.browser_monitor_script_events_navigate_authentication_type
-            creds = var.browser_monitor_script_events_navigate_authentication_creds
-          }
-          wait {
-            wait_for = var.browser_monitor_script_events_navigate_wait_wait_for
-          }
-        }
-      }
-      event {
-        description = var.browser_monitor_script_events_description_2
-        navigate {
-          url = var.browser_monitor_script_events_navigate_url_2
-          authentication {
-            type  = var.browser_monitor_script_events_navigate_authentication_type_2
-            creds = var.browser_monitor_script_events_navigate_authentication_creds_2
-          }
-          validate {
-            validation {
-              type  = var.browser_monitor_script_events_navigate_validate_validation_type
-              match = var.browser_monitor_script_events_navigate_validate_validation_match
-              regex = var.browser_monitor_script_events_navigate_validate_validation_regex
-              target {
-                window = var.browser_monitor_script_events_navigate_validate_validation_target_window
-              }
-            }
-          }
-          wait {
-            timeout  = var.browser_monitor_script_events_navigate_wait_timeout
-            wait_for = var.browser_monitor_script_events_navigate_wait_wait_for_2
-            validation {
-              type  = var.browser_monitor_script_events_navigate_wait_validation_type
-              match = var.browser_monitor_script_events_navigate_wait_validation_match
-              target {
-                locators {
-                  locator {
-                    type  = var.browser_monitor_script_events_navigate_wait_validation_target_locators_locator_type
-                    value = var.browser_monitor_script_events_navigate_wait_validation_target_locators_locator_value
+  }
+  # Optional anomaly detection configuration
+  dynamic "anomaly_detection" {
+    for_each = lookup(each.value, "anomaly_detection", [])
+    content {
+      enabled = anomaly_detection.value.enabled
+      # Additional anomaly fields can be added here
+    }
+  }
+
+  # Script block (clickpath or availability test)
+  dynamic "script" {
+    for_each = lookup(each.value, "script", [])
+    content {
+      type = script.value.type  # e.g., "clickpath" or "single-url"
+      # Iterate through script events
+      dynamic "events" {
+        for_each = script.value.events
+        content {
+          event {
+            description = events.value.description
+            # Navigate event
+            dynamic "navigate" {
+              for_each = lookup(events.value, "navigate", []) 
+              content {
+                url = navigate.value.url
+                dynamic "wait" {
+                  for_each = lookup(navigate.value, "wait", [])
+                  content {
+                    wait_for = wait.value.wait_for
+                    timeout  = wait.value.timeout
                   }
                 }
               }
             }
-          }
-        }
-      }
-      event {
-        description = var.browser_monitor_script_events_description_3
-        click {
-          button = var.browser_monitor_script_events_click_button
-          validate {
-            validation {
-              type = var.browser_monitor_script_events_click_validate_validation_type
+            # Click event
+            dynamic "click" {
+              for_each = lookup(events.value, "click", [])
+              content {
+                target {
+                  # Locator(s) for the click target
+                  dynamic "locators" {
+                    for_each = click.value.target.locators
+                    content {
+                      locator {
+                        type  = locators.value.type
+                        value = locators.value.value
+                      }
+                    }
+                  }
+                }
+                dynamic "wait" {
+                  for_each = lookup(click.value, "wait", [])
+                  content {
+                    wait_for = wait.value.wait_for
+                    timeout  = wait.value.timeout
+                  }
+                }
+              }
             }
-          }
-          wait {
-            wait_for = var.browser_monitor_script_events_click_wait_wait_for
-          }
-        }
-      }
-      event {
-        description = var.browser_monitor_script_events_description_4
-        javascript {
-          code = var.browser_monitor_script_events_javascript_code
-          wait {
-            wait_for = var.browser_monitor_script_events_javascript_wait_wait_for
+            # Keystrokes event
+            dynamic "keystrokes" {
+              for_each = lookup(events.value, "keystrokes", [])
+              content {
+                text = keystrokes.value.text
+                target {
+                  dynamic "locators" {
+                    for_each = keystrokes.value.target.locators
+                    content {
+                      locator {
+                        type  = locators.value.type
+                        value = locators.value.value
+                      }
+                    }
+                  }
+                }
+                # Validation after keystroke (optional)
+                dynamic "validate" {
+                  for_each = lookup(keystrokes.value, "validate", [])
+                  content {
+                    validation {
+                      type         = validate.value.type
+                      fail_if_found = validate.value.fail_if_found
+                      ignore_case  = validate.value.ignore_case
+                      # ... other validation fields ...
+                    }
+                  }
+                }
+              }
+            }
+            # Additional event types (e.g., javascript, navigate-back) can be added similarly
           }
         }
       }
@@ -129,23 +123,32 @@ resource "dynatrace_browser_monitor" "example" {
   }
 }
 
-resource "dynatrace_browser_monitor_outage" "example" {
-  global_consecutive_outage_count_threshold = var.browser_monitor_outage_global_consecutive_outage_count_threshold
-  global_outages                            = var.browser_monitor_outage_global_outages
-  local_consecutive_outage_count_threshold  = var.browser_monitor_outage_local_consecutive_outage_count_threshold
-  local_location_outage_count_threshold     = var.browser_monitor_outage_local_location_outage_count_threshold
-  local_outages                             = var.browser_monitor_outage_local_outages
-  retry_on_error                            = var.browser_monitor_outage_retry_on_error
-  scope                                     = var.browser_monitor_outage_scope
+# Optional outage settings for each monitor
+resource "dynatrace_browser_monitor_outage" "outage" {
+  for_each = dynatrace_browser_monitor.monitor
+
+  monitor_id                            = each.value.id
+  global_outages                        = lookup(each.value, "global_outages", null)
+  local_outages                         = lookup(each.value, "local_outages", null)
+  retry_on_error                        = lookup(each.value, "retry_on_error", null)
+  global_consecutive_outage_count_threshold = lookup(each.value, "global_consecutive_outage_count_threshold", null)
+  local_consecutive_outage_count_threshold  = lookup(each.value, "local_consecutive_outage_count_threshold", null)
+  local_location_outage_count_threshold    = lookup(each.value, "local_location_outage_count_threshold", null)
+  # If you want to use scope (SYNTHETIC_TEST), you can include it here; omit for global
 }
 
-resource "dynatrace_browser_monitor_performance" "example" {
-  enabled = var.browser_monitor_performance_enabled
-  scope   = var.browser_monitor_performance_scope
-  thresholds {
-    threshold {
-      event     = var.browser_monitor_performance_thresholds_event
-      threshold = var.browser_monitor_performance_thresholds_threshold
+# Optional performance threshold settings for each monitor
+resource "dynatrace_browser_monitor_performance" "performance" {
+  for_each = dynatrace_browser_monitor.monitor
+
+  monitor_id = each.value.id
+  enabled    = lookup(each.value, "performance_enabled", false)
+  scope      = lookup(each.value, "performance_scope", null)  # e.g. "SYNTHETIC_TEST"
+  dynamic "thresholds" {
+    for_each = lookup(each.value, "performance_thresholds", [])
+    content {
+      event     = thresholds.value.event    # e.g. "LOAD"
+      threshold = thresholds.value.threshold
     }
   }
 }

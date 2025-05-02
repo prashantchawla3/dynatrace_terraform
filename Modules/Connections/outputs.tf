@@ -1,39 +1,39 @@
-output "github_connection_id" {
-  description = "The ID of the GitHub connection."
-  value       = dynatrace_github_connection.example.id
+output "jenkins_connection_ids" {
+  description = "IDs of Jenkins connections"
+  value       = { for k, conn in dynatrace_jenkins_connection.this : k => conn.id }
 }
 
-output "gitlab_connection_id" {
-  description = "The ID of the GitLab connection."
-  value       = dynatrace_gitlab_connection.example.id
+output "github_connection_ids" {
+  description = "IDs of GitHub connections"
+  value       = { for k, conn in dynatrace_github_connection.this : k => conn.id }
 }
 
-output "jenkins_connection_id" {
-  description = "The ID of the Jenkins connection."
-  value       = dynatrace_jenkins_connection.example.id
+output "gitlab_connection_ids" {
+  description = "IDs of GitLab connections"
+  value       = { for k, conn in dynatrace_gitlab_connection.this : k => conn.id }
 }
 
-output "ms365_email_connection_id" {
-  description = "The ID of the Microsoft 365 email connection."
-  value       = dynatrace_ms365_email_connection.example.id
+output "ms365_email_connection_ids" {
+  description = "IDs of Microsoft 365 email connections"
+  value       = { for k, conn in dynatrace_ms365_email_connection.this : k => conn.id }
 }
 
-output "msentraid_connection_id" {
-  description = "The ID of the Microsoft Entra Identity Developer connection."
-  value       = dynatrace_msentraid_connection.example.id
+output "msentraid_connection_ids" {
+  description = "IDs of Microsoft Entra ID connections"
+  value       = { for k, conn in dynatrace_msentraid_connection.this : k => conn.id }
 }
 
-output "msteams_connection_id" {
-  description = "The ID of the Microsoft Teams connection."
-  value       = dynatrace_msteams_connection.example.id
+output "msteams_connection_ids" {
+  description = "IDs of Microsoft Teams connections"
+  value       = { for k, conn in dynatrace_msteams_connection.this : k => conn.id }
 }
 
-output "pagerduty_connection_id" {
-  description = "The ID of the PagerDuty connection."
-  value       = dynatrace_pagerduty_connection.example.id
+output "pagerduty_connection_ids" {
+  description = "IDs of PagerDuty connections"
+  value       = { for k, conn in dynatrace_pagerduty_connection.this : k => conn.id }
 }
 
-output "servicenow_connection_id" {
-  description = "The ID of the ServiceNow connection."
-  value       = dynatrace_servicenow_connection.example.id
+output "servicenow_connection_ids" {
+  description = "IDs of ServiceNow connections"
+  value       = { for k, conn in dynatrace_servicenow_connection.this : k => conn.id }
 }

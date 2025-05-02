@@ -1,112 +1,143 @@
+##########################
+# Built-in Rule Variables
+##########################
+variable "builtin_rule_enabled" {
+  description = "Enable or disable creation of dynatrace_container_builtin_rule"
+  type        = bool
+  default     = true
+}
+
 variable "ignore_docker_pause_container" {
-  description = "Disable monitoring of platform internal pause containers in Kubernetes and OpenShift"
+  description = "Disable monitoring of Docker pause containers"
   type        = bool
   default     = false
 }
 
 variable "ignore_kubernetes_pause_container" {
-  description = "Disable monitoring of platform internal pause containers in Kubernetes and OpenShift"
+  description = "Disable monitoring of Kubernetes pause containers"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "ignore_open_shift_build_pod_name" {
-  description = "Disable monitoring of intermediate containers created during image build"
+  description = "Disable monitoring of OpenShift build pod containers"
   type        = bool
   default     = false
 }
 
 variable "ignore_open_shift_sdn_namespace" {
-  description = "Disable monitoring of platform internal containers in the openshift-sdn namespace"
+  description = "Disable monitoring of containers in OpenShift SDN namespace"
+  type        = bool
+  default     = false
+}
+
+#############################
+# Container Registry Variables
+#############################
+variable "registry_enabled" {
+  description = "Enable or disable creation of dynatrace_container_registry"
   type        = bool
   default     = true
 }
 
 variable "container_registry" {
-  description = "The container registry URL"
+  description = "Container registry to configure"
   type        = string
+  default     = ""
 }
 
+##########################
+# Container Rule Variables
+##########################
 variable "container_rule_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
+  description = "Enable or disable creation of dynatrace_container_rule"
   type        = bool
   default     = true
 }
 
 variable "container_rule_mode" {
-  description = "Possible Values: MONITORING_OFF, MONITORING_ON"
+  description = "Mode of the container rule (e.g., EXCLUDE)"
   type        = string
-  default     = "MONITORING_ON"
+  default     = "EXCLUDE"
 }
 
 variable "container_rule_operator" {
-  description = "Possible Values: CONTAINS, ENDS, EQUALS, EXISTS, NOT_CONTAINS, NOT_ENDS, NOT_EQUALS, NOT_EXISTS, NOT_STARTS, STARTS"
+  description = "Operator to use for the rule (e.g., EQUALS)"
   type        = string
-  default     = "NOT_CONTAINS"
+  default     = "EQUALS"
 }
 
 variable "container_rule_property" {
-  description = "Possible Values: CONTAINER_NAME, IMAGE_NAME, KUBERNETES_BASEPODNAME, KUBERNETES_CONTAINERNAME, KUBERNETES_FULLPODNAME, KUBERNETES_NAMESPACE, KUBERNETES_PODUID"
+  description = "Property to match in the rule (e.g., CONTAINER_NAME)"
   type        = string
   default     = "CONTAINER_NAME"
 }
 
 variable "container_rule_value" {
-  description = "Condition value"
+  description = "Value to match in the rule"
   type        = string
-  default     = "Terraform"
+  default     = ""
 }
 
-variable "bosh_process_manager" {
-  description = "Platform: Cloud Foundry"
+##############################
+# Container Technology Variables
+##############################
+variable "technology_enabled" {
+  description = "Enable or disable creation of dynatrace_container_technology"
   type        = bool
   default     = true
 }
 
+variable "bosh_process_manager" {
+  description = "Enable monitoring for BOSH"
+  type        = bool
+  default     = false
+}
+
 variable "containerd" {
-  description = "Platform: Kubernetes"
+  description = "Enable monitoring for containerd"
   type        = bool
   default     = true
 }
 
 variable "crio" {
-  description = "Platform: Kubernetes"
+  description = "Enable monitoring for CRI-O"
   type        = bool
   default     = true
 }
 
 variable "docker" {
-  description = "Platform: Docker and Kubernetes"
+  description = "Enable monitoring for Docker"
   type        = bool
   default     = true
 }
 
 variable "docker_windows" {
-  description = "Platform: Docker"
+  description = "Enable monitoring for Docker on Windows"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "garden" {
-  description = "Platform: Cloud Foundry"
+  description = "Enable monitoring for Garden"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "podman" {
-  description = "Platform: Podman"
+  description = "Enable monitoring for Podman"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "scope" {
-  description = "The scope of this setting (HOST, HOST_GROUP). Omit this property if you want to cover the whole environment."
+  description = "Scope for the container technology (e.g., environment scope)"
   type        = string
-  default     = "environment"
+  default     = ""
 }
 
 variable "winc" {
-  description = "Platform: Cloud Foundry"
+  description = "Enable monitoring for Windows containers (winc)"
   type        = bool
-  default     = true
+  default     = false
 }

@@ -1,56 +1,63 @@
-resource "dynatrace_github_connection" "example" {
-  name  = var.github_connection_name
-  type  = "pat"
-  token = var.github_connection_token
+resource "dynatrace_jenkins_connection" "this" {
+  for_each = { for conn in var.jenkins_connections : conn.name => conn }
+  name     = each.value.name
+  url      = each.value.url
+  username = each.value.username
+  password = each.value.password
+}
+resource "dynatrace_github_connection" "this" {
+  for_each = { for conn in var.github_connections : conn.name => conn }
+  name  = each.value.name
+  type  = each.value.type
+  token = each.value.token
 }
 
-resource "dynatrace_gitlab_connection" "example" {
-  name  = var.gitlab_connection_name
-  url   = var.gitlab_connection_url
-  token = var.gitlab_connection_token
+resource "dynatrace_gitlab_connection" "this" {
+  for_each = { for conn in var.gitlab_connections : conn.name => conn }
+  name  = each.value.name
+  url   = each.value.url
+  token = each.value.token
 }
 
-resource "dynatrace_jenkins_connection" "example" {
-  name     = var.jenkins_connection_name
-  url      = var.jenkins_connection_url
-  username = var.jenkins_connection_username
-  password = var.jenkins_connection_password
+resource "dynatrace_ms365_email_connection" "this" {
+  for_each = { for conn in var.ms365_email_connections : conn.name => conn }
+  name          = each.value.name
+  client_id     = each.value.client_id
+  tenant_id     = each.value.tenant_id
+  from_address  = each.value.from_address
+  type          = each.value.type
+  client_secret = each.value.client_secret
 }
 
-resource "dynatrace_ms365_email_connection" "example" {
-  name          = var.ms365_email_connection_name
-  type          = "client_secret"
-  tenant_id     = var.ms365_email_connection_tenant_id
-  client_id     = var.ms365_email_connection_client_id
-  client_secret = var.ms365_email_connection_client_secret
-  from_address  = var.ms365_email_connection_from_address
+resource "dynatrace_msentraid_connection" "this" {
+  for_each = { for conn in var.msentraid_connections : conn.name => conn }
+  name           = each.value.name
+  application_id = each.value.application_id
+  directory_id   = each.value.directory_id
+  client_secret  = each.value.client_secret
+  description    = each.value.description
 }
 
-resource "dynatrace_msentraid_connection" "example" {
-  name           = var.msentraid_connection_name
-  directory_id   = var.msentraid_connection_directory_id
-  application_id = var.msentraid_connection_application_id
-  client_secret  = var.msentraid_connection_client_secret
-  description    = var.msentraid_connection_description
+resource "dynatrace_msteams_connection" "this" {
+  for_each = { for conn in var.msteams_connections : conn.name => conn }
+  name         = each.value.name
+  webhook      = each.value.webhook
+  team_name    = lookup(each.value, "team_name", null)
+  channel_name = lookup(each.value, "channel_name", null)
 }
 
-resource "dynatrace_msteams_connection" "example" {
-  name         = var.msteams_connection_name
-  webhook      = var.msteams_connection_webhook
-  channel_name = var.msteams_connection_channel_name
-  team_name    = var.msteams_connection_team_name
+resource "dynatrace_pagerduty_connection" "this" {
+  for_each = { for conn in var.pagerduty_connections : conn.name => conn }
+  name  = each.value.name
+  token = each.value.token
+  url   = each.value.url
 }
 
-resource "dynatrace_pagerduty_connection" "example" {
-  name  = var.pagerduty_connection_name
-  url   = var.pagerduty_connection_url
-  token = var.pagerduty_connection_token
-}
-
-resource "dynatrace_servicenow_connection" "example" {
-  name     = var.servicenow_connection_name
-  url      = var.servicenow_connection_url
-  type     = var.servicenow_connection_type
-  user     = var.servicenow_connection_user
-  password = var.servicenow_connection_password
+resource "dynatrace_servicenow_connection" "this" {
+  for_each = { for conn in var.servicenow_connections : conn.name => conn }
+  name     = each.value.name
+  url      = each.value.url
+  type     = each.value.type
+  user     = lookup(each.value, "user", null)
+  password = lookup(each.value, "password", null)
 }

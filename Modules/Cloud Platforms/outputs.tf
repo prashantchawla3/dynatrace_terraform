@@ -1,24 +1,24 @@
-output "cloud_foundry_id" {
-  description = "The ID of the Cloud Foundry resource"
-  value       = dynatrace_cloud_foundry.example.id
+output "cloud_foundry_ids" {
+  description = "IDs of the created CloudFoundry resources"
+  value       = dynatrace_cloud_foundry.cloud_foundry[*].id
 }
 
-output "k8s_monitoring_id" {
-  description = "The ID of the Kubernetes monitoring resource"
-  value       = dynatrace_k8s_monitoring.example.id
+output "k8s_monitoring_ids" {
+  description = "IDs of the created Kubernetes monitoring resources"
+  value       = dynatrace_k8s_monitoring.k8s_monitoring[*].id
 }
 
-output "kubernetes_id" {
-  description = "The ID of the Kubernetes resource"
-  value       = dynatrace_kubernetes.example.id
+output "kubernetes_ids" {
+  description = "IDs of the created Kubernetes resources"
+  value       = dynatrace_kubernetes.kubernetes[*].id
 }
 
-output "kubernetes_app_id" {
-  description = "The ID of the Kubernetes app resource"
-  value       = dynatrace_kubernetes_app.example.id
+output "kubernetes_app_ids" {
+  description = "IDs of the created Kubernetes app resources"
+  value       = dynatrace_kubernetes_app.kubernetes_app[*].id
 }
 
-output "kubernetes_enrichment_id" {
-  description = "The ID of the Kubernetes enrichment resource"
-  value       = dynatrace_kubernetes_enrichment.example.id
+output "kubernetes_enrichment_ids" {
+  description = "IDs of the created Kubernetes enrichment resources"
+  value       = dynatrace_kubernetes_enrichment.kubernetes_enrichment[*].id
 }

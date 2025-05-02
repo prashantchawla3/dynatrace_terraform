@@ -1,125 +1,135 @@
-variable "aws_anomalies_name" {
-  description = "Name for the AWS anomalies resource"
-  type        = string
-  default     = "aws_anomalies"
+# Variables for Dynatrace disk anomaly detection module
+
+variable "disk_anomalies" {
+  description = "List of configurations for dynatrace_disk_anomalies_v2 resources"
+  type = list(object({
+    # Unique name or identifier for this anomaly configuration (used to index resources)
+    name                     = string
+    enabled                  = bool
+    # Optional base attribute (e.g., "auto" or "custom" detection mode)
+    detection_mode           = optional(string)
+
+    # Nested block for low inodes detection
+    disk_low_inodes_detection = optional(object({
+      enabled           = bool
+      # Custom thresholds for free inodes percentage
+      custom_thresholds = optional(list(object({
+        free_inodes_percentage = number
+        # Additional threshold parameters can be added here
+      })))
+    }))
+
+    # Nested block for low disk space detection
+    disk_low_space_detection = optional(object({
+      enabled           = bool
+      custom_thresholds = optional(list(object({
+        free_disk_space_percentage = number
+        # Additional threshold parameters can be added here
+      })))
+    }))
+
+    # Alerts nested blocks (example: severity and threshold)
+    alerts = optional(list(object({
+      severity_level = string
+      threshold      = number
+      # Other alert options can be added here
+    })))
+
+    # Event properties to attach to triggered events
+    event_properties = optional(list(object({
+      key   = string
+      value = string
+    })))
+
+    # Add other configurable options as needed
+  }))
+  default = []
 }
 
-variable "custom_app_scope" {
-  description = "Scope for the custom application anomalies"
-  type        = string
-  default     = "CUSTOM_APPLICATION-1234567890000000"
+variable "disk_anomaly_rules" {
+  description = "List of configurations for dynatrace_disk_anomaly_rules resources"
+  type = list(object({
+    name       = string
+    enabled    = bool
+
+    # Example condition block for a rule
+    condition = optional(object({
+      property  = string
+      operator  = string
+      value     = number
+    }))
+
+    event_properties = optional(list(object({
+      key   = string
+      value = string
+    })))
+
+    alerts = optional(list(object({
+      severity_level = string
+      threshold      = number
+      # Other alert options...
+    })))
+  }))
+  default = []
 }
 
-variable "custom_app_crash_rate_scope" {
-  description = "Scope for the custom application crash rate"
-  type        = string
-  default     = "CUSTOM_APPLICATION-1234567890000000"
+variable "disk_edge_detectors" {
+  description = "List of configurations for dynatrace_disk_edge_anomaly_detectors resources"
+  type = list(object({
+    name        = string
+    enabled     = bool
+    # Example additional properties
+    metric_name = optional(string)
+    threshold   = optional(number)
+
+    event_properties = optional(list(object({
+      key   = string
+      value = string
+    })))
+
+    alerts = optional(list(object({
+      severity_level = string
+      threshold      = number
+      # Other alert options...
+    })))
+  }))
+  default = []
 }
 
-variable "database_anomalies_scope" {
-  description = "Scope for the database anomalies"
-  type        = string
-  default     = "environment"
-}
+variable "disk_specific_anomalies" {
+  description = "List of configurations for dynatrace_disk_specific_anomalies_v2 resources"
+  type = list(object({
+    name    = string
+    enabled = bool
 
-variable "davis_anomaly_detectors_name" {
-  description = "Name for the Davis anomaly detectors"
-  type        = string
-  default     = "davis_anomaly_detectors"
-}
+    # Nested block for low disk space detection
+    disk_low_space_detection = optional(object({
+      enabled = bool
+      custom_thresholds = optional(list(object({
+        free_disk_space_percentage = number
+        # Other threshold parameters...
+      })))
+    }))
 
-variable "disk_anomalies_scope" {
-  description = "Scope for the disk anomalies"
-  type        = string
-  default     = "environment"
-}
+    # Nested block for low inodes detection
+    disk_low_inodes_detection = optional(object({
+      enabled = bool
+      custom_thresholds = optional(list(object({
+        free_inodes_percentage = number
+        # Other threshold parameters...
+      })))
+    }))
 
-variable "disk_anomaly_rules_name" {
-  description = "Name for the disk anomaly rules"
-  type        = string
-  default     = "disk_anomaly_rules"
-}
+    event_properties = optional(list(object({
+      key   = string
+      value = string
+    })))
 
-variable "disk_edge_anomaly_detectors_name" {
-  description = "Name for the disk edge anomaly detectors"
-  type        = string
-  default     = "disk_edge_anomaly_detectors"
-}
-
-variable "disk_specific_anomalies_disk_id" {
-  description = "Disk ID for the specific disk anomalies"
-  type        = string
-  default     = "DISK-1234567890000000"
-}
-
-variable "host_anomalies_scope" {
-  description = "Scope for the host anomalies"
-  type        = string
-  default     = "HOST-1234567890000000"
-}
-
-variable "k8s_cluster_anomalies_scope" {
-  description = "Scope for the Kubernetes cluster anomalies"
-  type        = string
-  default     = "environment"
-}
-
-variable "k8s_namespace_anomalies_scope" {
-  description = "Scope for the Kubernetes namespace anomalies"
-  type        = string
-  default     = "environment"
-}
-
-variable "k8s_node_anomalies_scope" {
-  description = "Scope for the Kubernetes node anomalies"
-  type        = string
-  default     = "environment"
-}
-
-variable "k8s_pvc_anomalies_scope" {
-  description = "Scope for the Kubernetes PVC anomalies"
-  type        = string
-  default     = "environment"
-}
-
-variable "k8s_workload_anomalies_scope" {
-  description = "Scope for the Kubernetes workload anomalies"
-  type        = string
-  default     = "environment"
-}
-
-variable "metric_events_name" {
-  description = "Name for the metric events"
-  type        = string
-  default     = "metric_events"
-}
-
-variable "mobile_app_scope" {
-  description = "Scope for the mobile application anomalies"
-  type        = string
-  default     = "MOBILE_APPLICATION-1234567890000000"
-}
-
-variable "mobile_app_crash_rate_application_id" {
-  description = "Application ID for the mobile application crash rate"
-  type        = string
-  default     = "MOBILE_APPLICATION-1234567890000000"
-}
-
-variable "service_anomalies_scope" {
-  description = "Scope for the service anomalies"
-  type        = string
-  default     = "SERVICE-1234567890000000"
-}
-
-variable "vmware_anomalies_name" {
-  description = "Name for the VMware anomalies"
-  type        = string
-  default     = "vmware_anomalies"
-}
-
-variable "web_app_scope" {
-  description = "Scope for the web application anomalies"
-  type        = string
-  default     = "APPLICATION-1234567890000000"
+    alerts = optional(list(object({
+      severity_level = string
+      threshold      = number
+      # Other alert options...
+    })))
+  }))
+  default = []
 }
