@@ -1,3 +1,4 @@
+
 output "log_agent_feature_flags_id" {
   value = dynatrace_log_agent_feature_flags.example.id
 }
