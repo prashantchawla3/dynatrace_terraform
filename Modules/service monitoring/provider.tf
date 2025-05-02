@@ -1,3 +1,4 @@
+
 terraform {
   required_providers {
     dynatrace = {
@@ -6,4 +7,3 @@ terraform {
     }
   }
 }
-

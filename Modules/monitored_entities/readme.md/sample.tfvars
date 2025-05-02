@@ -9,4 +9,3 @@ listen_ports     = [80, 443]
 props            = "key1=value1,key2=value2"
 type             = "customType"
 ui_based         = true
-

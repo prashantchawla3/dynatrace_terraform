@@ -1,76 +1,82 @@
-variable "slo_name" {
-  description = "SLO name"
+
+variable "environment_url" {
   type        = string
+  description = "Dynatrace environment URL"
+}
+
+variable "dynatrace_client_id" {
+  type        = string
+  description = "OAuth client ID"
+}
+
+variable "dynatrace_client_secret" {
+  type        = string
+  description = "OAuth client secret"
+  sensitive   = true
+}
+
+variable "slo_name" {
+  type        = string
+  description = "Name of the SLO"
 }
 
 variable "slo_enabled" {
-  description = "This setting is enabled (true) or disabled (false)"
   type        = bool
-  default     = true
+  description = "Whether the SLO is enabled"
 }
 
 variable "slo_description" {
-  description = "The description of the SLO"
   type        = string
-  default     = "Terraform Test"
+  description = "Custom description of the SLO"
 }
 
 variable "slo_evaluation_type" {
-  description = "Evaluation type"
-  type        = map(string)
-  default     = "AGGREGATE"
+  type        = string
+  description = "Evaluation type (AGGREGATE, SINGLE_VALUE)"
 }
 
 variable "slo_evaluation_window" {
-  description = "Evaluation window"
   type        = string
-  default     = "-1w"
+  description = "Evaluation window duration (e.g., -1w, -24h)"
 }
 
 variable "slo_filter" {
-  description = "Filter parameter"
   type        = string
-  default     = "type(SERVICE),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)"
+  description = "Filter criteria for the metric"
 }
 
 variable "slo_metric_expression" {
-  description = "Metric expression"
   type        = string
-  default     = "100*(builtin:service.requestCount.server:splitBy())/(builtin:service.requestCount.server:splitBy())"
+  description = "Metric expression for the SLO"
 }
 
 variable "slo_metric_name" {
-  description = "Metric name"
   type        = string
-  default     = "terraform_test"
+  description = "Metric name"
 }
 
 variable "slo_target_success" {
-  description = "Target success value"
   type        = number
-  default     = 95
+  description = "Target success threshold"
 }
 
 variable "slo_target_warning" {
-  description = "Target warning value"
   type        = number
-  default     = 98
+  description = "Warning threshold"
 }
 
 variable "slo_legacy_id" {
-  description = "Legacy ID"
   type        = string
-  default     = ""
+  description = "Optional legacy ID"
 }
 
 variable "burn_rate_visualization_enabled" {
-  description = "Burn rate visualization enabled"
   type        = bool
-  default     = false
+  description = "Enable burn rate visualization"
 }
 
 variable "fast_burn_threshold" {
-  description = "Fast burn threshold"
   type        = number
   default     = null
+  description = "Fast burn threshold value"
 }

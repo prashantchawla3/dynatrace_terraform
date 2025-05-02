@@ -1,9 +1,0 @@
-auto_language = true
-language      = "en"
-auto_region   = true
-region        = "auto"
-auto_theme    = true
-theme         = "auto"
-auto_timezone = true
-timezone      = "UTC"
-scope         = "user-terraform@dynatrace.com"

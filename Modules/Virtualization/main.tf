@@ -1,3 +1,4 @@
+
 resource "dynatrace_vmware" "example" {
   enabled   = var.enabled_vmware
   ipaddress = var.ipaddress
