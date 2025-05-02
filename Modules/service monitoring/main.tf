@@ -4,11 +4,14 @@ resource "dynatrace_api_detection" "example" {
   third_party_api = var.third_party_api
   technology      = var.technology
 
-  conditions {
-    condition {
-      base    = var.condition_base
-      matcher = var.condition_matcher
-      pattern = var.condition_pattern
+  dynamic "conditions" {
+    for_each = [1]
+    content {
+      condition {
+        base    = var.condition_base
+        matcher = var.condition_matcher
+        pattern = var.condition_pattern
+      }
     }
   }
 }
@@ -20,14 +23,17 @@ resource "dynatrace_calculated_service_metric" "example" {
   metric_key       = var.metric_key
   unit             = var.metric_unit
 
-  conditions {
-    condition {
-      attribute = var.condition_attribute
-      comparison {
-        negate = var.comparison_negate
-        http_method {
-          operator = var.http_method_operator
-          values   = var.http_method_values
+  dynamic "conditions" {
+    for_each = [1]
+    content {
+      condition {
+        attribute = var.condition_attribute
+        comparison {
+          negate = var.comparison_negate
+          http_method {
+            operator = var.http_method_operator
+            values   = var.http_method_values
+          }
         }
       }
     }
