@@ -1,7 +1,4 @@
 
-environment_url         = "https://your-env.live.dynatrace.com"
-dynatrace_client_id     = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
 guardian_name           = "My Guardian"
 guardian_tags           = ["team:devops", "env:prod"]
 

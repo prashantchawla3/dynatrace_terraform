@@ -1,19 +1,4 @@
 
-variable "environment_url" {
-  type        = string
-  description = "Dynatrace environment URL"
-}
-
-variable "dynatrace_client_id" {
-  type        = string
-  description = "OAuth client ID for Dynatrace"
-}
-
-variable "dynatrace_client_secret" {
-  type        = string
-  description = "OAuth client secret for Dynatrace"
-  sensitive   = true
-}
 
 variable "guardian_name" {
   type        = string
@@ -21,13 +6,13 @@ variable "guardian_name" {
 }
 
 variable "guardian_description" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 variable "guardian_tags" {
-  type        = list(string)
-  default     = []
+  type    = list(string)
+  default = []
 }
 
 variable "objectives" {

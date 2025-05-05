@@ -1,3 +1,34 @@
+variable "guardian_name" {
+  type        = string
+  description = "Name of the Site Reliability Guardian"
+}
+
+variable "guardian_description" {
+  type        = string
+  default     = ""
+  description = "Description of the Site Reliability Guardian"
+}
+
+variable "guardian_tags" {
+  type        = list(string)
+  default     = []
+  description = "Tags associated with the Site Reliability Guardian"
+}
+
+variable "objectives" {
+  type = list(object({
+    name                = string
+    description         = optional(string)
+    objective_type      = string
+    dql_query           = optional(string)
+    reference_slo       = optional(string)
+    comparison_operator = string
+    target              = number
+    warning             = number
+  }))
+  description = "List of objectives for the Site Reliability Guardian"
+}
+
 variable "workflow_title" {
   description = "Title of the workflow"
   type        = string
@@ -43,3 +74,4 @@ variable "workflow_trigger" {
   })
   default = null
 }
+

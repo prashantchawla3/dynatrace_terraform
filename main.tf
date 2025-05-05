@@ -398,4 +398,3 @@ module "Integrations" {
   remote_environment_token       = var.remote_environment_token
   remote_environment_uri         = var.remote_environment_uri
 }
-
