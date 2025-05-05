@@ -1,3 +1,5 @@
+
+# Include just a few to keep it concise; user can extend as needed
 variable "api_color" { type = string }
 variable "api_name" { type = string }
 variable "third_party_api" { type = bool }

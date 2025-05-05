@@ -1,4 +1,3 @@
-
 variable "scope" { description = "Scope (HOST, HOST_GROUP, etc.)"; type = string }
 variable "new_container_log_detector" { description = "Detect all container logs"; type = bool }
 variable "journald_log_detector" { description = "Enable journald logs"; type = bool }

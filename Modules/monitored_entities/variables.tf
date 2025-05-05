@@ -1,6 +1,6 @@
 
 variable "custom_device_id" {
-  description = "The ID of the custom device"
+  description = "The unique ID of the custom device"
   type        = string
 }
 
@@ -10,32 +10,32 @@ variable "display_name" {
 }
 
 variable "config_url" {
-  description = "Configuration URL"
+  description = "Configuration URL for the device"
   type        = string
 }
 
 variable "dns_names" {
-  description = "List of DNS names"
+  description = "DNS names of the device"
   type        = list(string)
 }
 
 variable "favicon_url" {
-  description = "URL for the favicon"
+  description = "URL of the favicon to show for the custom device"
   type        = string
 }
 
 variable "group" {
-  description = "Device group"
+  description = "Custom group the device belongs to"
   type        = string
 }
 
 variable "ip_addresses" {
-  description = "List of IP addresses"
+  description = "IP addresses of the device"
   type        = list(string)
 }
 
 variable "listen_ports" {
-  description = "List of listening ports"
+  description = "Ports the device listens on"
   type        = list(number)
 }
 
@@ -45,11 +45,11 @@ variable "props" {
 }
 
 variable "type" {
-  description = "Type of the custom device"
+  description = "Device type identifier"
   type        = string
 }
 
 variable "ui_based" {
-  description = "Whether the device is UI-based"
+  description = "Whether the device was created via UI"
   type        = bool
 }

@@ -1,37 +1,37 @@
-resource "dynatrace_http_monitor" "Terraform_test_HTTP" {
-  name      = var.httpMonitorName
-  enabled   = true
-  frequency = var.httpMonitorFrequency
-  locations = [var.httpLocationId]
-  
+resource "dynatrace_http_monitor" "this" {
+  name      = var.http_monitor_name
+  enabled   = var.http_monitor_enabled
+  frequency = var.http_monitor_frequency
+  locations = var.http_monitor_locations
+
   anomaly_detection {
     loading_time_thresholds {
-      # enabled = false
+      enabled = var.loading_time_thresholds_enabled
     }
     outage_handling {
-      global_outage    = true
-      # local_outage   = false
-      # retry_on_error = false
+      global_outage    = var.global_outage
+      local_outage     = var.local_outage
+      retry_on_error   = var.retry_on_error
       global_outage_policy {
-        consecutive_runs = 1
+        consecutive_runs = var.consecutive_runs
       }
     }
   }
-  
+
   script {
     request {
-      description = var.httpMonitorName
-      method      = "GET"
-      url         = var.httpMonitorUrl
+      description = var.http_monitor_description
+      method      = var.http_monitor_method
+      url         = var.http_monitor_url
       configuration {
-        accept_any_certificate = true
-        follow_redirects       = true
+        accept_any_certificate = var.accept_any_certificate
+        follow_redirects       = var.follow_redirects
       }
       validation {
         rule {
-          type  = "httpStatusesList"
-          # pass_if_found = false
-          value = ">=400"
+          type          = var.validation_type
+          value         = var.validation_value
+          pass_if_found = var.pass_if_found
         }
       }
     }
