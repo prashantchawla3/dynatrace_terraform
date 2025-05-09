@@ -1,6 +1,4 @@
-###################################
-# main.tf
-###################################
+
 
 resource "dynatrace_aws_credentials" "this" {
   label                              = var.label

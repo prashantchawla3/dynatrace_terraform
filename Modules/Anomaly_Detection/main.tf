@@ -1,63 +1,24 @@
-# Implementation of Dynatrace disk anomaly detection resources using dynamic blocks
-
-# dynatrace_disk_anomalies_v2 resources (multiple instances via for_each)
 resource "dynatrace_disk_anomalies_v2" "this" {
   for_each = { for idx, conf in var.disk_anomalies : idx => conf }
 
-  # Example base attributes (replace with actual attributes from provider docs)
-  name           = each.value.name
-  enabled        = each.value.enabled
-  detection_mode = lookup(each.value, "detection_mode", null)
+  scope = each.value.scope
 
-  # Nested block for low inodes detection
-  dynamic "disk_low_inodes_detection" {
-    for_each = each.value.disk_low_inodes_detection != null ? [each.value.disk_low_inodes_detection] : []
+  dynamic "disk" {
+    for_each = each.value.disk
     content {
-      enabled = disk_low_inodes_detection.value.enabled
-
-      # Nested custom_thresholds block inside inodes detection
-      dynamic "custom_thresholds" {
-        for_each = lookup(disk_low_inodes_detection.value, "custom_thresholds", [])
-        content {
-          free_inodes_percentage = custom_thresholds.value.free_inodes_percentage
-        }
+      disk_low_space_detection {
+        enabled = disk.value.disk_low_space_detection.enabled
       }
-    }
-  }
-
-  # Nested block for low disk space detection
-  dynamic "disk_low_space_detection" {
-    for_each = each.value.disk_low_space_detection != null ? [each.value.disk_low_space_detection] : []
-    content {
-      enabled = disk_low_space_detection.value.enabled
-
-      dynamic "custom_thresholds" {
-        for_each = lookup(disk_low_space_detection.value, "custom_thresholds", [])
-        content {
-          free_disk_space_percentage = custom_thresholds.value.free_disk_space_percentage
-        }
+      disk_slow_writes_and_reads_detection {
+        enabled = disk.value.disk_slow_writes_and_reads_detection.enabled
       }
-    }
-  }
-
-  # Alerts nested blocks (if any)
-  dynamic "alerts" {
-    for_each = lookup(each.value, "alerts", [])
-    content {
-      severity_level = alerts.value.severity_level
-      threshold      = alerts.value.threshold
-    }
-  }
-
-  # Event properties nested blocks (if any)
-  dynamic "event_properties" {
-    for_each = lookup(each.value, "event_properties", [])
-    content {
-      key   = event_properties.value.key
-      value = event_properties.value.value
+      disk_low_inodes_detection {
+        enabled = disk.value.disk_low_inodes_detection.enabled
+      }
     }
   }
 }
+
 
 # dynatrace_disk_anomaly_rules resources (multiple instances via for_each)
 resource "dynatrace_disk_anomaly_rules" "this" {
@@ -65,33 +26,17 @@ resource "dynatrace_disk_anomaly_rules" "this" {
 
   name    = each.value.name
   enabled = each.value.enabled
+  metric  = each.value.metric
 
-  # Condition nested block (example)
-  dynamic "condition" {
-    for_each = lookup(each.value, "condition", []) != null ? [each.value.condition] : []
-    content {
-      property = condition.value.property
-      operator = condition.value.operator
-      value    = condition.value.value
-    }
+  disk_name_filter {
+    operator = each.value.disk_name_filter.operator
+    # Disk name filter attributes
   }
 
-  # Event properties nested blocks (if any)
-  dynamic "event_properties" {
-    for_each = lookup(each.value, "event_properties", [])
-    content {
-      key   = event_properties.value.key
-      value = event_properties.value.value
-    }
-  }
-
-  # Alerts nested blocks (if any)
-  dynamic "alerts" {
-    for_each = lookup(each.value, "alerts", [])
-    content {
-      severity_level = alerts.value.severity_level
-      threshold      = alerts.value.threshold
-    }
+  sample_limit {
+    samples           = each.value.sample_limit.samples
+    violating_samples = each.value.sample_limit.violating_samples
+    # Sample limit attributes
   }
 }
 
@@ -99,26 +44,20 @@ resource "dynatrace_disk_anomaly_rules" "this" {
 resource "dynatrace_disk_edge_anomaly_detectors" "this" {
   for_each = { for idx, conf in var.disk_edge_detectors : idx => conf }
 
-  name        = each.value.name
+  policy_name = each.value.policy_name
   enabled     = each.value.enabled
-  metric_name = lookup(each.value, "metric_name", null)
-  threshold   = lookup(each.value, "threshold", null)
 
-  # Event properties nested blocks (if any)
-  dynamic "event_properties" {
-    for_each = lookup(each.value, "event_properties", [])
-    content {
-      key   = event_properties.value.key
-      value = event_properties.value.value
+  event_properties {
+    event_propertie {
+      metadata_key   = each.value.event_properties.event_propertie.metadata_key
+      metadata_value = each.value.event_properties.event_propertie.metadata_value
     }
   }
 
-  # Alerts nested blocks (if any)
-  dynamic "alerts" {
-    for_each = lookup(each.value, "alerts", [])
-    content {
-      severity_level = alerts.value.severity_level
-      threshold      = alerts.value.threshold
+  alerts {
+    alert {
+      trigger = each.value.alerts.alert.trigger
+      # Alert attributes
     }
   }
 }
@@ -127,54 +66,18 @@ resource "dynatrace_disk_edge_anomaly_detectors" "this" {
 resource "dynatrace_disk_specific_anomalies_v2" "this" {
   for_each = { for idx, conf in var.disk_specific_anomalies : idx => conf }
 
-  name    = each.value.name
-  enabled = each.value.enabled
+  disk_id                                  = each.value.disk_id
+  override_disk_low_space_detection        = each.value.override_disk_low_space_detection
+  override_low_inodes_detection            = each.value.override_low_inodes_detection
+  override_slow_writes_and_reads_detection = each.value.override_slow_writes_and_reads_detection
 
-  # Nested block for low disk space detection
-  dynamic "disk_low_space_detection" {
-    for_each = each.value.disk_low_space_detection != null ? [each.value.disk_low_space_detection] : []
-    content {
-      enabled = disk_low_space_detection.value.enabled
-
-      dynamic "custom_thresholds" {
-        for_each = lookup(disk_low_space_detection.value, "custom_thresholds", [])
-        content {
-          free_disk_space_percentage = custom_thresholds.value.free_disk_space_percentage
-        }
-      }
-    }
+  disk_low_space_detection {
+    enabled = each.value.disk_low_space_detection.enabled
+    # Attributes for disk_low_space_detection
   }
 
-  # Nested block for low inodes detection
-  dynamic "disk_low_inodes_detection" {
-    for_each = each.value.disk_low_inodes_detection != null ? [each.value.disk_low_inodes_detection] : []
-    content {
-      enabled = disk_low_inodes_detection.value.enabled
-
-      dynamic "custom_thresholds" {
-        for_each = lookup(disk_low_inodes_detection.value, "custom_thresholds", [])
-        content {
-          free_inodes_percentage = custom_thresholds.value.free_inodes_percentage
-        }
-      }
-    }
-  }
-
-  # Event properties nested blocks (if any)
-  dynamic "event_properties" {
-    for_each = lookup(each.value, "event_properties", [])
-    content {
-      key   = event_properties.value.key
-      value = event_properties.value.value
-    }
-  }
-
-  # Alerts nested blocks (if any)
-  dynamic "alerts" {
-    for_each = lookup(each.value, "alerts", [])
-    content {
-      severity_level = alerts.value.severity_level
-      threshold      = alerts.value.threshold
-    }
+  disk_low_inodes_detection {
+    enabled = each.value.disk_low_inodes_detection.enabled
+    # Attributes for disk_low_inodes_detection
   }
 }

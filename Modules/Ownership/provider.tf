@@ -7,7 +7,3 @@ terraform {
   }
 }
 
-provider "dynatrace" {
-  api_url   = var.dynatrace_api_url
-  api_token = var.dynatrace_api_token
-}

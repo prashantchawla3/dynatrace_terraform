@@ -1,6 +1,4 @@
-##############################
-# AWS Credential Variables
-##############################
+
 
 variable "label" {
   description = "Label for AWS credentials"

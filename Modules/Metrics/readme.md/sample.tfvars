@@ -12,5 +12,3 @@ metric_metadata_unit         = "percent"
 metric_query_metric_id       = "metric-func:slo.terraform-test"
 metric_query_metric_selector = "((100*(builtin:service.requestCount.server:filter(in(\"dt.entity.service\",entitySelector(\"type(SERVICE),mzId(0000000000000000000),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)\"))):splitBy())/(builtin:service.requestCount.server:filter(in(\"dt.entity.service\",entitySelector(\"type(SERVICE),mzId(0000000000000000000),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)\"))):splitBy())) - (95.0))"
 
-dynatrace_api_url   = "https://yourenv.live.dynatrace.com/api"
-dynatrace_api_token = "your-api-token"

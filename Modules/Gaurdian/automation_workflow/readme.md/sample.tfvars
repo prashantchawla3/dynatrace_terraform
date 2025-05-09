@@ -20,3 +20,4 @@ workflow_trigger = {
   event_type = "bizevents"
   query      = "application == \"demo\" and stage == \"prod\""
 }
+
