@@ -4,27 +4,6 @@
 
 This README documents Terraform resources used to configure generic settings, Grail metrics access, platform buckets, problem propagation, and security contexts in Dynatrace.
 
----
-
-## `dynatrace_generic_setting`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`schema`**: Specify the schema ID (e.g., `app:my.booking.analytics:connection`).
-- **`scope`**: Use `"environment"` or a specific scope.
-- **`value`**: Provide a JSON-encoded object with schema-specific fields.
-
-### Schema
-
-#### Required
-- `schema` (String)
-- `scope` (String)
-- `value` (JSON-encoded String)
-
----
 
 ## `dynatrace_grail_metrics_allowall`
 

@@ -1,6 +1,4 @@
-output "generic_setting_ids" {
-  value = [for k, v in dynatrace_generic_setting.this : v.id]
-}
+
 
 output "platform_bucket_names" {
   value = [for k, v in dynatrace_platform_bucket.this : v.name]

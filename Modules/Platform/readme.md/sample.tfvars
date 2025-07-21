@@ -1,18 +1,3 @@
-generic_settings = {
-  abc = {
-    schema = "app:my.booking.analytics:connection"
-    scope  = "environment"
-    value = {
-      client_id     = "asdfhh"
-      client_secret = "mysecret"
-      name          = "ABC"
-      tenant_id     = "asdf"
-      type          = "client_secret"
-      user_id       = "asdf"
-    }
-  }
-}
-
 grail_allowall = {
   default = {
     allow_all = true

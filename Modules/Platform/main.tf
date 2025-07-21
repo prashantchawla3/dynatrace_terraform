@@ -1,58 +1,36 @@
-resource "dynatrace_generic_setting" "this" {
-  for_each = var.generic_settings
 
-  schema = each.value.schema
-  scope  = each.value.scope
-  value  = jsonencode(each.value.value)
+module "grail_allowall" {
+  source = "./Modules/dynatrace_grail_metrics_allowall"
+
+  grail_allowall = var.grail_allowall
 }
 
-resource "dynatrace_grail_metrics_allowall" "this" {
-  for_each = var.grail_allowall
-  allow_all = each.value.allow_all
+module "grail_allowlist" {
+  source = "./Modules/dynatrace_grail_metrics_allowlist"
+
+  grail_allowlist = var.grail_allowlist
 }
 
-resource "dynatrace_grail_metrics_allowlist" "this" {
-  for_each = var.grail_allowlist
+module "platform_buckets" {
+  source = "./Modules/dynatrace_platform_bucket"
 
-  allow_rules {
-    dynamic "allow_rule" {
-      for_each = each.value.allow_rules
-      content {
-        enabled    = allow_rule.value.enabled
-        metric_key = allow_rule.value.metric_key
-        pattern    = allow_rule.value.pattern
-      }
-    }
-  }
+  platform_buckets = var.platform_buckets
 }
 
-resource "dynatrace_platform_bucket" "this" {
-  for_each = var.platform_buckets
+module "problem_fields" {
+  source = "./Modules/dynatrace_problem_fields"
 
-  name         = each.key
-  display_name = each.value.display_name
-  retention    = each.value.retention
-  table        = each.value.table
+  problem_fields = var.problem_fields
 }
 
-resource "dynatrace_problem_fields" "this" {
-  for_each = var.problem_fields
+module "problem_propagation_rules" {
+  source = "./Modules/dynatrace_problem_record_propagation_rules"
 
-  enabled        = each.value.enabled
-  event_field    = each.value.event_field
-  problem_field  = each.value.problem_field
+  problem_propagation_rules = var.problem_propagation_rules
 }
 
-resource "dynatrace_problem_record_propagation_rules" "this" {
-  for_each = var.problem_propagation_rules
+module "security_contexts" {
+  source = "./Modules/dynatrace_security_context"
 
-  enabled               = each.value.enabled
-  source_attribute_key  = each.value.source_attribute_key
-  target_attribute_key  = each.value.target_attribute_key
-}
-
-resource "dynatrace_security_context" "this" {
-  for_each = var.security_contexts
-
-  enabled = each.value.enabled
+  security_contexts = var.security_contexts
 }
