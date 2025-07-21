@@ -1,39 +1,59 @@
-resource "dynatrace_http_monitor" "this" {
-  name      = var.http_monitor_name
-  enabled   = var.http_monitor_enabled
-  frequency = var.http_monitor_frequency
-  locations = var.http_monitor_locations
 
-  anomaly_detection {
-    loading_time_thresholds {
-      enabled = var.loading_time_thresholds_enabled
-    }
-    outage_handling {
-      global_outage    = var.global_outage
-      local_outage     = var.local_outage
-      retry_on_error   = var.retry_on_error
-      global_outage_policy {
-        consecutive_runs = var.consecutive_runs
-      }
-    }
-  }
+# ─── Monitor Cookies ────────────────────────────────────────
+module "http_monitor_cookies" {
+  source               = "./modules/dynatrace_http_monitor_cookies"
+  http_monitor_cookies = var.http_monitor_cookies
+}
 
-  script {
-    request {
-      description = var.http_monitor_description
-      method      = var.http_monitor_method
-      url         = var.http_monitor_url
-      configuration {
-        accept_any_certificate = var.accept_any_certificate
-        follow_redirects       = var.follow_redirects
-      }
-      validation {
-        rule {
-          type          = var.validation_type
-          value         = var.validation_value
-          pass_if_found = var.pass_if_found
-        }
-      }
-    }
-  }
+# ─── Outage Monitoring Flags ────────────────────────────────
+module "enable_outage_monitoring" {
+  source                  = "./modules/dynatrace_http_monitor_outage"
+  enable_outage_monitoring = var.enable_outage_monitoring
+}
+
+module "global_consecutive_outage_count_threshold" {
+  source                             = "./modules/dynatrace_http_monitor_outage"
+  global_consecutive_outage_count_threshold = var.global_consecutive_outage_count_threshold
+}
+
+module "global_outages" {
+  source         = "./modules/dynatrace_http_monitor_outage
+}
+
+module "local_consecutive_outage_count_threshold" {
+  source                             = "./modules/dynatrace_http_monitor_outage"
+  local_consecutive_outage_count_threshold = var.local_consecutive_outage_count_threshold
+}
+
+module "local_location_outage_count_threshold" {
+  source                            = "./modules/dynatrace_http_monitor_outage"
+  local_location_outage_count_threshold = var.local_location_outage_count_threshold
+}
+
+module "local_outages" {
+  source       = "./modules/dynatrace_http_monitor_outage"
+  local_outages = var.local_outages
+}
+
+module "outage_scope" {
+  source       = "./modules/dynatrace_http_monitor_outage"
+  outage_scope = var.outage_scope
+}
+
+# ─── Performance Threshold Monitors ─────────────────────────
+module "performance_monitors" {
+  source              = "./modules/dynatrace_http_monitor_performance"
+  performance_monitors = var.performance_monitors
+}
+
+# ─── Synthetic Scripts ──────────────────────────────────────
+module "scripts" {
+  source   = "./modules/dynatrace_http_monitor_script"
+  scripts  = var.scripts
+}
+
+# ─── Synthetic Monitors ─────────────────────────────────────
+module "monitors" {
+  source   = "./modules/dynatrace_http_monitor"
+  monitors = var.monitors
 }

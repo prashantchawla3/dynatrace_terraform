@@ -1,6 +1,3 @@
-environment_url         = "https://your-env.live.dynatrace.com"
-dynatrace_client_id     = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
 
 calculated_synthetic_metric_name               = "example_metric"
 calculated_synthetic_metric_enabled            = true

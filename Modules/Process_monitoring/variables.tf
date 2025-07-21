@@ -1,11 +1,4 @@
-variable "dynatrace_api_url" {
-  type = string
-}
 
-variable "dynatrace_api_token" {
-  type = string
-  sensitive = true
-}
 
 variable "host_group_id" { type = string }
 variable "aspnetcore" { type = bool }

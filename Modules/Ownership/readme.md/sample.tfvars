@@ -1,5 +1,4 @@
-dynatrace_api_url = "https://yourenv.live.dynatrace.com/api"
-dynatrace_api_token = "your-api-token"
+
 
 team_name                       = "example_team"
 team_description                = "Created by Terraform"

@@ -1,85 +1,102 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This Terraform module manages Dynatrace resources for auto-tagging, auto-tag rules, and custom tags. It includes configurations for these resources along with necessary variables and outputs.
 
-## Table of Contents
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
-  - Example
+# Dynatrace Tagging Resources
 
-## Usage
-To use this module, include it in your Terraform configuration and provide the necessary variables. Below is an example of how to use this module:
-```hcl
-module "dynatrace_autotag" {
-  source = "./path_to_module"
-  autotag_name = var.autotag_name
-  entity_selector = var.entity_selector
-}
+This README documents the Terraform resources used to configure automatic and custom tagging in Dynatrace.
+
+---
+
+## `dynatrace_autotag_v2`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`name`**: Name of the auto tag.
+- **`rules_maintained_externally`**: Set to `true` if rules are managed outside this resource.
+- **`rules`**: Define tagging rules including type, format, normalization, and attribute conditions.
+
+### Schema
+
+#### Required
+- `name` (String)
+- `rules_maintained_externally` (Boolean)
+
+#### Nested: `rules.rule`
+- `type` (String)
+- `enabled` (Boolean)
+- `value_format` (String)
+- `value_normalization` (String)
+
+#### Nested: `attribute_rule`
+- `entity_type` (String)
+- `service_to_host_propagation` (Boolean)
+- `service_to_pgpropagation` (Boolean)
+
+#### Nested: `attribute_rule.conditions.condition`
+- `key` (String)
+- `operator` (String)
+- `dynamic_key` (String)
+- `dynamic_key_source` (String)
+- `tag` (String, Optional)
+
+---
+
+## `dynatrace_autotag_rules`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`auto_tag_id`**: Reference to the ID of the `dynatrace_autotag_v2` resource.
+- **`rules`**: Define selector-based rules for tagging.
+
+### Schema
+
+#### Required
+- `auto_tag_id` (String)
+
+#### Nested: `rules.rule`
+- `type` (String)
+- `enabled` (Boolean)
+- `entity_selector` (String)
+- `value_format` (String)
+- `value_normalization` (String)
+
+---
+
+## `dynatrace_custom_tags`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`entity_selector`**: Selector to identify the target entities.
+- **`tags`**: List of tags to apply, including context, key, and optional value.
+
+### Schema
+
+#### Required
+- `entity_selector` (String)
+
+#### Nested: `tags.filter`
+- `context` (String)
+- `key` (String)
+- `value` (String, Optional)
+
+---
+
+## Data Source Usage
+
+These resources do not have dedicated data sources. To retrieve existing configurations, use:
+
+```bash
+terraform-provider-dynatrace -export <resource_name>
 ```
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
+Replace `<resource_name>` with the specific resource you want to export.
 
-## Providers
-The module requires the following provider:
-
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
-
-## Resources
-The following resources are created by this module:
-
-- `dynatrace_autotag_v2`
-- `dynatrace_autotag_rules`
-- `dynatrace_custom_tags`
-
-## Inputs
-### Dashboard Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `autotag_name` | The name of the auto tag | `string` | `"example_tag"` |
-| `entity_selector` | Specifies the entities where you want to update tags | `string` | `"entityId(\"HOST-123456789000000\")"` |
-
-## Outputs
-| Name | Description |
-|------|-------------|
-| `autotag_id` | The ID of the auto tag resource |
-| `autotag_rules_id` | The ID of the auto tag rules resource |
-| `custom_tags_id` | The ID of the custom tags resource |
-
-## Example
-```hcl
-module "dynatrace_autotag" {
-  source = "./path_to_module"
-  autotag_name = "example_tag"
-  entity_selector = "entityId(\"HOST-123456789000000\")"
-}
-```
-
-## API Token Scopes
-This resource requires the API token scopes:
-- Read configuration (`ReadConfig`)
-- Write configuration (`WriteConfig`)
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
-- Read entities (`entities.read`)
-- Write entities (`entities.write`)
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
-
+---

@@ -1,112 +1,56 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This Terraform module manages Dynatrace user settings. It includes configurations for user preferences such as language, region, theme, and timezone, along with necessary variables and outputs.
 
-## Table of Contents
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
-  - Example
+## `dynatrace_user_settings`
 
-## Usage
-To use this module, include it in your Terraform configuration and provide the necessary variables. Below is an example of how to use this module:
-```hcl
-module "dynatrace_user_settings" {
-  source = "./path_to_module"
-  auto_language = var.auto_language
-  auto_region = var.auto_region
-  auto_theme = var.auto_theme
-  auto_timezone = var.auto_timezone
-  scope = var.scope
-  language = var.language
-  region = var.region
-  theme = var.theme
-  timezone = var.timezone
-}
+>  **Note**:  
+> This resource is excluded by default in the export utility because it is scoped to an individual user and requires a personal access token.
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+---
+
+### How to Determine tfvars Values
+
+- **`scope`**: Set to the user email or identifier (e.g., `user-terraform@dynatrace.com`).
+- **`auto_language`**, **`auto_region`**, **`auto_theme`**, **`auto_timezone`**: Set to `true` to use browser defaults.
+- **`language`**: Optional override. Use `"en"` for English or `"ja"` for Japanese.
+- **`region`**: Optional override for region.
+- **`theme`**: Optional override. Use `"dark"` or `"light"`.
+- **`timezone`**: Optional override for timezone (e.g., `"UTC"`).
+
+---
+
+### Schema
+
+#### Required
+- `auto_language` (Boolean)
+- `auto_region` (Boolean)
+- `auto_theme` (Boolean)
+- `auto_timezone` (Boolean)
+- `scope` (String)
+
+#### Optional
+- `language` (String) — Possible values: `en`, `ja`
+- `region` (String)
+- `theme` (String) — Possible values: `dark`, `light`
+- `timezone` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+### Data Source Usage
+
+This resource does not have a dedicated data source. To retrieve existing user settings, use:
+
+```bash
+terraform-provider-dynatrace -export dynatrace_user_settings
 ```
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
+Note that export requires a personal access token and is scoped per user.
 
-## Providers
-The module requires the following provider:
-
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
-
-## Resources
-The following resources are created by this module:
-
-- `dynatrace_user_settings`
-
-### User Settings
-```hcl
-resource "dynatrace_user_settings" "example" {
-  auto_language = var.auto_language
-  auto_region = var.auto_region
-  auto_theme = var.auto_theme
-  auto_timezone = var.auto_timezone
-  scope = var.scope
-  language = var.language
-  region = var.region
-  theme = var.theme
-  timezone = var.timezone
-}
-```
-
-## Inputs
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `auto_language` | Language - use browser default | `bool` | `true` |
-| `auto_region` | Region - use browser default | `bool` | `true` |
-| `auto_theme` | Theme - use browser default | `bool` | `true` |
-| `auto_timezone` | Timezone - use browser default | `bool` | `true` |
-| `scope` | The scope of this setting (user, userdefaults) | `string` | `"user-terraform@dynatrace.com"` |
-| `language` | Language | `string` | `"en"` |
-| `region` | Region | `string` | `"auto"` |
-| `theme` | Theme | `string` | `"auto"` |
-| `timezone` | Timezone | `string` | `"UTC"` |
-
-## Outputs
-| Name | Description |
-|------|-------------|
-| `user_settings_id` | The ID of the user settings resource |
-
-## Example
-```hcl
-module "dynatrace_user_settings" {
-  source = "./path_to_module"
-  auto_language = true
-  auto_region = true
-  auto_theme = true
-  auto_timezone = true
-  scope = "user-terraform@dynatrace.com"
-  language = "en"
-  region = "auto"
-  theme = "auto"
-  timezone = "UTC"
-}
-```
-
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace user settings.
+---
 

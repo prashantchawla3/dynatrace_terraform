@@ -1,18 +1,19 @@
-
-
 variable "label" {
   description = "Label for AWS credentials"
   type        = string
+  default     = "aws-main"
 }
 
 variable "partition_type" {
   description = "AWS partition type (e.g., AWS_DEFAULT, AWS_CN, AWS_US_GOV)"
   type        = string
+  default     = "AWS_DEFAULT"
 }
 
 variable "tagged_only" {
   description = "Whether to monitor only tagged resources"
   type        = bool
+  default     = false
 }
 
 variable "credentials_enabled" {
@@ -41,6 +42,12 @@ variable "authentication_data" {
     access_key = optional(string)
     secret_key = optional(string)
   })
+  default = {
+    account_id = "123456789012"
+    iam_role   = "DynatraceMonitoringRole"
+    access_key = null
+    secret_key = null
+  }
 }
 
 variable "tags_to_monitor" {
@@ -49,7 +56,9 @@ variable "tags_to_monitor" {
     name  = string
     value = string
   }))
-  default = []
+  default = [
+    { name = "Environment", value = "Prod" }
+  ]
 }
 
 variable "aws_services" {
@@ -57,93 +66,8 @@ variable "aws_services" {
   type = map(object({
     use_recommended_metrics = bool
   }))
-  default = {}
-}
-
-##############################
-# Azure Credential Variables
-##############################
-
-variable "azure_active" {
-  description = "Activate Azure monitoring"
-  type        = bool
-}
-
-variable "azure_app_id" {
-  description = "Azure App ID"
-  type        = string
-}
-
-variable "azure_auto_tagging" {
-  description = "Enable auto-tagging for Azure resources"
-  type        = bool
-}
-
-variable "azure_directory_id" {
-  description = "Azure Directory ID (Tenant ID)"
-  type        = string
-}
-
-variable "azure_label" {
-  description = "Label for Azure credentials"
-  type        = string
-}
-
-variable "azure_key" {
-  description = "Azure client secret"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_monitor_only_tagged_entities" {
-  description = "Monitor only tagged Azure resources"
-  type        = bool
-}
-
-variable "azure_remove_defaults" {
-  description = "Remove default Azure services added by Dynatrace"
-  type        = bool
-  default     = false
-}
-
-variable "azure_monitor_only_tag_pairs" {
-  description = "Azure tag name-value pairs for filtering"
-  type = list(object({
-    name  = string
-    value = string
-  }))
-  default = []
-}
-
-variable "azure_services" {
-  description = "Azure services to monitor with recommended metrics toggle"
-  type = map(object({
-    use_recommended_metrics = bool
-  }))
-  default = {}
-}
-
-##############################
-# Dynatrace Credentials
-##############################
-
-variable "credentials_name" {
-  description = "Name for generic Dynatrace credentials"
-  type        = string
-}
-
-variable "credentials_scopes" {
-  description = "Scopes for the Dynatrace credentials"
-  type        = list(string)
-}
-
-variable "credentials_username" {
-  description = "Username for Dynatrace credentials"
-  type        = string
-}
-
-variable "credentials_password" {
-  description = "Password for Dynatrace credentials"
-  type        = string
-  sensitive   = true
+  default = {
+    ec2 = { use_recommended_metrics = true }
+    s3  = { use_recommended_metrics = false }
+  }
 }

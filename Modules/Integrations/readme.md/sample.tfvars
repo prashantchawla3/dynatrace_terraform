@@ -16,6 +16,3 @@ remote_environment_network_scope  = "EXTERNAL"
 remote_environment_token          = "your-remote-environment-token"
 remote_environment_uri            = "https://terraformexample.live.dynatrace.com"
 
-# Dynatrace provider values
-dynatrace_api_url                 = "https://yourenv.live.dynatrace.com/api"
-dynatrace_api_token               = "your-api-token"

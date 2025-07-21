@@ -1,90 +1,71 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This repository contains a Terraform module for deploying and managing custom devices in Dynatrace. The module is designed to simplify the configuration and management of these functionalities using Terraform.
 
-## Table of Contents
-- Introduction
-- Requirements
-- Providers
-- Resources
-- Inputs
-- Outputs
-- Usage
-- License
+## `dynatrace_custom_device`
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace account
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
-## Providers
-The module requires the following provider:
+---
 
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
+### How to Determine tfvars Values
+
+- **`custom_device_id`**: A unique identifier for the custom device.
+- **`display_name`**: Human-readable name for the device.
+- **`config_url`**: URL to the configuration page for the device.
+- **`favicon_url`**: URL to the favicon image for the device.
+- **`group`**: Logical group name to which the device belongs.
+- **`props`**: Comma-separated key-value pairs for custom properties (e.g., `"key1=value1,key2=value2"`).
+- **`type`**: Type identifier for the custom device.
+- **`ui_based`**: Boolean indicating whether the device is UI-based.
+- **`dns_names`**: List of DNS names associated with the device.
+- **`ip_addresses`**: List of IP addresses associated with the device.
+- **`listen_ports`**: List of ports the device listens on.
+
+---
+
+### Schema
+
+#### Required
+- `custom_device_id` (String): Unique ID for the custom device.
+- `display_name` (String): Display name of the device.
+- `config_url` (String): URL to the configuration page.
+- `favicon_url` (String): URL to the favicon image.
+- `group` (String): Group name for the device.
+- `props` (String): Custom properties in key=value format.
+- `type` (String): Type of the custom device.
+- `ui_based` (Boolean): Whether the device is UI-based.
+
+#### Optional
+- `dns_names` (Block List): List of DNS names.
+- `ip_addresses` (Block List): List of IP addresses.
+- `listen_ports` (Block List): List of listening ports.
+
+#### Read-Only
+- `id` (String): The ID of the resource (automatically assigned).
+
+---
+
+### Nested Schema
+
+#### `dns_names`
+- `value` (String): A DNS name associated with the device.
+
+#### `ip_addresses`
+- `value` (String): An IP address associated with the device.
+
+#### `listen_ports`
+- `value` (Number): A port number the device listens on.
+
+---
+
+### Data Source Usage
+
+This resource does not have a dedicated data source. To retrieve existing configurations, use:
+
+```bash
+terraform-provider-dynatrace -export dynatrace_custom_device
 ```
 
-## Resources
-The following resources are created by this module:
+---
 
-- `dynatrace_custom_device`
-
-## Inputs
-### Custom Device Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `custom_device_id` | The ID of the custom device | `string` | `"customDeviceId"` |
-| `display_name` | The display name of the custom device | `string` | `"customDevicename"` |
-| `config_url` | The configuration URL of the custom device | `string` | `"https://config.url"` |
-| `dns_names` | The DNS names associated with the custom device | `list(string)` | `["dns1.example.com", "dns2.example.com"]` |
-| `favicon_url` | The favicon URL of the custom device | `string` | `"https://favicon.url/icon.png"` |
-| `group` | The group to which the custom device belongs | `string` | `"customGroup"` |
-| `ip_addresses` | The IP addresses associated with the custom device | `list(string)` | `["192.168.1.1", "192.168.1.2"]` |
-| `listen_ports` | The ports on which the custom device listens | `list(number)` | `[80, 443]` |
-| `props` | The properties of the custom device | `string` | `"key1=value1,key2=value2"` |
-| `type` | The type of the custom device | `string` | `"customType"` |
-| `ui_based` | Whether the custom device is UI-based | `bool` | `true` |
-
-## Outputs
-| Name | Description |
-|------|-------------|
-| `custom_device_entity_id` | The entity ID of the custom device |
-| `custom_device_id` | The ID of the custom device |
-
-## Usage
-### Example Configuration
-```hcl
-provider "dynatrace" {
-  api_token = var.dynatrace_api_token
-  environment_url = var.dynatrace_environment_url
-}
-
-module "dynatrace_custom_device" {
-  source = "./modules/custom_device"
-
-  custom_device_id = var.custom_device_id
-  display_name = var.display_name
-  config_url = var.config_url
-  dns_names = var.dns_names
-  favicon_url = var.favicon_url
-  group = var.group
-  ip_addresses = var.ip_addresses
-  listen_ports = var.listen_ports
-  props = var.props
-  type = var.type
-  ui_based = var.ui_based
-}
-```
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`entities.read`)
-- Write settings (`entities.write`)
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.

@@ -1,97 +1,210 @@
-variable "http_monitor_name" {
-  description = "The name of the HTTP monitor"
-  type        = string
+variable "http_monitor_cookies" {
+  description = "List of HTTP monitor cookie configurations, scoped by entity. Each cookie block defines visibility and cookie parameters."
+  type = list(object({
+    enabled = bool
+    scope   = string
+    cookies = list(object({
+      name   = string
+      domain = string
+      value  = string
+    }))
+  }))
+  default = [
+    {
+      enabled = true
+      scope   = "monitor:europe-login"
+      cookies = [
+        { name = "session", domain = "login.example.com", value = "abc123" },
+        { name = "auth", domain = "login.example.com", value = "tokenXYZ" }
+      ]
+    }
+  ]
 }
 
-variable "http_monitor_enabled" {
-  description = "Whether the monitor is enabled"
+variable "enable_outage_monitoring" {
+  description = "Whether to enable global outage monitoring logic"
   type        = bool
   default     = true
 }
 
-variable "http_monitor_frequency" {
-  description = "The frequency in minutes"
+variable "global_consecutive_outage_count_threshold" {
+  description = "Number of consecutive failed runs before triggering global outage"
   type        = number
-  default     = 5
+  default     = 3
 }
 
-variable "http_monitor_locations" {
-  description = "List of locations to run the monitor from"
-  type        = list(string)
-}
-
-variable "loading_time_thresholds_enabled" {
-  description = "Enable loading time thresholds"
-  type        = bool
-  default     = false
-}
-
-variable "global_outage" {
+variable "global_outages" {
   description = "Enable global outage detection"
   type        = bool
   default     = true
 }
 
-variable "local_outage" {
-  description = "Enable local outage detection"
-  type        = bool
-  default     = false
+variable "local_consecutive_outage_count_threshold" {
+  description = "Number of consecutive failed runs at location before declaring local outage"
+  type        = number
+  default     = 2
 }
 
-variable "retry_on_error" {
-  description = "Retry on error"
-  type        = bool
-  default     = false
-}
-
-variable "consecutive_runs" {
-  description = "Number of consecutive failed runs before alerting"
+variable "local_location_outage_count_threshold" {
+  description = "Number of locations required to fail before declaring a local outage"
   type        = number
   default     = 1
 }
 
-variable "http_monitor_description" {
-  description = "Description of the HTTP monitor request"
-  type        = string
-}
-
-variable "http_monitor_method" {
-  description = "HTTP method to use for the request"
-  type        = string
-  default     = "GET"
-}
-
-variable "http_monitor_url" {
-  description = "URL to monitor"
-  type        = string
-}
-
-variable "accept_any_certificate" {
-  description = "Accept any SSL certificate"
+variable "local_outages" {
+  description = "Enable local outage detection"
   type        = bool
   default     = true
 }
 
-variable "follow_redirects" {
-  description = "Follow HTTP redirects"
-  type        = bool
-  default     = true
-}
-
-variable "validation_type" {
-  description = "Validation rule type"
+variable "outage_scope" {
+  description = "Scope to which outage rules apply (e.g., 'monitor-group:frontend')"
   type        = string
-  default     = "httpStatusesList"
+  default     = "monitor-group:global"
 }
 
-variable "validation_value" {
-  description = "Value for validation rule"
-  type        = string
-  default     = ">=400"
+variable "performance_monitors" {
+  description = "Performance threshold monitors scoped by entity. Detect event-triggered performance breaches."
+  type = list(object({
+    enabled    = bool
+    scope      = string
+    thresholds = list(object({
+      event     = string
+      threshold = number
+    }))
+  }))
+  default = [
+    {
+      enabled = true
+      scope   = "monitor:checkout"
+      thresholds = [
+        { event = "LOADING_TIME", threshold = 1500 },
+        { event = "TIME_TO_FIRST_BYTE", threshold = 500 }
+      ]
+    }
+  ]
 }
 
-variable "pass_if_found" {
-  description = "Pass if validation value is found"
-  type        = bool
-  default     = false
+variable "scripts" {
+  description = "List of HTTP monitor scripts, each with request blocks containing validation, post-processing, and header injection."
+  type = list(object({
+    http_id  = string
+    requests = list(object({
+      description     = string
+      method          = string
+      url             = string
+      post_processing = optional(string)
+      configuration = object({
+        accept_any_certificate = bool
+        follow_redirects       = optional(bool)
+        headers = optional(list(object({
+          name  = string
+          value = string
+        })))
+      })
+      validation = optional(object({
+        rules = list(object({
+          type  = string
+          value = string
+        }))
+      }))
+    }))
+  }))
+  default = [
+    {
+      http_id  = "synthetic-api-check"
+      requests = [
+        {
+          description = "GET main API health endpoint"
+          method      = "GET"
+          url         = "https://api.example.com/health"
+          configuration = {
+            accept_any_certificate = true
+            follow_redirects       = true
+            headers = [
+              { name = "Authorization", value = "Bearer token123" }
+            ]
+          }
+          validation = {
+            rules = [
+              { type = "CONTAINS", value = "healthy" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+
+variable "monitors" {
+  description = "List of synthetic monitor definitions, each with optional script, frequency, locations, and outage handling policies."
+  type = list(object({
+    name      = string
+    frequency = number
+    locations = list(string)
+    no_script = bool
+    anomaly_detection = optional(object({
+      loading_time_thresholds = optional(map(any))
+      outage_handling = optional(object({
+        global_outage = bool
+        global_outage_policy = object({
+          consecutive_runs = number
+        })
+      }))
+    }))
+    script = optional(object({
+      requests = list(object({
+        description     = string
+        method          = string
+        url             = string
+        post_processing = optional(string)
+        configuration = object({
+          accept_any_certificate = bool
+          follow_redirects       = optional(bool)
+          headers = optional(list(object({
+            name  = string
+            value = string
+          })))
+        })
+        validation = optional(object({
+          rules = list(object({
+            type  = string
+            value = string
+          }))
+        }))
+      }))
+    }))
+  }))
+  default = [
+    {
+      name      = "Homepage Monitor"
+      frequency = 5
+      locations = ["GEO-US", "GEO-EU"]
+      no_script = false
+      anomaly_detection = {
+        loading_time_thresholds = { TIME_TO_FIRST_BYTE = 800 }
+        outage_handling = {
+          global_outage = true
+          global_outage_policy = { consecutive_runs = 3 }
+        }
+      }
+      script = {
+        requests = [
+          {
+            description = "Open Homepage"
+            method      = "GET"
+            url         = "https://example.com"
+            configuration = {
+              accept_any_certificate = true
+              follow_redirects       = true
+              headers = []
+            }
+            validation = {
+              rules = [{ type = "STATUS_CODE", value = "200" }]
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

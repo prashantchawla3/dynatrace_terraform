@@ -12,6 +12,4 @@ user_settings = {
   }
 }
 
-environment_url         = "https://your-env.live.dynatrace.com"
-dynatrace_client_id     = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
+

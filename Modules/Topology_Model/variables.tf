@@ -1,7 +1,5 @@
 
-variable "environment_url" { type = string }
-variable "dynatrace_client_id" { type = string }
-variable "dynatrace_client_secret" { type = string, sensitive = true }
+
 
 variable "generic_relationships_enabled" { type = bool }
 variable "generic_relationships_created_by" { type = string }

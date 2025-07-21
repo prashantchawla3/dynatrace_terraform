@@ -1,106 +1,56 @@
 browser_monitors = [
   {
-    name       = "HomePage Availability Check"
-    frequency  = 5
-    enabled    = true
-    locations  = ["GEOLOCATION-123456"]
-    tags       = ["Env:Production","Team:Web"]
-    device_profile = {
-      screen_width  = 1366
-      screen_height = 768
-      user_agent    = "CustomUA/1.0"
-    }
-    key_performance_metrics = {
-      load_action_kpm = "VISUALLY_COMPLETE"
-      xhr_action_kpm  = "DOC_COMPLETE"
-    }
-    anomaly_detection = {
-      enabled = true
-      # ... other anomaly fields ...
-    }
-    script = [
-      {
-        type = "clickpath"
-        events = [
-          {
-            description = "Load homepage"
-            navigate = {
-              url = "https://example.com"
-              wait = {
-                wait_for = "page_complete"
-                timeout  = 30
-              }
-            }
-          },
-          {
-            description = "Search for item"
-            keystrokes = {
-              text = "terraform"
-              target = {
-                locators = [{ type = "css", value = "#search-box" }]
-              }
-              validate = {
-                type          = "text_match"
-                fail_if_found = false
-                ignore_case   = true
-              }
-            }
-            wait = {
-              wait_for = "page_complete"
-              timeout  = 20
-            }
-          },
-          {
-            description = "Click search"
-            click = {
-              target = {
-                locators = [{ type = "css", value = "#search-button" }]
-              }
-              wait = {
-                wait_for = "page_complete"
-                timeout  = 20
-              }
-            }
-          }
-        ]
-      }
-    ]
-    outage = {
-      global_outages                            = true
-      local_outages                             = false
-      retry_on_error                            = true
-      global_consecutive_outage_count_threshold = 3
-      local_consecutive_outage_count_threshold  = 1
-      local_location_outage_count_threshold     = 1
-    }
-    performance = {
-      enabled = true
-      scope   = "SYNTHETIC_TEST"
-      thresholds = [
-        { event = "LOAD", threshold = 5.0 },
-        { event = "XHR",  threshold = 3.0 }
-      ]
-    }
-  },
-  {
-    name      = "Login Page Uptime"
-    frequency = 10
+    name      = "HomepageMonitor"
     enabled   = true
-    locations = ["GEOLOCATION-abcdef"]
-    tags      = ["Env:Staging"]
-    script = [
+    frequency = 5
+    locations = ["GEOLOCATION-B4B9167CAAA88F6A", "GEOLOCATION-03E96F97A389F96A"]
+
+    load_action_kpm = "VISUALLY_COMPLETE"
+    xhr_action_kpm  = "RESPONSE_END"
+
+    script_events = [
       {
-        type   = "single-url"
-        events = [
-          {
-            description = "Check login page"
-            navigate = {
-              url = "https://example.com/login"
-            }
+        description = "Navigate to homepage"
+        navigate = {
+          url = "https://example.com"
+        }
+      },
+      {
+        description = "Click login button"
+        click = {
+          button = 0
+          target = {
+            locators = [
+              {
+                type  = "css"
+                value = "#login-button"
+              }
+            ]
           }
-        ]
+        }
+      },
+      {
+        description = "Enter username"
+        keystrokes = {
+          text = "my-username"
+          target = {
+            locators = [
+              {
+                type  = "css"
+                value = "#username"
+              }
+            ]
+          }
+        }
       }
     ]
-    # No outage/performance block means defaults (no custom alerts)
+
+    global_outages  = false
+    local_outages   = false
+    retry_on_error  = false
+
+    performance_enabled   = true
+    performance_event     = "LOAD"
+    performance_threshold = 3000
   }
 ]

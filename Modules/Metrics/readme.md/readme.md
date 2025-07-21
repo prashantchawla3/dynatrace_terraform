@@ -1,121 +1,122 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This repository contains a Terraform module for deploying and managing custom units, histogram metrics, metric metadata, and metric queries in Dynatrace. The module is designed to simplify the configuration and management of these functionalities using Terraform.
 
-## Table of Contents
-- Introduction
-- Requirements
-- Providers
-- Resources
-- Inputs
-- Outputs
-- Usage
-- License
+## `dynatrace_custom_units`
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace account
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
-## Providers
-The module requires the following provider:
+### How to Determine tfvars Values
+- **`name`**: Unique identifier for the unit.
+- **`description`**: A brief explanation of the unit.
+- **`plural_name`**: Plural form of the unit name.
+- **`symbol`**: Unique symbol representing the unit.
 
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
+### Schema
 
-## Resources
-The following resources are created by this module:
+#### Required
+- `name` (String)
+- `description` (String)
+- `plural_name` (String)
+- `symbol` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## `dynatrace_histogram_metrics`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`enable_histogram_bucket_ingest`**: Set to `true` to ingest histogram bucket data (e.g., from OpenTelemetry or Prometheus).
+
+### Schema
+
+#### Required
+- `enable_histogram_bucket_ingest` (Boolean)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## `dynatrace_metric_metadata`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`metric_id`**: The metric identifier (e.g., `metric-func:slo.terraform-test`).
+- **`unit`**: Unit of measurement (e.g., `percent`).
+- **`display_name`**: Human-readable name for the metric.
+- **`description`**, **`tags`**, and **`unit_display_format`** are optional.
+- Use nested blocks to define dimension metadata and metric properties.
+
+### Schema
+
+#### Required
+- `metric_id` (String)
+- `unit` (String)
+
+#### Optional
+- `description` (String)
+- `dimensions` (Block List, Max: 1)
+- `display_name` (String)
+- `metric_properties` (Block List, Max: 1)
+- `source_entity_type` (String)
+- `tags` (Set of String)
+- `unit_display_format` (String)
+
+#### Read-Only
+- `id` (String)
+
+#### Nested: `dimensions.dimension`
+- `key` (String) — Required
+- `display_name` (String) — Optional
+
+#### Nested: `metric_properties`
+- `value_type` (String) — Required (Values: `Error`, `Score`, `Unknown`)
+- `impact_relevant` (Boolean) — Optional
+- `latency` (Number) — Optional (1–60 minutes)
+- `max_value` (Number) — Optional
+- `min_value` (Number) — Optional
+- `root_cause_relevant` (Boolean) — Optional
+
+---
+
+## `dynatrace_metric_query`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`metric_id`**: The metric identifier.
+- **`metric_selector`**: The metric query expression.
+
+### Schema
+
+#### Required
+- `metric_id` (String)
+- `metric_selector` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## Data Source Usage
+
+These resources do not have dedicated data sources. Use the `terraform-provider-dynatrace -export` command to retrieve existing configurations for:
 
 - `dynatrace_custom_units`
 - `dynatrace_histogram_metrics`
 - `dynatrace_metric_metadata`
 - `dynatrace_metric_query`
 
-## Inputs
-### Custom Units Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `custom_units_name` | Unit name has to be unique and is used as identifier | `string` | `"example_unit"` |
-| `custom_units_description` | Unit description should provide additional information about the new unit | `string` | `"Created by Terraform"` |
-| `custom_units_plural_name` | Unit plural name represents the plural form of the unit name | `string` | `"TerraformUnits"` |
-| `custom_units_symbol` | Unit symbol has to be unique | `string` | `"T/u"` |
-
-### Histogram Metrics Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `histogram_metrics_enable_histogram_bucket_ingest` | Enable histogram bucket ingest | `bool` | `false` |
-
-### Metric Metadata Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `metric_metadata_display_name` | Display name | `string` | `"example_metric"` |
-| `metric_metadata_metric_id` | The scope of this setting (metric) | `string` | `"metric-func:slo.terraform-test"` |
-| `metric_metadata_unit` | Unit | `string` | `"percent"` |
-
-### Metric Query Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `metric_query_metric_id` | The scope of this setting (metric) | `string` | `"metric-func:slo.terraform-test"` |
-| `metric_query_metric_selector` | Query | `string` | `"((100*(builtin:service.requestCount.server:filter(in(\"dt.entity.service\",entitySelector(\"type(SERVICE),mzId(0000000000000000000),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE\"))):splitBy())/(builtin:service.requestCount.server:filter(in(\"dt.entity.service\",entitySelector(\"type(SERVICE),mzId(0000000000000000000),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE\"))):splitBy())) - (95.0))"` |
-
-## Outputs
-| Name | Description |
-|------|-------------|
-| `custom_units_id` | The ID of the custom units |
-| `histogram_metrics_id` | The ID of the histogram metrics |
-| `metric_metadata_id` | The ID of the metric metadata |
-| `metric_query_id` | The ID of the metric query |
-
-## Usage
-### Example Configuration
-```hcl
-provider "dynatrace" {
-  api_token = var.dynatrace_api_token
-  environment_url = var.dynatrace_environment_url
-}
-
-module "dynatrace_custom_units" {
-  source = "./modules/custom_units"
-
-  custom_units_name = var.custom_units_name
-  custom_units_description = var.custom_units_description
-  custom_units_plural_name = var.custom_units_plural_name
-  custom_units_symbol = var.custom_units_symbol
-}
-
-module "dynatrace_histogram_metrics" {
-  source = "./modules/histogram_metrics"
-
-  histogram_metrics_enable_histogram_bucket_ingest = var.histogram_metrics_enable_histogram_bucket_ingest
-}
-
-module "dynatrace_metric_metadata" {
-  source = "./modules/metric_metadata"
-
-  metric_metadata_display_name = var.metric_metadata_display_name
-  metric_metadata_metric_id = var.metric_metadata_metric_id
-  metric_metadata_unit = var.metric_metadata_unit
-}
-
-module "dynatrace_metric_query" {
-  source = "./modules/metric_query"
-
-  metric_query_metric_id = var.metric_query_metric_id
-  metric_query_metric_selector = var.metric_query_metric_selector
-}
-```
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
-
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
+---

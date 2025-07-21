@@ -66,4 +66,31 @@ output "dynatrace_web_app_resource_cleanup_ids" {
   value = [for cleanup in dynatrace_web_app_resource_cleanup.web_app_resource_cleanup : cleanup.id]
 }
 
+output "application_detection_rule_id" {
+  value = dynatrace_application_detection_rule.this.id
+}
+
+output "custom_prop_restrictions_id" {
+  value = dynatrace_web_app_custom_prop_restrictions.this.id
+}
+
+output "javascript_filename_id" {
+  value = dynatrace_web_app_javascript_filename.this.id
+}
+
+output "javascript_updates_id" {
+  value = dynatrace_web_app_javascript_updates.this.id
+}
+
+output "javascript_version_id" {
+  value = dynatrace_web_app_javascript_version.this.id
+}
+
+output "resource_types_id" {
+  value = dynatrace_web_app_resource_types.this.id
+}
+
+output "web_application_ids" {
+  value = { for k, v in dynatrace_web_application.this : k => v.id }
+}
 

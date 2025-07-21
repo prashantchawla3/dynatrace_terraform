@@ -1,84 +1,54 @@
-# Dynatrace Terraform Module
 
-This Terraform module provides resources for managing Dynatrace Davis CoPilot. It includes configurations for enabling CoPilot, tenant-aware data mining, and blocklist entries.
 
-## Table of Contents
+## `dynatrace_davis_copilot`
 
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
+>  **Preview Notice**  
+> Davis CoPilot is currently in **Preview** and only accessible to selected customers. For feedback or access, contact your Customer Success Manager or join the Dynatrace Community user group.
 
-## Usage
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
-To use this module, include it in your Terraform configuration as follows:
+---
 
-```hcl
-module "dynatrace_davis_copilot" {
-  source = "./path_to_module"
+### How to Determine tfvars Values
 
-  enable_copilot = true
-  enable_tenant_aware_data_mining = true
-  blocklist_name = "example_blocklist"
-  blocklist_type = "TABLE"
-}
+- **`enable_copilot`**: Set to `true` to activate Davis CoPilot. Note that enabling this does not automatically assign user permissions.
+- **`enable_tenant_aware_data_mining`**: Set to `true` to allow Davis CoPilot to scan your Grail data and build a semantic index for environment-aware queries.
+- **`blocklist_entries`**: Define a list of data buckets or tables to exclude from the semantic index.
+  - **`name`**: Name of the blocklisted item.
+  - **`type`**: Must be either `BUCKET` or `TABLE`.
+
+---
+
+### Schema
+
+#### Required
+- `enable_copilot` (Boolean)
+
+#### Optional
+- `enable_tenant_aware_data_mining` (Boolean)
+- `blocklist_entries` (Block List, Max: 1)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+### Nested Schema: `blocklist_entries.blocklist_entrie`
+
+#### Required
+- `name` (String)
+- `type` (String) — Possible values: `BUCKET`, `TABLE`
+
+---
+
+### Data Source Usage
+
+This resource does not have a dedicated data source. Use the following command to retrieve existing configurations:
+
+```bash
+terraform-provider-dynatrace -export dynatrace_davis_copilot
 ```
 
-## Requirements
-
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
-
-## Providers
-
-| Name      | Version |
-| --------- | ------- |
-| dynatrace | ~> 1.0  |
-
-## Resources
-
-The following resources are created by this module:
-
-- `dynatrace_davis_copilot.example`
-
-## Inputs
-
-| Name                             | Description                                | Type   | Default | Required |
-| -------------------------------- | ------------------------------------------ | ------ | ------- | -------- |
-| enable_copilot                   | Enable Davis CoPilot.                      | bool   | true    | yes      |
-| enable_tenant_aware_data_mining  | Enable tenant-aware data mining.           | bool   | true    | yes      |
-| blocklist_name                   | Name of the blocklist entry.               | string |         | yes      |
-| blocklist_type                   | Type of the blocklist entry (BUCKET, TABLE). | string |         | yes      |
-
-## Outputs
-
-| Name              | Description                          |
-| ----------------- | ------------------------------------ |
-| davis_copilot_id  | ID of the Davis CoPilot resource     |
-
-## Example
-
-Here is an example of how to use this module in your Terraform configuration:
-
-```hcl
-module "dynatrace_davis_copilot" {
-  source = "./path_to_module"
-
-  enable_copilot = true
-  enable_tenant_aware_data_mining = true
-  blocklist_name = "example_blocklist"
-  blocklist_type = "TABLE"
-}
-```
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
-
-
+---

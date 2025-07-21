@@ -1,63 +1,41 @@
-resource "dynatrace_jenkins_connection" "this" {
-  for_each = { for conn in var.jenkins_connections : conn.name => conn }
-  name     = each.value.name
-  url      = each.value.url
-  username = each.value.username
-  password = each.value.password
-}
-resource "dynatrace_github_connection" "this" {
-  for_each = { for conn in var.github_connections : conn.name => conn }
-  name  = each.value.name
-  type  = each.value.type
-  token = each.value.token
+
+
+module "jenkins_connections" {
+  source               = "./modules/dynatrace_jenkins_connection"
+  jenkins_connections  = var.jenkins_connections
 }
 
-resource "dynatrace_gitlab_connection" "this" {
-  for_each = { for conn in var.gitlab_connections : conn.name => conn }
-  name  = each.value.name
-  url   = each.value.url
-  token = each.value.token
+module "github_connections" {
+  source              = "./modules/dynatrace_github_connection"
+  github_connections  = var.github_connections
 }
 
-resource "dynatrace_ms365_email_connection" "this" {
-  for_each = { for conn in var.ms365_email_connections : conn.name => conn }
-  name          = each.value.name
-  client_id     = each.value.client_id
-  tenant_id     = each.value.tenant_id
-  from_address  = each.value.from_address
-  type          = each.value.type
-  client_secret = each.value.client_secret
+module "gitlab_connections" {
+  source             = "./modules/dynatrace_gitlab_connection"
+  gitlab_connections = var.gitlab_connections
 }
 
-resource "dynatrace_msentraid_connection" "this" {
-  for_each = { for conn in var.msentraid_connections : conn.name => conn }
-  name           = each.value.name
-  application_id = each.value.application_id
-  directory_id   = each.value.directory_id
-  client_secret  = each.value.client_secret
-  description    = each.value.description
+module "ms365_email_connections" {
+  source                   = "./modules/dynatrace_ms365_email_connection"
+  ms365_email_connections  = var.ms365_email_connections
 }
 
-resource "dynatrace_msteams_connection" "this" {
-  for_each = { for conn in var.msteams_connections : conn.name => conn }
-  name         = each.value.name
-  webhook      = each.value.webhook
-  team_name    = lookup(each.value, "team_name", null)
-  channel_name = lookup(each.value, "channel_name", null)
+module "msentraid_connections" {
+  source                = "./modules/dynatrace_msentraid_connection"
+  msentraid_connections = var.msentraid_connections
 }
 
-resource "dynatrace_pagerduty_connection" "this" {
-  for_each = { for conn in var.pagerduty_connections : conn.name => conn }
-  name  = each.value.name
-  token = each.value.token
-  url   = each.value.url
+module "msteams_connections" {
+  source               = "./modules/dynatrace_msteams_connection"
+  msteams_connections  = var.msteams_connections
 }
 
-resource "dynatrace_servicenow_connection" "this" {
-  for_each = { for conn in var.servicenow_connections : conn.name => conn }
-  name     = each.value.name
-  url      = each.value.url
-  type     = each.value.type
-  user     = lookup(each.value, "user", null)
-  password = lookup(each.value, "password", null)
+module "pagerduty_connections" {
+  source                = "./modules/dynatrace_pagerduty_connection"
+  pagerduty_connections = var.pagerduty_connections
+}
+
+module "servicenow_connections" {
+  source                 = "./modules/dynatrace_servicenow_connection"
+  servicenow_connections = var.servicenow_connections
 }

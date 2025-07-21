@@ -1,89 +1,179 @@
 
 
-# Dynatrace Terraform Module
-
-This Terraform module deploys and configures various Dynatrace resources, including Cloud Foundry, Kubernetes monitoring, Kubernetes clusters, Kubernetes applications, and Kubernetes enrichment rules.
-
-## Resources Deployed
-
-### Dynatrace Cloud Foundry
-This resource configures Dynatrace monitoring for Cloud Foundry environments.
-
-- **Enabled**: Whether the monitoring is enabled.
-- **Active Gate Group**: The group of Active Gates used.
-- **API URL**: The API endpoint for Cloud Foundry.
-- **Label**: A label for the Cloud Foundry environment.
-- **Login URL**: The login URL for Cloud Foundry.
-- **Username**: The username for authentication.
-- **Password**: The password for authentication.
-
-### Dynatrace Kubernetes Monitoring
-This resource configures Dynatrace monitoring for Kubernetes environments.
-
-- **Cloud Application Pipeline Enabled**: Whether the cloud application pipeline is enabled.
-- **Event Processing Active**: Whether event processing is active.
-- **Filter Events**: Whether to filter events.
-- **Include All FDI Events**: Whether to include all FDI events.
-- **Open Metrics Built-in Enabled**: Whether built-in Open Metrics are enabled.
-- **Open Metrics Pipeline Enabled**: Whether the Open Metrics pipeline is enabled.
-- **Scope**: The scope of the monitoring.
-- **Event Patterns**: Patterns for event processing.
-
-### Dynatrace Kubernetes
-This resource configures Dynatrace monitoring for Kubernetes clusters.
-
-- **Enabled**: Whether the monitoring is enabled.
-- **Cluster ID**: The ID of the Kubernetes cluster.
-- **Cluster ID Enabled**: Whether the cluster ID is enabled.
-- **Label**: A label for the Kubernetes cluster.
-- **Scope**: The scope of the monitoring.
-- **Active Gate Group**: The group of Active Gates used.
-- **Auth Token**: The authentication token.
-- **Certificate Check Enabled**: Whether certificate checks are enabled.
-- **Endpoint URL**: The endpoint URL for the Kubernetes cluster.
-- **Hostname Verification Enabled**: Whether hostname verification is enabled.
-
-### Dynatrace Kubernetes App
-This resource configures Dynatrace monitoring for Kubernetes applications.
-
-- **Scope**: The scope of the monitoring.
-- **Enable Kubernetes App**: Whether the Kubernetes app monitoring is enabled.
-
-### Dynatrace Kubernetes Enrichment
-This resource configures enrichment rules for Kubernetes monitoring.
-
-- **Scope**: The scope of the enrichment.
-- **Rules**: The enrichment rules, including type, source, and target.
-
-## Outputs
-
-- **cloud_foundry_ids**: IDs of the created Cloud Foundry resources.
-- **k8s_monitoring_ids**: IDs of the created Kubernetes monitoring resources.
-- **kubernetes_ids**: IDs of the created Kubernetes resources.
-- **kubernetes_app_ids**: IDs of the created Kubernetes app resources.
-- **kubernetes_enrichment_ids**: IDs of the created Kubernetes enrichment resources.
-
-## Variables
-
-### cloud_foundry
-Configuration for Dynatrace Cloud Foundry.
-
-### k8s_monitoring
-Configuration for Kubernetes Monitoring.
-
-### kubernetes
-Configuration for Kubernetes.
-
-### kubernetes_app
-Configuration for Kubernetes App.
-
-### kubernetes_enrichment
-Configuration for Kubernetes Enrichment.
-
-## API Token Scopes
-This module requires the following API token scopes:
-- **Read settings (settings.read)**
-- **Write settings (settings.write)**
+# Terraform Dynatrace Infrastructure Modules
 
 ---
 
+## dynatrace_cloud_foundry
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine `tfvars` Values
+- **`api_url`**: Use the Cloud Foundry API endpoint (e.g., `https://api.cf.example.com`).
+- **`login_url`**: Use the Cloud Foundry login endpoint (e.g., `https://login.cf.example.com`).
+- **`username` / `password`**: Use credentials with access to the Cloud Foundry environment.
+- **`active_gate_group`**: Optional. Use the name of the ActiveGate group configured in Dynatrace.
+
+### Schema
+
+#### Required
+- `api_url` (String)
+- `enabled` (Boolean)
+- `label` (String)
+- `login_url` (String)
+- `password` (String, Sensitive)
+- `username` (String)
+
+#### Optional
+- `active_gate_group` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## dynatrace_k8s_monitoring
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine `tfvars` Values
+- **`scope`**: Use the Kubernetes cluster ID (e.g., `KUBERNETES_CLUSTER-xxxxxxxx`).
+- **`event_patterns`**: Define filters using Kubernetes field selectors (e.g., `involvedObject.kind=Node`).
+- **`open_metrics_*`**: Enable or disable based on your monitoring strategy and resource usage.
+
+### Schema
+
+#### Required
+- `cloud_application_pipeline_enabled` (Boolean)
+- `event_processing_active` (Boolean)
+- `open_metrics_builtin_enabled` (Boolean)
+- `open_metrics_pipeline_enabled` (Boolean)
+
+#### Optional
+- `event_patterns` (Block)
+- `filter_events` (Boolean)
+- `include_all_fdi_events` (Boolean)
+- `pvc_monitoring_enabled` (Boolean, Deprecated)
+- `scope` (String)
+
+#### Read-Only
+- `id` (String)
+
+#### Nested Schema for `event_patterns`
+- `event_pattern` (Block)
+  - `active` (Boolean)
+  - `label` (String)
+  - `pattern` (String)
+
+---
+
+## dynatrace_kubernetes
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine `tfvars` Values
+- **`cluster_id`**: Use the unique ID of the Kubernetes cluster.
+- **`endpoint_url`**: Use the Kubernetes API server URL.
+- **`auth_token`**: Use a bearer token with access to the Kubernetes API.
+- **`scope`**: Use the cluster scope (e.g., `KUBERNETES_CLUSTER-xxxxxx`).
+
+### Schema
+
+#### Required
+- `cluster_id_enabled` (Boolean)
+- `enabled` (Boolean)
+- `label` (String)
+
+#### Optional
+- `active_gate_group` (String)
+- `auth_token` (String, Sensitive)
+- `certificate_check_enabled` (Boolean)
+- `cloud_application_pipeline_enabled` (Boolean, Deprecated)
+- `cluster_id` (String)
+- `endpoint_url` (String)
+- `event_patterns` (Block, Deprecated)
+- `event_processing_active` (Boolean, Deprecated)
+- `filter_events` (Boolean, Deprecated)
+- `hostname_verification_enabled` (Boolean)
+- `include_all_fdi_events` (Boolean, Deprecated)
+- `open_metrics_builtin_enabled` (Boolean, Deprecated)
+- `open_metrics_pipeline_enabled` (Boolean, Deprecated)
+- `pvc_monitoring_enabled` (Boolean, Deprecated)
+- `scope` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## dynatrace_kubernetes_app
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine `tfvars` Values
+- **`scope`**: Use the Kubernetes cluster scope (e.g., `KUBERNETES_CLUSTER-xxxxxx`).
+- **`enable_kubernetes_app`**: Set to `true` to enable the new Kubernetes experience.
+
+### Schema
+
+#### Required
+- `kubernetes_app_options` (Block)
+  - `enable_kubernetes_app` (Boolean)
+
+#### Optional
+- `scope` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## dynatrace_kubernetes_enrichment
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine `tfvars` Values
+- **`rules`**: Define rules to map Kubernetes labels or annotations to Dynatrace metadata fields.
+  - **`type`**: Use `LABEL` or `ANNOTATION`
+  - **`source`**: Use a valid Kubernetes label or annotation key
+  - **`target`**: Use one of `dt.cost.product`, `dt.cost.costcenter`, or `dt.security_context`
+
+### Schema
+
+#### Optional
+- `rules` (Block)
+  - `rule` (Block)
+    - `source` (String)
+    - `target` (String)
+    - `type` (String)
+    - `enabled` (Boolean, Deprecated)
+- `scope` (String)
+
+#### Read-Only
+- `id` (String)
+
+---
+
+## Using Data Blocks to Retrieve Existing Information
+
+To retrieve existing configuration from Dynatrace, use Terraform `data` blocks. For example:
+
+```hcl
+data "dynatrace_kubernetes" "existing" {
+  label = "Production Cluster"
+}
+```
+
+This allows you to reference existing resources and use their attributes in other modules or resources.
+
+---

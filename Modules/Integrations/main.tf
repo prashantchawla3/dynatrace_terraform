@@ -1,19 +1,50 @@
-resource "dynatrace_issue_tracking" "this" {
-  enabled            = var.issue_tracking_enabled
-  issuelabel         = var.issue_tracking_issuelabel
-  issuequery         = var.issue_tracking_issuequery
-  issuetheme         = var.issue_tracking_issuetheme
-  issuetrackersystem = var.issue_tracking_issuetrackersystem
-  token              = var.issue_tracking_token
-  url                = var.issue_tracking_url
-  username           = var.issue_tracking_username
-  insert_after       = var.issue_tracking_insert_after
-  password           = var.issue_tracking_password
+
+module "issue_tracking_enabled" {
+  source                 = "./modules/dynatrace_issue_tracking"
+  issue_tracking_enabled = var.issue_tracking_enabled
 }
 
-resource "dynatrace_remote_environments" "this" {
-  name           = var.remote_environment_name
-  network_scope  = var.remote_environment_network_scope
-  token          = var.remote_environment_token
-  uri            = var.remote_environment_uri
+module "issue_tracking_issuelabel" {
+  source                  = "./modules/dynatrace_issue_tracking"
+  issue_tracking_issuelabel = var.issue_tracking_issuelabel
+}
+
+module "issue_tracking_issuequery" {
+  source                   = "./modules/dynatrace_issue_tracking"
+  issue_tracking_issuequery = var.issue_tracking_issuequery
+}
+
+module "issue_tracking_issuetheme" {
+  source                   = "./modules/dynatrace_issue_tracking"
+  issue_tracking_issuetheme = var.issue_tracking_issuetheme
+}
+
+module "issue_tracking_issuetrackersystem" {
+  source                        = "./modules/dynatrace_issue_tracking"
+  issue_tracking_issuetrackersystem = var.issue_tracking_issuetrackersystem
+}
+
+module "issue_tracking_token" {
+  source              = "./modules/dynatrace_issue_tracking"
+  issue_tracking_token = var.issue_tracking_token
+}
+
+module "issue_tracking_url" {
+  source            = "./modules/dynatrace_issue_tracking"
+  issue_tracking_url = var.issue_tracking_url
+}
+
+module "issue_tracking_username" {
+  source               = "./modules/dynatrace_issue_tracking"
+  issue_tracking_username = var.issue_tracking_username
+}
+
+module "issue_tracking_insert_after" {
+  source                    = "./modules/dynatrace_issue_tracking"
+  issue_tracking_insert_after = var.issue_tracking_insert_after
+}
+
+module "issue_tracking_password" {
+  source               = "./modules/dynatrace_issue_tracking"
+  issue_tracking_password = var.issue_tracking_password
 }

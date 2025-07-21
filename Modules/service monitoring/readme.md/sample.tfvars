@@ -22,7 +22,10 @@ metric_definition_metric = "metric_definition_example"
 metric_definition_request_attribute = "request_attribute_example"
 
 service_id = "service_id_example"
-key_request_ids = ["request_id1", "request_id2"]
+key_request_ids = {
+  "request_id1" = "Request 1"
+  "request_id2" = "Request 2"
+}
 key_request_names = ["Request 1", "Request 2"]
 
 muted_request_names = ["Muted Request 1", "Muted Request 2"]
@@ -76,3 +79,38 @@ query_parameter_value = "param_value_example"
 query_parameter_value_is_undefined = false
 
 naming_pattern = "naming_pattern_example"
+
+request_naming_rules = {
+  "rule1" = {
+    naming_pattern = "Pattern1"
+    enabled        = true
+    management_zones = ["ZoneA"]
+    conditions = [
+      {
+        condition = [
+          {
+            attribute = "SERVICE_NAME"
+            comparison = {
+              fast_string = {
+                value    = "MyService"
+                operator = "EQUALS"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    placeholders = {
+      placeholder = [
+        {
+          name      = "service"
+          kind      = "ORIGINAL_TEXT"
+          attribute = "SERVICE_NAME"
+        }
+      ]
+    }
+  }
+}
+
+request_naming_ids = ["rule1"]
+service_naming_rule_ids = ["service_rule_1", "service_rule_2"]

@@ -48,5 +48,3 @@ network_monitor_outage_local_consecutive_outage_count_threshold = 3
 network_monitor_outage_local_location_outage_count_threshold = 1
 network_monitor_outage_scope = "MULTIPROTOCOL_MONITOR"
 
-dynatrace_api_url   = "https://yourenv.live.dynatrace.com/api"
-dynatrace_api_token = "your-api-token"

@@ -1,111 +1,177 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This Terraform module provides resources for managing Dynatrace Service Level Objectives (SLOs). It includes configurations for SLOs, their evaluation, and error budget burn rate visualization.
+#  Resource: `dynatrace_platform_slo`
 
-## Table of Contents
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
+##  Required OAuth Scopes
+- `slo:slos:read`
+- `slo:slos:write`
 
-## Usage
-To use this module, include it in your Terraform configuration as follows:
-```hcl
-module "dynatrace_slo" {
-  source = "./path_to_module"
-  slo_name = "example_slo"
-  slo_enabled = true
-  slo_description = "Terraform Test"
-  slo_evaluation_type = "AGGREGATE"
-  slo_evaluation_window = "-1w"
-  slo_filter = "type(SERVICE),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)"
-  slo_metric_expression = "100*(builtin:service.requestCount.server:splitBy())/(builtin:service.requestCount.server:splitBy())"
-  slo_metric_name = "terraform_test"
-  slo_target_success = 95
-  slo_target_warning = 98
-  slo_legacy_id = ""
-  burn_rate_visualization_enabled = false
-  fast_burn_threshold = null
-}
-```
+##  How to Determine Values for `tfvars`
+- **name**: Choose a descriptive name for the SLO.
+- **description**: Optional description of the SLO.
+- **tags**: Optional tags to categorize the SLO.
+- **criteria**: Define `target`, `timeframe_from`, and optionally `timeframe_to` and `warning`.
+- **custom_sli**: Provide a custom SLI expression.
+- **sli_reference**: Use a template ID and define variables if using a predefined SLI template.
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
+##  Full Schema
 
-## Providers
-The module requires the following provider:
+###  Required Fields
+- **name** (String)
+- **criteria** (Block List, Min: 1, Max: 1)
+  - **criteria_detail** (Block List, Min: 1)
+    - **target** (Number)
+    - **timeframe_from** (String)
 
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
+###  Optional Fields
+- **description** (String)
+- **tags** (Set of String)
+- **custom_sli** (Block List, Max: 1)
+  - **indicator** (String)
+  - **filter_segments** (Optional)
+    - **filter_segment**
+      - **id** (String)
+      - **variables**
+        - **filter_segment_variable**
+          - **name** (String)
+          - **values** (Set of String)
+- **sli_reference** (Block List, Max: 1)
+  - **template_id** (String)
+  - **variables**
+    - **sli_reference_variable**
+      - **name** (String)
+      - **value** (String)
 
-## Resources
-The following resources are created by this module:
-- `dynatrace_slo_v2.example_slo`
+###  Read-Only Fields
+- **id** (String)
 
-## Inputs
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `slo_name` | SLO name | `string` | | yes |
-| `slo_enabled` | This setting is enabled (true) or disabled (false) | `bool` | `true` | yes |
-| `slo_description` | The description of the SLO | `string` | `"Terraform Test"` | yes |
-| `slo_evaluation_type` | Evaluation type | `string` | `"AGGREGATE"` | yes |
-| `slo_evaluation_window` | Evaluation window | `string` | `"-1w"` | yes |
-| `slo_filter` | Filter parameter | `string` | `"type(SERVICE),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)"` | yes |
-| `slo_metric_expression` | Metric expression | `string` | `"100*(builtin:service.requestCount.server:splitBy())/(builtin:service.requestCount.server:splitBy())"` | yes |
-| `slo_metric_name` | Metric name | `string` | `"terraform_test"` | yes |
-| `slo_target_success` | Target success value | `number` | `95` | yes |
-| `slo_target_warning` | Target warning value | `number` | `98` | yes |
-| `slo_legacy_id` | Legacy ID | `string` | `""` | yes |
-| `burn_rate_visualization_enabled` | Burn rate visualization enabled | `bool` | `false` | yes |
-| `fast_burn_threshold` | Fast burn threshold | `number` | `null` | yes |
+##  Using a `data` Block
+Use `data "dynatrace_platform_slo_template"` or `dynatrace_platform_slo_templates` to retrieve template IDs.
 
-## Outputs
-| Name | Description |
-|------|-------------|
-| `slo_id` | The ID of the created SLO |
-| `slo_name` | The name of the created SLO |
+---
 
-## Example
-Here is an example of how to use this module in your Terraform configuration:
-```hcl
-module "dynatrace_slo" {
-  source = "./path_to_module"
-  slo_name = "example_slo"
-  slo_enabled = true
-  slo_description = "Terraform Test"
-  slo_evaluation_type = "AGGREGATE"
-  slo_evaluation_window = "-1w"
-  slo_filter = "type(SERVICE),serviceType(WEB_SERVICE,WEB_REQUEST_SERVICE)"
-  slo_metric_expression = "100*(builtin:service.requestCount.server:splitBy())/(builtin:service.requestCount.server:splitBy())"
-  slo_metric_name = "terraform_test"
-  slo_target_success = 95
-  slo_target_warning = 98
-  slo_legacy_id = ""
-  burn_rate_visualization_enabled = false
-  fast_burn_threshold = null
-}
-```
+#  Resource: `dynatrace_slo_normalization`
 
-## API Token Scopes
-This resource requires the API token scopes:
-- Read SLO (`slo.read`)
-- Write SLO (`slo.write`)
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
+##  Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace SLO resources.
+##  How to Determine Values for `tfvars`
+- **normalize**: Set to `true` to show error budget left as a percentage.
 
+##  Full Schema
+
+###  Required Fields
+- **normalize** (Boolean)
+
+###  Read-Only Fields
+- **id** (String)
+
+##  Using a `data` Block
+Use the export utility with `-export dynatrace_slo_normalization` to retrieve existing configuration.
+
+---
+
+#  Resource: `dynatrace_slo_v2`
+##  Required API Token Scopes
+- `slo.read`
+- `slo.write`
+- `settings.read`
+- `settings.write`
+
+##  How to Determine Values for `tfvars`
+- Define the SLO's name, metric expression, evaluation window, and thresholds.
+- Use `filter` to target specific services.
+- Configure `error_budget_burn_rate` settings.
+
+##  Full Schema
+
+###  Required Fields
+- **enabled** (Boolean)
+- **name** (String)
+- **evaluation_type** (String)
+- **evaluation_window** (String)
+- **filter** (String)
+- **metric_expression** (String)
+- **target_success** (Number)
+- **target_warning** (Number)
+- **error_budget_burn_rate** (Block List, Min: 1)
+  - **burn_rate_visualization_enabled** (Boolean)
+
+###  Optional Fields
+- **custom_description** (String)
+- **legacy_id** (String)
+- **metric_name** (String)
+- **fast_burn_threshold** (Number)
+
+###  Read-Only Fields
+- **id** (String)
+
+##  Using a `data` Block
+Use `-export dynatrace_slo_v2` to retrieve existing SLO configurations.
+
+---
+
+#  Data Source: `dynatrace_platform_slo_template`
+
+##  Required OAuth Scopes
+- `slo:slos:read`
+- `slo:objective-templates:read`
+
+##  How to Determine Values for `tfvars`
+- Provide the name of the SLO objective template to retrieve its ID.
+
+##  Full Schema
+
+###  Required Fields
+- **name** (String)
+
+###  Read-Only Fields
+- **id** (String)
+
+---
+
+#  Data Source: `dynatrace_platform_slo_templates`
+
+##  Required OAuth Scopes
+- `slo:slos:read`
+- `slo:objective-templates:read`
+
+##  How to Determine Values for `tfvars`
+- No input required. Use this to retrieve a list of all available templates.
+
+##  Full Schema
+
+###  Read-Only Fields
+- **id** (String)
+- **templates** (List of Object)
+  - **id** (String)
+  - **name** (String)
+
+---
+
+#  Data Source: `dynatrace_slo`
+
+##  How to Determine Values for `tfvars`
+- Provide the name of the SLO to retrieve its ID and metadata.
+
+##  Full Schema
+
+###  Required Fields
+- **name** (String)
+
+###  Read-Only Fields
+- **id** (String)
+- **description** (String)
+- **enabled** (Boolean)
+- **evaluation_type** (String)
+- **evaluation_window** (String)
+- **filter** (String)
+- **metric_expression** (String)
+- **metric_name** (String)
+- **target_success** (Number)
+- **target_warning** (Number)
+- **legacy_id** (String)
+- **burn_rate_visualization_enabled** (Boolean)
+- **fast_burn_threshold** (Number)
+
+---

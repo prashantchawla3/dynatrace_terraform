@@ -1,5 +1,5 @@
 module "site_reliability_guardian" {
-  source = "./site_reliability_guardian"
+  source = "./modules/site_reliability_guardian"
 
   guardian_name        = var.guardian_name
   guardian_description = var.guardian_description
@@ -8,7 +8,7 @@ module "site_reliability_guardian" {
 }
 
 module "automation_workflow" {
-  source = "./automation_workflow"
+  source = "./modules/automation_workflow"
 
   workflow_title       = var.workflow_title
   workflow_description = var.workflow_description

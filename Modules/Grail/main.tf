@@ -1,23 +1,8 @@
-resource "dynatrace_segment" "example" {
-  count       = length(var.segments)
-  
-  name        = var.segments[count.index].name
-  description = var.segments[count.index].description
-  is_public   = var.segments[count.index].is_public
-
-  includes {
-    items {
-      data_object = each.value.data_object
-      filter      = each.value.filter
-      relationship {
-        name   = each.value.relationship_name
-        target = each.value.relationship_target
-      }
-    }
-  }
-
-  variables {
-    type  = var.variables_type
-    value = var.variables_value
-  }
+module "segment" {
+  source             = "./modules/dynatrace_segment"
+  segment_name       = var.segment_name
+  segment_description = var.segment_description
+  segment_is_public  = var.segment_is_public
+  segment_query      = var.segment_query
+  includes_items     = var.includes_items
 }

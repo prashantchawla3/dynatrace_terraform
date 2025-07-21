@@ -9,10 +9,10 @@ resource "dynatrace_container_builtin_rule" "this" {
 }
 
 # Container registry configuration
-resource "dynatrace_container_registry" "this" {
-  count              = var.registry_enabled ? 1 : 0
-  container_registry = var.container_registry
-}
+# resource "dynatrace_container_registry" "this" {
+ #  count              = var.registry_enabled ? 1 : 0
+ #  container_registry = var.container_registry
+# }
 
 # Container rule
 resource "dynatrace_container_rule" "this" {

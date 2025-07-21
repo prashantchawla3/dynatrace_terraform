@@ -1,14 +1,9 @@
-output "dashboard_ids" {
-  description = "List of Dynatrace dashboard IDs"
-  value = [for dashboard in dynatrace_json_dashboard.this : dashboard.id]
+output "json_dashboard_ids" {
+  description = "List of Dynatrace JSON dashboard IDs"
+  value       = [for d in dynatrace_json_dashboard.this : d.id]
 }
 
-output "dashboard_names" {
-  description = "List of Dynatrace dashboard names"
-  value = [for dashboard in dynatrace_json_dashboard.this : dashboard.name]
-}
-
-output "dashboard_management_zones" {
-  description = "List of Dynatrace dashboard management zones"
-  value = [for dashboard in dynatrace_json_dashboard.this : dashboard.management_zone]
+output "default_dashboard_ids" {
+  description = "List of default dashboard IDs"
+  value       = [for d in var.default_dashboards : d.dashboard]
 }

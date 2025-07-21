@@ -1,57 +1,78 @@
 
-resource "dynatrace_log_agent_feature_flags" "example" {
-  scope                      = var.scope
-  new_container_log_detector = var.new_container_log_detector
-  journald_log_detector      = var.journald_log_detector
+# ─── Log Agent Feature Flags ──────────────────────────────
+module "log_agent_feature_flags" {
+  source                  = "./modules/dynatrace_log_agent_feature_flags"
+  log_agent_feature_flags = var.log_agent_feature_flags
 }
 
-resource "dynatrace_log_buckets" "example" {
-  enabled      = var.enabled_buckets
-  bucket_name  = var.bucket_name
-  matcher      = var.matcher_buckets
-  rule_name    = var.rule_name_buckets
-  insert_after = var.insert_after_buckets
+# ─── Log Buckets ──────────────────────────────────────────
+module "log_buckets" {
+  source       = "./modules/dynatrace_log_buckets"
+  log_buckets  = var.log_buckets
 }
 
-resource "dynatrace_log_custom_attribute" "example" {
-  sidebar = var.sidebar_custom_attribute
-  key     = var.key_custom_attribute
+# ─── Log Custom Attribute ─────────────────────────────────
+module "log_custom_attribute" {
+  source               = "./modules/dynatrace_log_custom_attribute"
+  log_custom_attribute = var.log_custom_attribute
 }
 
-resource "dynatrace_log_custom_source" "example" {
-  name    = var.name_custom_source
-  enabled = var.enabled_custom_source
-  scope   = var.scope_custom_source
+# ─── Log Custom Source ────────────────────────────────────
+module "log_custom_source" {
+  source            = "./modules/dynatrace_log_custom_source"
+  log_custom_source = var.log_custom_source
+}
 
-  custom_log_source {
-    type = var.custom_log_source_type
+# ─── Log Debug Settings ───────────────────────────────────
+module "log_debug_settings" {
+  source             = "./modules/dynatrace_log_debug_settings"
+  log_debug_settings = var.log_debug_settings
+}
 
-    values_and_enrichment {
-      custom_log_source_with_enrichment {
-        path = var.custom_log_source_path
+# ─── Log Events ───────────────────────────────────────────
+module "log_events" {
+  source      = "./modules/dynatrace_log_events"
+  log_events  = var.log_events
+}
 
-        enrichment {
-          dynamic "enrichment" {
-            for_each = [
-              {
-                type  = var.enrichment_type_custom_source
-                key   = var.enrichment_key1_custom_source
-                value = var.enrichment_value1_custom_source
-              },
-              {
-                type  = var.enrichment_type_custom_source
-                key   = var.enrichment_key2_custom_source
-                value = var.enrichment_value2_custom_source
-              }
-            ]
-            content {
-              type  = enrichment.value.type
-              key   = enrichment.value.key
-              value = enrichment.value.value
-            }
-          }
-        }
-      }
-    }
-  }
+# ─── Log Metrics ──────────────────────────────────────────
+module "log_metrics" {
+  source       = "./modules/dynatrace_log_metrics"
+  log_metrics  = var.log_metrics
+}
+
+# ─── Log OneAgent Settings ────────────────────────────────
+module "log_oneagent" {
+  source        = "./modules/dynatrace_log_oneagent"
+  log_oneagent  = var.log_oneagent
+}
+
+# ─── Log Processing Rules ─────────────────────────────────
+module "log_processing" {
+  source          = "./modules/dynatrace_log_processing"
+  log_processing  = var.log_processing
+}
+
+# ─── Log Security Context ─────────────────────────────────
+module "log_security_context" {
+  source               = "./modules/dynatrace_log_security_context"
+  log_security_context = var.log_security_context
+}
+
+# ─── Log Sensitive Data Masking ───────────────────────────
+module "log_sensitive_data_masking" {
+  source                     = "./modules/dynatrace_log_sensitive_data_masking"
+  log_sensitive_data_masking = var.log_sensitive_data_masking
+}
+
+# ─── Log Storage Routing ──────────────────────────────────
+module "log_storage" {
+  source       = "./modules/dynatrace_log_storage"
+  log_storage  = var.log_storage
+}
+
+# ─── Log Timestamp Extraction ─────────────────────────────
+module "log_timestamp" {
+  source        = "./modules/dynatrace_log_timestamp"
+  log_timestamp = var.log_timestamp
 }

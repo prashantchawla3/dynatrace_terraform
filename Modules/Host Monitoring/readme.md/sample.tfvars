@@ -1,5 +1,3 @@
-api_url  = "https://your-dynatrace-api-url"
-api_token = "your-dynatrace-api-token"
 
 aix_extensions = [
   {
@@ -11,7 +9,7 @@ aix_extensions = [
 
 crashdump_analytics = [
   {
-    host_id                   = "host1"
+    host_id                    = "host1"
     enable_crash_dump_analytics = true
   }
 ]
@@ -71,13 +69,13 @@ host_process_group_monitoring = [
 net_tracers = [
   {
     scope      = "ALL"
-    net_tracer = "tracer1"
+    net_tracer = true
   }
 ]
 
 network_traffic = [
   {
-    host_id = "host1"
+    host_id   = "host1"
     ip_address = "192.168.1.1"
     interface = "eth0"
     os        = "Linux"
@@ -88,22 +86,16 @@ os_services = [
   {
     name                      = "service1"
     enabled                   = true
-    alert_activation_duration = "5m"
+    alert_activation_duration = 5
     alerting                  = true
     monitoring                = true
     not_installed_alerting    = true
     scope                     = "ALL"
     status_condition_linux    = "ACTIVE"
     system                    = "Linux"
-    condition                = "ACTIVE"
-    property                 = "service_status"
-    metadata_key             = "service_version"
-    metadata_value           = "1.0.0"
-  }
-]
-
-host_naming_orders = [
-  {
-    naming_rule_ids = ["rule1"]
+    condition                 = "ACTIVE"
+    property                  = "service_status"
+    metadata_key              = "service_version"
+    metadata_value            = "1.0.0"
   }
 ]

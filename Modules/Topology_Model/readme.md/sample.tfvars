@@ -1,7 +1,4 @@
 
-environment_url         = "https://your-env.live.dynatrace.com"
-dynatrace_client_id     = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
 
 generic_relationships_enabled          = true
 generic_relationships_created_by       = "Terraform"

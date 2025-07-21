@@ -1,105 +1,83 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This Terraform module manages Dynatrace resources for ActiveGate updates, OneAgent updates, and update windows. It includes configurations for these resources along with necessary variables and outputs.
 
-## Table of Contents
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
-  - Example
+# Dynatrace Update Management Resources
 
-## Usage
-To use this module, include it in your Terraform configuration and provide the necessary variables. Below is an example of how to use this module:
-```hcl
-module "dynatrace_updates" {
-  source = "./path_to_module"
-  auto_update = var.auto_update
-  scope_activegate = var.scope_activegate
-  scope_oneagent = var.scope_oneagent
-  target_version = var.target_version
-  update_mode = var.update_mode
-  name = var.name
-  enabled = var.enabled
-  recurrence = var.recurrence
-  once_recurrence_end = var.once_recurrence_end
-  once_recurrence_start = var.once_recurrence_start
-}
+This README documents the Terraform resources used to manage ActiveGate and OneAgent updates, as well as update windows in Dynatrace.
+
+---
+
+## `dynatrace_activegate_updates`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`auto_update`**: Set to `true` to enable automatic updates for ActiveGates.
+- **`scope`**: Use `"environment"` or specify a specific scope.
+
+### Schema
+
+#### Required
+- `auto_update` (Boolean)
+- `scope` (String)
+
+---
+
+## `dynatrace_oneagent_updates`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`scope`**: Use `"environment"` or specify a specific scope.
+- **`target_version`**: Specify the desired OneAgent version (e.g., `"latest"`).
+- **`update_mode`**: Choose update mode (e.g., `"AUTOMATIC"`).
+
+### Schema
+
+#### Required
+- `scope` (String)
+- `target_version` (String)
+- `update_mode` (String)
+
+---
+
+## `dynatrace_update_windows`
+
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+### How to Determine tfvars Values
+- **`name`**: Name of the update window.
+- **`enabled`**: Set to `true` to enable the window.
+- **`recurrence`**: Set to `"ONCE"` or another supported recurrence type.
+- **`once_recurrence_start`** and **`once_recurrence_end`**: Define the start and end of the update window if recurrence is `"ONCE"`.
+
+### Schema
+
+#### Required
+- `name` (String)
+- `enabled` (Boolean)
+- `recurrence` (String)
+
+#### Optional (when `recurrence = "ONCE"`)
+- `once_recurrence.recurrence_range.start` (String)
+- `once_recurrence.recurrence_range.end` (String)
+
+---
+
+## Data Source Usage
+
+These resources do not have dedicated data sources. To retrieve existing configurations, use:
+
+```bash
+terraform-provider-dynatrace -export <resource_name>
 ```
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
+Replace `<resource_name>` with the specific resource you want to export.
 
-## Providers
-The module requires the following provider:
-
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
-
-## Resources
-The following resources are created by this module:
-
-- `dynatrace_activegate_updates`
-- `dynatrace_oneagent_updates`
-- `dynatrace_update_windows`
-
-## Inputs
-### Dashboard Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `auto_update` | Automatic updates at earliest convenience | `bool` | `true` |
-| `scope_activegate` | The scope of this setting (ENVIRONMENT_ACTIVE_GATE). Omit this property if you want to cover the whole environment. | `string` | `"environment"` |
-| `scope_oneagent` | The scope of this setting (HOST, HOST_GROUP). Omit this property if you want to cover the whole environment. | `string` | `"environment"` |
-| `target_version` | Target version | `string` | `"latest"` |
-| `update_mode` | Update mode | `string` | `"AUTOMATIC"` |
-| `name` | Name | `string` | |
-| `enabled` | This setting is enabled (true) or disabled (false) | `bool` | `true` |
-| `recurrence` | Recurrence type | `string` | `"ONCE"` |
-| `once_recurrence_end` | End time for once recurrence | `string` | |
-| `once_recurrence_start` | Start time for once recurrence | `string` | |
-
-## Outputs
-| Name | Description |
-|------|-------------|
-| `activegate_updates_id` | The ID of the ActiveGate updates resource |
-| `oneagent_updates_id` | The ID of the OneAgent updates resource |
-| `update_windows_id` | The ID of the update windows resource |
-
-## Example
-```hcl
-module "dynatrace_updates" {
-  source = "./path_to_module"
-  auto_update = true
-  scope_activegate = "environment"
-  scope_oneagent = "environment"
-  target_version = "latest"
-  update_mode = "AUTOMATIC"
-  name = "example"
-  enabled = true
-  recurrence = "ONCE"
-  once_recurrence_end = "2023-02-15T04:00:00Z"
-  once_recurrence_start = "2023-02-15T02:00:00Z"
-}
-```
-
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
-
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace resources.
+---
 

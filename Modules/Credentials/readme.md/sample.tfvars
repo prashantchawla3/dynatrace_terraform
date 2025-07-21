@@ -1,8 +1,8 @@
-label                     = "Dynatrace AWS Credentials"
-partition_type            = "AWS_DEFAULT"
-tagged_only               = true
-credentials_enabled       = true
-remove_defaults           = true
+label                                = "Dynatrace AWS Credentials"
+partition_type                       = "AWS_DEFAULT"
+tagged_only                          = true
+credentials_enabled                  = true
+remove_defaults                      = true
 running_on_dynatrace_infrastructure = false
 
 authentication_data = {
@@ -24,22 +24,25 @@ tags_to_monitor = [
 ]
 
 aws_services = {
-  ec2 = {
+  AmazonEC2 = {
     use_recommended_metrics = true
-  }
-  s3 = {
-    use_recommended_metrics = false
+  },
+  AmazonS3 = {
+    use_recommended_metrics = true
+  },
+  AmazonRDS = {
+    use_recommended_metrics = true
   }
 }
 
-azure_active                       = true
-azure_app_id                       = "your-app-id"
-azure_auto_tagging                 = true
-azure_directory_id                 = "your-directory-id"
-azure_label                        = "Azure Monitoring"
-azure_key                          = "your-azure-key"
+azure_active                        = true
+azure_app_id                        = "your-app-id"
+azure_auto_tagging                  = true
+azure_directory_id                  = "your-directory-id"
+azure_label                         = "Azure Monitoring"
+azure_key                           = "your-azure-key"
 azure_monitor_only_tagged_entities = false
-azure_remove_defaults              = true
+azure_remove_defaults               = true
 
 azure_monitor_only_tag_pairs = [
   {
@@ -49,12 +52,19 @@ azure_monitor_only_tag_pairs = [
 ]
 
 azure_services = {
-  vm = {
+  "Azure Virtual Machines" = {
+    use_recommended_metrics = true
+  },
+  "Azure App Service" = {
     use_recommended_metrics = true
   }
 }
 
 credentials_name     = "admin"
-credentials_scopes   = ["ReadConfig", "WriteConfig"]
+credentials_scopes = ["SYNTHETIC"]
+
 credentials_username = "admin"
 credentials_password = "yourpassword"
+
+
+

@@ -1,100 +1,62 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This Terraform module manages Dynatrace VMware resources. It includes configurations for VMware settings along with necessary variables and outputs.
 
-## Table of Contents
-- Dynatrace Terraform Module
-  - Table of Contents
-  - Usage
-  - Requirements
-  - Providers
-  - Resources
-  - Inputs
-  - Outputs
-  - Example
+#  Resource: `dynatrace_vmware`
 
-## Usage
-To use this module, include it in your Terraform configuration and provide the necessary variables. Below is an example of how to use this module:
+##  Required API Token Scopes
+- `settings.read`
+- `settings.write`
+
+##  How to Determine Values for `tfvars`
+
+To configure the `vmware_configs` variable in your `terraform.tfvars` file:
+
+- **enabled**: Set to `true` or `false` depending on whether you want the VMware monitoring integration to be active.
+- **ipaddress**: Provide the IP address or hostname of the vCenter or standalone ESXi host.
+- **label**: Choose a descriptive name for the connection.
+- **password**: Provide the password for the vCenter or ESXi host (sensitive).
+- **username**: Provide the username for the vCenter or ESXi host.
+- **filter** *(optional)*: Use one of the following formats to filter:
+  - `$prefix(parameter)`
+  - `$eq(parameter)`
+  - `$suffix(parameter)`
+  - `$contains(parameter)`
+
+Example structure for `vmware_configs`:
 ```hcl
-module "dynatrace_vmware" {
-  source = "./path_to_module"
-  enabled = var.enabled
-  ipaddress = var.ipaddress
-  label = var.label
-  password = var.password
-  username = var.username
-  filter = var.filter
-}
-```
-
-## Requirements
-- Terraform >= 0.12
-- Dynatrace provider >= 1.0
-
-## Providers
-The module requires the following provider:
-
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
+vmware_configs = {
+  "example1" = {
+    enabled   = false
+    ipaddress = "vcenter01"
+    label     = "example"
+    password  = "your-password-here"
+    username  = "terraform"
+    filter    = "$contains(Terraform)"
   }
 }
 ```
 
-## Resources
-The following resources are created by this module:
+##  Full Schema
 
-- `dynatrace_vmware`
+###  Required Fields
+- **enabled** `(Boolean)`: Whether the setting is enabled.
+- **ipaddress** `(String)`: IP address or hostname of the vCenter or ESXi host.
+- **label** `(String)`: Name for the connection.
+- **password** `(String, Sensitive)`: Password for authentication.
+- **username** `(String)`: Username for authentication.
 
-### VMware
-```hcl
-resource "dynatrace_vmware" "example" {
-  enabled = var.enabled
-  ipaddress = var.ipaddress
-  label = var.label
-  password = var.password
-  username = var.username
-  filter = var.filter
-}
-```
+### 🔹 Optional Fields
+- **filter** `(String)`: Filter string using supported formats.
 
-## Inputs
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `enabled` | This setting is enabled (true) or disabled (false) | `bool` | `false` |
-| `ipaddress` | Specify the IP address or name of the vCenter or standalone ESXi host | `string` | `"vcenter01"` |
-| `label` | Name this connection | `string` | `"example"` |
-| `password` | Provide the password for the vCenter or standalone ESXi host | `string` | `"your-password-here"` |
-| `username` | Provide user credentials for the vCenter or standalone ESXi host | `string` | `"terraform"` |
-| `filter` | Filter string for the VMware resource | `string` | `"$contains(Terraform)"` |
+###  Read-Only Fields
+- **id** `(String)`: The ID of the resource.
 
-## Outputs
-| Name | Description |
-|------|-------------|
-| `vmware_id` | The ID of the VMware resource |
+##  Using a `data` Block
 
-## Example
-```hcl
-module "dynatrace_vmware" {
-  source = "./path_to_module"
-  enabled = false
-  ipaddress = "vcenter01"
-  label = "example"
-  password = "your-password-here"
-  username = "terraform"
-  filter = "$contains(Terraform)"
-}
-```
+To retrieve existing VMware configurations, use the `terraform-provider-dynatrace -export dynatrace_vmware` command. This will download all existing VMware configuration settings from Dynatrace.
 
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
+For more information:
+- VMware vSphere Monitoring Documentation
+- Settings API Documentation (schemaId: `builtin:virtualization.vmware`)
 
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace VMware resources.
+---
 

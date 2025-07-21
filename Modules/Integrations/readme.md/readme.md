@@ -1,106 +1,81 @@
-# Dynatrace Terraform Module
 
-## Introduction
-This repository contains a Terraform module for deploying and managing issue tracking and remote environments in Dynatrace. The module is designed to simplify the configuration and management of these functionalities using Terraform.
+## `dynatrace_issue_tracking`
 
-## Table of Contents
-- Introduction
-- Requirements
-- Providers
-- Resources
-- Inputs
-- Outputs
-- Usage
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
+### How to Determine tfvars Values
+- **`enabled`**: Set to `true` to activate the integration.
+- **`issuelabel`**: A label to categorize issues (e.g., `release_blocker`).
+- **`issuequery`**: Use placeholders like `{NAME}`, `{VERSION}` to dynamically populate issue content.
+- **`issuetheme`**: Choose from `ERROR`, `INFO`, or `RESOLVED`.
+- **`issuetrackersystem`**: Choose from `GITHUB`, `GITLAB`, `JIRA`, `JIRA_CLOUD`, `JIRA_ON_PREMISE`, `SERVICENOW`.
+- **`url`**: Provide the appropriate URL based on the tracker system.
+- **`username`**: Username for authentication.
+- **`token`**: Authentication token (sensitive).
+- **`insert_after`** and **`password`** are optional.
 
-## Requirements
-- Terraform >= 0.12
-- Dynatrace account
+### Schema
 
-## Providers
-The module requires the following provider:
+#### Required
+- `enabled` (Boolean)
+- `issuelabel` (String)
+- `issuequery` (String)
+- `issuetheme` (String)
+- `issuetrackersystem` (String)
+- `url` (String)
+- `username` (String)
 
-```hcl
-terraform {
-  required_providers {
-    dynatrace = {
-      source  = "dynatrace-oss/dynatrace"
-      version = "~> 1.0"
-    }
-  }
-}
-```
+#### Optional
+- `insert_after` (String)
+- `password` (String)
+- `token` (String, Sensitive)
 
-## Resources
-The following resources are created by this module:
+#### Read-Only
+- `id` (String)
 
-- `dynatrace_issue_tracking`
-- `dynatrace_remote_environments`
+### Data Source Usage
+This resource does not have a dedicated data source. Use the `terraform-provider-dynatrace -export` command to retrieve existing configurations.
 
-## Inputs
-### Issue Tracking Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `issue_tracking_enabled` | Enable or disable the issue tracking | `bool` | `true` |
-| `issue_tracking_issuelabel` | Label to identify these issues | `string` | `"release_blocker"` |
-| `issue_tracking_issuequery` | Query for the issue tracking | `string` | `"{NAME}, {VERSION}"` |
-| `issue_tracking_issuetheme` | Theme of the issue | `string` | `"INFO"` |
-| `issue_tracking_issuetrackersystem` | Issue tracker system | `string` | `"GITHUB"` |
-| `issue_tracking_token` | Token for the issue tracker system | `string` | `"your-issue-tracking-token"` |
-| `issue_tracking_url` | URL for the issue tracker system | `string` | `"https://github.com/sampleorg/samplerepo"` |
-| `issue_tracking_username` | Username for the issue tracker system | `string` | `"terraform-user"` |
-| `issue_tracking_insert_after` | ID of the resource instance that comes before this instance regarding order | `string` | `null` |
-| `issue_tracking_password` | Password for the issue tracker system | `string` | `null` |
+---
 
-### Remote Environment Variables
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `remote_environment_name` | Name of the remote environment | `string` | `"TerraformExample"` |
-| `remote_environment_network_scope` | Network scope of the remote environment | `string` | `"EXTERNAL"` |
-| `remote_environment_token` | Token for the remote environment | `string` | `"your-remote-environment-token"` |
-| `remote_environment_uri` | URI of the remote environment | `string` | `"https://terraformexample.live.dynatrace.com"` |
+## `dynatrace_remote_environments`
 
-## Outputs
-| Name | Description |
-|------|-------------|
-| `issue_tracking_id` | ID of the created issue tracking configuration |
-| `remote_environment_id` | ID of the created remote environment configuration |
+### Required API Token Scopes
+- `settings.read`
+- `settings.write`
 
-## Usage
-### Example Configuration
-```hcl
-provider "dynatrace" {
-  api_token = var.dynatrace_api_token
-  environment_url = var.dynatrace_environment_url
-}
+### How to Determine tfvars Values
+- **`name`**: A unique name for the remote environment.
+- **`network_scope`**: Choose from `CLUSTER`, `EXTERNAL`, or `INTERNAL`.
+- **`token`**: A valid token from the remote environment.
+- **`uri`**: Full URI of the remote Dynatrace environment.
 
-module "dynatrace_issue_tracking" {
-  source = "./modules/issue_tracking"
+### Schema
 
-  issue_tracking_enabled = var.issue_tracking_enabled
-  issue_tracking_issuelabel = var.issue_tracking_issuelabel
-  issue_tracking_issuequery = var.issue_tracking_issuequery
-  issue_tracking_issuetheme = var.issue_tracking_issuetheme
-  issue_tracking_issuetrackersystem = var.issue_tracking_issuetrackersystem
-  issue_tracking_token = var.issue_tracking_token
-  issue_tracking_url = var.issue_tracking_url
-  issue_tracking_username = var.issue_tracking_username
-  issue_tracking_insert_after = var.issue_tracking_insert_after
-  issue_tracking_password = var.issue_tracking_password
-}
+#### Required
+- `name` (String)
+- `network_scope` (String)
+- `token` (String, Sensitive)
+- `uri` (String)
 
-module "dynatrace_remote_environments" {
-  source = "./modules/remote_environments"
+#### Read-Only
+- `id` (String)
 
-  remote_environment_name = var.remote_environment_name
-  remote_environment_network_scope = var.remote_environment_network_scope
-  remote_environment_token = var.remote_environment_token
-  remote_environment_uri = var.remote_environment_uri
-}
-```
-## API Token Scopes
-This resource requires the API token scopes:
-- Read settings (`settings.read`)
-- Write settings (`settings.write`)
+### Data Source: `dynatrace_remote_environments`
 
-Make sure your API token includes these scopes to successfully create and manage the Dynatrace  resources.
+#### How to Use
+Use this data source to retrieve a list of all configured remote environments.
+
+#### Schema
+
+##### Read-Only
+- `id` (String)
+- `remote_environments` (List of Object)
+  - `name` (String)
+  - `network_scope` (String)
+  - `token` (String)
+  - `uri` (String)
+
+---

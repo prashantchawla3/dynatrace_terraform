@@ -1,6 +1,4 @@
-variable "environment_url" { type = string }
-variable "dynatrace_client_id" { type = string }
-variable "dynatrace_client_secret" { type = string, sensitive = true }
+
 
 variable "autotag_name" { type = string }
 variable "entity_selector" { type = string }

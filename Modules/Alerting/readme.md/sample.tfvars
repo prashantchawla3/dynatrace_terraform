@@ -1,27 +1,67 @@
-name = "Example Alerting Profile"
+alerting_name        = "example-alerting-profile"
+management_zone      = "ExampleZone"
 
 rules = [
   {
-    severity_level   = "ERRORS"
-    delay_in_minutes = 15
-    include_mode     = "INCLUDE_ANY"
-    tags             = ["Service:A", "Team:Dev"]
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentA:production", "Team:test"]
+    delay_in_minutes = 0
+    severity_level   = "AVAILABILITY"
   },
   {
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentB:production", "Team:test"]
+    delay_in_minutes = 0
+    severity_level   = "CUSTOM_ALERT"
+  },
+  {
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentC:production", "Team:test"]
+    delay_in_minutes = 0
+    severity_level   = "ERRORS"
+  },
+  {
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentD:production", "Team:test"]
+    delay_in_minutes = 0
+    severity_level   = "MONITORING_UNAVAILABLE"
+  },
+  {
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentE:production", "Team:test"]
+    delay_in_minutes = 0
     severity_level   = "PERFORMANCE"
-    delay_in_minutes = 30
-    include_mode     = "NONE"
+  },
+  {
+    include_mode     = "INCLUDE_ALL"
+    tags             = ["EnvironmentF:production", "Team:test"]
+    delay_in_minutes = 0
+    severity_level   = "RESOURCE_CONTENTION"
   }
 ]
 
-maintenance_windows = {
-  mw1 = {
-    name             = "Weekly Maintenance"
-    maintenance_type = "PLANNED"
-    suppression      = "DETECT_PROBLEMS_DONT_ALERT"
-    schedule_type    = "WEEKLY"
-    start_time       = "02:00"
-    end_time         = "04:00"
-    time_zone        = "UTC"
+enable_connectivity_alerts = true
+connectivity_alerts        = false
+process_group_id           = "PROCESS_GROUP-1234567890000000"
+
+maintenance_enabled            = true
+maintenance_name               = "example-maintenance-window"
+maintenance_description        = "Terraform test execution"
+maintenance_type               = "PLANNED"
+maintenance_disable_synthetic = true
+maintenance_suppression        = "DETECT_PROBLEMS_AND_ALERT"
+
+schedule_type                     = "WEEKLY"
+weekly_recurrence_day_of_week    = "MONDAY"
+recurrence_range_end_date        = "2022-10-06"
+recurrence_range_start_date      = "2022-10-05"
+time_window_end_time             = "15:13:00"
+time_window_start_time           = "14:13:00"
+time_window_time_zone            = "UTC"
+
+filters = [
+  {
+    entity_type = "HOST"
+    entity_tags = ["KeyTest:ValueTest"]
   }
-}
+]

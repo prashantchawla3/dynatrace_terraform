@@ -21,8 +21,3 @@ resource "dynatrace_token_settings" "example" {
   personal_tokens  = var.token_settings_config.personal_tokens
 }
 
-data "dynatrace_api_token" "by_name" {
-  name = var.api_token_config.name
-}
-
-data "dynatrace_api_tokens" "all" {}

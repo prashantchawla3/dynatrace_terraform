@@ -1,45 +1,72 @@
-dynatrace_api_url = "https://your-dynatrace-instance/api"
-
-dynatrace_api_token = "your-api-token"
-
-dashboards = [
+allowlist_urlpatterns = [
   {
-    name            = "Sample Dashboard 1"
-    description     = "This is a sample dashboard"
-    dashboard_id    = "sample_dashboard_1"
-    layout_type     = "GRID"
-    sharing         = "PRIVATE"
-    management_zone = "Zone 1" # Added management zone
-    widgets = [
+    rule     = "equals"
+    template = "https://www.terraform.io/"
+  },
+  {
+    rule     = "startsWith"
+    template = "https://www.google.com/"
+  }
+]
+
+enable_public_sharing = false
+
+default_dashboards = [
+  {
+    dashboard  = "d902df65-2a3e-4c0a-b898-bd4869f224d6"
+    user_group = "admin-group"
+  }
+]
+
+enable_dashboard_presets = true
+
+dashboard_presets = [
+  {
+    dashboard_preset = "95465fe6-a2c2-1b87-305b-3ec688c32e3b"
+    user_group       = "devops-group"
+  }
+]
+
+
+
+json_dashboards = [
+  {
+    dashboardMetadata = {
+      name  = "dashboard-a"
+      owner = "me@home.com"
+    }
+    tiles = [
       {
-        name     = "Widget 1"
-        type     = "CHART"
-        size     = "MEDIUM"
-        position = "TOP_LEFT"
-        settings = {
-          "metric" = "cpu_usage"
-          "type"   = "LINE"
+        bounds = {
+          height = 152
+          left   = 0
+          top    = 0
+          width  = 304
         }
+        configured = true
+        markdown   = "## This is a reference to Dashboard B"
+        name       = "Markdown"
+        tileType   = "MARKDOWN"
       }
     ]
   },
   {
-    name            = "Sample Dashboard 2"
-    description     = "Another dashboard"
-    dashboard_id    = "sample_dashboard_2"
-    layout_type     = "GRID"
-    sharing         = "PUBLIC"
-    management_zone = "Zone 2" # Added management zone
-    widgets = [
+    dashboardMetadata = {
+      name  = "dashboard-b"
+      owner = "me@home.com"
+    }
+    tiles = [
       {
-        name     = "Widget 2"
-        type     = "TABLE"
-        size     = "LARGE"
-        position = "BOTTOM_RIGHT"
-        settings = {
-          "metric" = "memory_usage"
-          "type"   = "TABLE"
+        bounds = {
+          height = 152
+          left   = 0
+          top    = 0
+          width  = 304
         }
+        configured = true
+        markdown   = "## This is a reference to Dashboard A"
+        name       = "Markdown"
+        tileType   = "MARKDOWN"
       }
     ]
   }

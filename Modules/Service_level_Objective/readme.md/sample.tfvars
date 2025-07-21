@@ -1,6 +1,4 @@
-environment_url = "https://your-dynatrace-environment-url.com"
-dynatrace_client_id = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
+
 
 slo_name = "Your SLO Name"
 slo_enabled = true

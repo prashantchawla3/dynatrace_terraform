@@ -1,8 +1,4 @@
 
-environment_url         = "https://your-env.live.dynatrace.com"
-dynatrace_client_id     = "your-client-id"
-dynatrace_client_secret = "your-client-secret"
-
 auto_update           = true
 scope_activegate      = "environment"
 scope_oneagent        = "environment"

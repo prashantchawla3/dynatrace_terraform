@@ -1,358 +1,242 @@
 variable "alerting_name" {
-  type = string
+  description = "Name identifier for the alerting configuration block"
+  type        = string
+  default     = "core-alerting-rule"
 }
 
+# ── Ansible Tower ─────────────────────
 variable "ansible_tower_active" {
-  type = bool
+  description = "Enable or disable Ansible Tower integration"
+  type        = bool
+  default     = false
 }
 
 variable "ansible_tower_name" {
-  type = string
+  description = "Display name for Ansible Tower destination"
+  type        = string
+  default     = "AnsibleTower"
 }
 
 variable "ansible_tower_insecure" {
-  type = bool
+  description = "Allow insecure TLS connection for Ansible Tower"
+  type        = bool
+  default     = false
 }
 
 variable "ansible_tower_job_template_url" {
-  type = string
+  description = "URL to Ansible Tower job template"
+  type        = string
+  default     = ""
 }
 
 variable "ansible_tower_username" {
-  type = string
+  description = "Username for Ansible Tower authentication"
+  type        = string
+  default     = "admin"
 }
 
 variable "ansible_tower_password" {
-  type = string
-  sensitive = true
+  description = "Password for Ansible Tower"
+  type        = string
+  sensitive   = true
+  default     = "changeme"
 }
 
 variable "ansible_tower_custom_message" {
-  type = string
+  description = "Message payload for Ansible Tower execution"
+  type        = string
+  default     = "Triggered via Dynatrace alert"
 }
 
+# ── Email ─────────────────────────────
 variable "email_active" {
-  type = bool
+  description = "Enable email notifications"
+  type        = bool
+  default     = false
 }
 
 variable "email_name" {
-  type = string
+  description = "Display name for email destination"
+  type        = string
+  default     = "EmailAlerts"
 }
 
 variable "email_subject" {
-  type = string
+  description = "Email subject line"
+  type        = string
+  default     = "Alert Notification"
 }
 
 variable "email_to" {
-  type = list(string)
+  description = "List of primary recipients"
+  type        = list(string)
+  default     = []
 }
 
 variable "email_cc" {
-  type = list(string)
+  description = "List of CC recipients"
+  type        = list(string)
+  default     = []
 }
 
 variable "email_bcc" {
-  type = list(string)
+  description = "List of BCC recipients"
+  type        = list(string)
+  default     = []
 }
 
 variable "email_notify_closed_problems" {
-  type = bool
+  description = "Send notification for closed problems"
+  type        = bool
+  default     = true
 }
 
 variable "email_body" {
-  type = string
+  description = "Body of the email message"
+  type        = string
+  default     = "See Dynatrace problem details for more info."
 }
 
+# ── Jira ──────────────────────────────
 variable "jira_active" {
-  type = bool
+  description = "Enable Jira integration"
+  type        = bool
+  default     = false
 }
 
 variable "jira_name" {
-  type = string
+  description = "Display name for Jira destination"
+  type        = string
+  default     = "JiraAlerts"
 }
 
 variable "jira_url" {
-  type = string
+  description = "Base URL of Jira instance"
+  type        = string
+  default     = ""
 }
 
 variable "jira_username" {
-  type = string
+  description = "Username for Jira authentication"
+  type        = string
+  default     = "jira_bot"
 }
 
 variable "jira_api_token" {
-  type = string
-  sensitive = true
+  description = "API token for Jira"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "jira_project_key" {
-  type = string
+  description = "Jira project key"
+  type        = string
+  default     = "SRE"
 }
 
 variable "jira_issue_type" {
-  type = string
+  description = "Type of issue created in Jira"
+  type        = string
+  default     = "Bug"
 }
 
 variable "jira_summary" {
-  type = string
+  description = "Summary field for created Jira issues"
+  type        = string
+  default     = "New Dynatrace problem detected"
 }
 
 variable "jira_description" {
-  type = string
+  description = "Description field for created Jira issues"
+  type        = string
+  default     = "Problem details attached from Dynatrace"
 }
 
-variable "mobile_enabled" {
-  type = bool
-}
-
-variable "ops_genie_active" {
-  type = bool
-}
-
-variable "ops_genie_name" {
-  type = string
-}
-
-variable "ops_genie_domain" {
-  type = string
-}
-
-variable "ops_genie_message" {
-  type = string
-}
-
-variable "ops_genie_api_key" {
-  type = string
-  sensitive = true
-}
-
-variable "pager_duty_active" {
-  type = bool
-}
-
-variable "pager_duty_name" {
-  type = string
-}
-
-variable "pager_duty_account" {
-  type = string
-}
-
-variable "pager_duty_service" {
-  type = string
-}
-
-variable "pager_duty_api_key" {
-  type = string
-  sensitive = true
-}
-
-variable "service_now_active" {
-  type = bool
-}
-
-variable "service_now_name" {
-  type = string
-}
-
-variable "service_now_instance" {
-  type = string
-}
-
-variable "service_now_username" {
-  type = string
-}
-
-variable "service_now_password" {
-  type = string
-  sensitive = true
-}
-
-variable "service_now_message" {
-  type = string
-}
-
-variable "service_now_incidents" {
-  type = bool
-}
-
-variable "service_now_events" {
-  type = bool
-}
-
+# ── Slack ─────────────────────────────
 variable "slack_active" {
-  type = bool
+  description = "Enable Slack alerts"
+  type        = bool
+  default     = false
 }
 
 variable "slack_name" {
-  type = string
+  description = "Display name for Slack destination"
+  type        = string
+  default     = "SlackChannelAlerts"
 }
 
 variable "slack_url" {
-  type = string
+  description = "Webhook URL for Slack messages"
+  type        = string
+  default     = ""
 }
 
 variable "slack_channel" {
-  type = string
+  description = "Slack channel name or ID"
+  type        = string
+  default     = "#alerts"
 }
 
 variable "slack_message" {
-  type = string
+  description = "Slack message text content"
+  type        = string
+  default     = "Dynatrace alert triggered."
 }
 
+# ── Trello ────────────────────────────
 variable "trello_active" {
-  type = bool
+  description = "Enable Trello integration"
+  type        = bool
+  default     = false
 }
 
 variable "trello_name" {
-  type = string
+  description = "Display name for Trello integration"
+  type        = string
+  default     = "TrelloAlerts"
 }
 
 variable "trello_application_key" {
-  type = string
-  sensitive = true
+  description = "Trello application key"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "trello_board_id" {
-  type = string
+  description = "Trello board ID where card is created"
+  type        = string
+  default     = ""
 }
 
 variable "trello_list_id" {
-  type = string
+  description = "Trello list ID for open alerts"
+  type        = string
+  default     = ""
 }
 
 variable "trello_resolved_list_id" {
-  type = string
+  description = "Trello list ID for resolved alerts"
+  type        = string
+  default     = ""
 }
 
 variable "trello_text" {
-  type = string
+  description = "Trello card title"
+  type        = string
+  default     = "Alert card"
 }
 
 variable "trello_description" {
-  type = string
+  description = "Trello card description"
+  type        = string
+  default     = "Details from Dynatrace alert"
 }
 
 variable "trello_authorization_token" {
-  type = string
-  sensitive = true
-}
-
-variable "victor_ops_active" {
-  type = bool
-}
-
-variable "victor_ops_name" {
-  type = string
-}
-
-variable "victor_ops_api_key" {
-  type = string
-  sensitive = true
-}
-
-variable "victor_ops_routing_key" {
-  type = string
-}
-
-variable "victor_ops_message" {
-  type = string
-}
-
-variable "webhook_active" {
-  type = bool
-}
-
-variable "webhook_name" {
-  type = string
-}
-
-variable "webhook_url" {
-  type = string
-}
-
-variable "webhook_insecure" {
-  type = bool
-}
-
-variable "webhook_notify_event_merges" {
-  type = bool
-}
-
-variable "webhook_notify_closed_problems" {
-  type = bool
-}
-
-variable "webhook_payload" {
-  type = string
-}
-
-variable "webhook_header_name_01" {
-  type = string
-}
-
-variable "webhook_header_value_01" {
-  type = string
-}
-
-variable "webhook_header_name_02" {
-  type = string
-}
-
-variable "webhook_header_value_02" {
-  type = string
-  sensitive = true
-}
-
-variable "webhook_use_oauth_2" {
-  type = bool
-}
-
-variable "webhook_access_token_url" {
-  type = string
-}
-
-variable "webhook_client_id" {
-  type = string
-}
-
-variable "webhook_client_secret" {
-  type = string
-  sensitive = true
-}
-
-variable "xmatters_active" {
-  type = bool
-}
-
-variable "xmatters_name" {
-  type = string
-}
-
-variable "xmatters_url" {
-  type = string
-}
-
-variable "xmatters_insecure" {
-  type = bool
-}
-
-variable "xmatters_payload" {
-  type = string
-}
-
-variable "xmatters_header_name_01" {
-  type = string
-}
-
-variable "xmatters_header_value_01" {
-  type = string
-}
-
-variable "xmatters_header_name_02" {
-  type = string
-}
-
-variable "xmatters_header_value_02" {
-  type = string
-  sensitive = true
+  description = "Authorization token for Trello API"
+  type        = string
+  sensitive   = true
+  default     = ""
 }

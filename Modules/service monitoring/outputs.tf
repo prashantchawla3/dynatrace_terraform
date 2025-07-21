@@ -25,3 +25,18 @@ output "service_naming_id" {
 output "url_based_sampling_id" {
   value = dynatrace_url_based_sampling.example.id
 }
+
+output "request_naming_rule_ids" {
+  description = "IDs of request naming rules"
+  value       = [for r in dynatrace_request_naming.request_naming : r.id]
+}
+
+output "request_namings_id" {
+  description = "ID of the request namings resource"
+  value       = dynatrace_request_namings.request_namings.id
+}
+
+output "service_naming_order_id" {
+  description = "ID of the service naming order resource"
+  value       = dynatrace_service_naming_order.service_naming_order.id
+}

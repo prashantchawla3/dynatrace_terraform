@@ -1,20 +1,4 @@
 
-variable "environment_url" {
-  description = "Dynatrace environment URL"
-  type        = string
-}
-
-variable "dynatrace_client_id" {
-  description = "OAuth client ID"
-  type        = string
-}
-
-variable "dynatrace_client_secret" {
-  description = "OAuth client secret"
-  type        = string
-  sensitive   = true
-}
-
 variable "activegate_token_config" {
   description = "Configuration for ActiveGate token"
   type = object({

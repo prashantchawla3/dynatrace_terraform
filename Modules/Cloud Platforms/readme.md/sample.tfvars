@@ -1,70 +1,61 @@
 cloud_foundry = {
-  "cf_example" = {
+  cf1 = {
     enabled           = true
-    active_gate_group = "group_1"
-    api_url           = "https://api.example.com"
-    label             = "example_label"
-    login_url         = "https://login.example.com"
-    password          = "secretpassword"
+    active_gate_group = "cf-gate-group"
+    api_url           = "https://api.cf.example.com"
+    label             = "Cloud Foundry Instance"
+    login_url         = "https://login.cf.example.com"
+    password          = "supersecret"
     username          = "admin"
   }
 }
 
 k8s_monitoring = {
-  "k8s_example" = {
+  cluster1 = {
     cloud_application_pipeline_enabled = true
     event_processing_active            = true
-    filter_events                      = true
+    filter_events                      = false
     include_all_fdi_events             = true
     open_metrics_builtin_enabled       = true
-    open_metrics_pipeline_enabled      = true
-    scope                              = "us-west"
-    event_patterns = [
-      {
-        active  = true
-        label   = "pattern_1"
-        pattern = "pattern_value"
-      }
-    ]
+    open_metrics_pipeline_enabled      = false
+    scope                              = "environmentid:my-env-id"
+    event_patterns = {
+      active  = true
+      label   = "Node Events"
+      pattern = "involvedObject.kind=Node"
+    }
   }
 }
 
 kubernetes = {
-  "k8s_example" = {
-    enabled                    = true
-    cluster_id                 = "cluster-123"
-    cluster_id_enabled         = true
-    label                      = "example_label"
-    scope                      = "us-west"
-    active_gate_group          = "group_1"
-    auth_token                 = "auth-token-123"
-    certificate_check_enabled  = true
-    endpoint_url               = "https://example.com"
+  cluster1 = {
+    enabled                        = true
+    cluster_id                     = "my-cluster-id"
+    cluster_id_enabled             = true
+    label                          = "Production Cluster"
+    scope                          = "environmentid:my-env-id"
+    active_gate_group              = "k8s-gate-group"
+    auth_token                     = "dt0c01.abc123securetoken"
+    certificate_check_enabled      = true
+    endpoint_url                   = "https://k8s-api.example.com"
     hostname_verification_enabled = true
   }
 }
 
 kubernetes_app = {
-  "k8s_app_example" = {
-    scope                    = "us-west"
-    enable_kubernetes_app    = true
+  app1 = {
+    scope                 = "environmentid:my-env-id"
+    enable_kubernetes_app = true
   }
 }
 
 kubernetes_enrichment = {
-  "k8s_enrichment_example" = {
-    scope = "us-west"
-    rules = [
-      {
-        type   = "type1"
-        source = "source1"
-        target = "target1"
-      },
-      {
-        type   = "type2"
-        source = "source2"
-        target = "target2"
-      }
-    ]
+  enrich1 = {
+    scope = "environmentid:my-env-id"
+    rules = {
+      type   = "KUBERNETES"
+      source = "namespace"
+      target = "tag"
+    }
   }
 }

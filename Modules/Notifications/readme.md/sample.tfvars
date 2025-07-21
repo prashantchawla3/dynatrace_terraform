@@ -3,7 +3,8 @@ alerting_name = "Default Alerting Profile"
 ansible_tower_active = true
 ansible_tower_name = "Ansible Tower Notification"
 ansible_tower_insecure = false
-ansible_tower_job_template_url = "https://ansible.example.com/job_template"
+ansible_tower_job_template_url = "https://ansible.example.com/#/templates/job_template/42"
+
 ansible_tower_username = "ansible_user"
 ansible_tower_password = "ansible_password"
 ansible_tower_custom_message = "Custom message for Ansible Tower"
