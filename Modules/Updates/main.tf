@@ -1,27 +1,28 @@
 
-resource "dynatrace_activegate_updates" "this" {
-  auto_update = var.auto_update
-  scope       = var.scope_activegate
+# ─── ActiveGate Auto Update ───────────────────────────────
+module "activegate_update" {
+  source          = "./modules/dynatrace_activegate_updates"
+
+  auto_update     = var.auto_update
+  scope_activegate = var.scope_activegate
 }
 
-resource "dynatrace_oneagent_updates" "this" {
-  scope          = var.scope_oneagent
+# ─── OneAgent Update Targeting ────────────────────────────
+module "oneagent_update" {
+  source         = "./modules/dynatrace_oneagent_updates"
+
+  scope_oneagent = var.scope_oneagent
   target_version = var.target_version
   update_mode    = var.update_mode
 }
 
-resource "dynatrace_update_windows" "this" {
-  name       = var.name
-  enabled    = var.enabled
-  recurrence = var.recurrence
+# ─── OneAgent Update Window Scheduling ────────────────────
+module "update_window" {
+  source                  = "./modules/dynatrace_update_windows"
 
-  dynamic "once_recurrence" {
-    for_each = var.recurrence == "ONCE" ? [1] : []
-    content {
-      recurrence_range {
-        start = var.once_recurrence_start
-        end   = var.once_recurrence_end
-      }
-    }
-  }
+  name                    = var.name
+  enabled                 = var.enabled
+  recurrence              = var.recurrence
+  once_recurrence_start   = var.once_recurrence_start
+  once_recurrence_end     = var.once_recurrence_end
 }

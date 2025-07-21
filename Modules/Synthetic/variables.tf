@@ -1,86 +1,129 @@
+# ──  Calculated Synthetic Metric ─────────────────────────
 variable "calculated_synthetic_metric_name" {
-  type = string
+  description = "Unique name for the calculated synthetic metric being defined."
+  type        = string
+  default     = "SyntheticMetric:ResponseTimeThreshold"
 }
 
 variable "calculated_synthetic_metric_enabled" {
-  type = bool
+  description = "Toggle to enable or disable creation of the calculated synthetic metric."
+  type        = bool
+  default     = true
 }
 
 variable "calculated_synthetic_metric_metric" {
-  type = string
+  description = "Source metric identifier used to calculate the synthetic metric."
+  type        = string
+  default     = "builtin:synmon.response.time"
 }
 
 variable "calculated_synthetic_metric_metric_key" {
-  type = string
+  description = "Logical key for identifying the calculated metric formula or scope."
+  type        = string
+  default     = "calc.synthetic.response.threshold"
 }
 
 variable "calculated_synthetic_metric_monitor_identifier" {
-  type = string
+  description = "Monitor ID or tag used to scope the calculated synthetic metric."
+  type        = string
+  default     = "SYNTH_MONITOR_WEB_AFRICA"
 }
 
+# ──  Synthetic Availability ─────────────────────────────
 variable "synthetic_availability_exclude_maintenance_windows" {
-  type = bool
+  description = "Exclude maintenance windows from availability calculations if set to true."
+  type        = bool
+  default     = false
 }
 
+# ──  Synthetic Location Configuration ───────────────────
 variable "synthetic_location_name" {
-  type = string
+  description = "Name of the custom synthetic location."
+  type        = string
+  default     = "Private Location"
 }
 
 variable "synthetic_location_auto_update_chromium" {
-  type = bool
+  description = "Enable auto-update for Chromium used by the synthetic agent."
+  type        = bool
+  default     = true
 }
 
 variable "synthetic_location_availability_location_outage" {
-  type = bool
+  description = "Enable reporting of location-level outages."
+  type        = bool
+  default     = true
 }
 
 variable "synthetic_location_availability_node_outage" {
-  type = bool
+  description = "Enable reporting of node-level outages inside this location."
+  type        = bool
+  default     = false
 }
 
 variable "synthetic_location_availability_notifications_enabled" {
-  type = bool
+  description = "Enable alert notifications for outages at this synthetic location."
+  type        = bool
+  default     = true
 }
 
 variable "synthetic_location_city" {
-  type = string
+  description = "City label for the synthetic location."
+  type        = string
+  default     = "Nairobi"
 }
 
 variable "synthetic_location_country_code" {
-  type = string
+  description = "ISO 3166 country code for the location."
+  type        = string
+  default     = "KE"
 }
 
 variable "synthetic_location_deployment_type" {
-  type = string
+  description = "Deployment type of the location (e.g. PRIVATE or PUBLIC)."
+  type        = string
+  default     = "PRIVATE"
 }
 
 variable "synthetic_location_latitude" {
-  type = number
+  description = "Latitude coordinate for synthetic location geolocation."
+  type        = number
+  default     = -1.2921
 }
 
 variable "synthetic_location_location_node_outage_delay_in_minutes" {
-  type = number
+  description = "Delay in minutes before detecting node outage."
+  type        = number
+  default     = 5
 }
 
 variable "synthetic_location_longitude" {
-  type = number
+  description = "Longitude coordinate for synthetic location geolocation."
+  type        = number
+  default     = 36.8219
 }
 
 variable "synthetic_location_region_code" {
-  type = string
+  description = "Custom region label used for grouping locations."
+  type        = string
+  default     = "AF-EA"
 }
 
+# ──  Enable Switches ────────────────────────────────────
 variable "enable_calculated_synthetic_metric" {
-  type    = bool
-  default = true
+  description = "Master switch to enable calculated synthetic metric provisioning."
+  type        = bool
+  default     = true
 }
 
 variable "enable_synthetic_availability" {
-  type    = bool
-  default = true
+  description = "Master switch to enable synthetic availability rules."
+  type        = bool
+  default     = true
 }
 
 variable "enable_synthetic_location" {
-  type    = bool
-  default = true
+  description = "Master switch to enable synthetic location creation."
+  type        = bool
+  default     = true
 }
