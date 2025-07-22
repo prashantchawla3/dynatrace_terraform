@@ -1,134 +1,159 @@
+# Dynatrace Terraform Modules Documentation
 
-
-## `dynatrace_generic_relationships`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to activate the relationship rule.
-- **`created_by`**: Identifier for the user or extension that created the rule.
-- **`from_type` / `to_type`**: Define the source and destination entity types.
-- **`type_of_relation`**: Choose from `CALLS`, `CHILD_OF`, `INSTANCE_OF`, `PART_OF`, `RUNS_ON`, `SAME_AS`.
-- **`from_role` / `to_role`**: Optional roles to distinguish directionality.
-- **`sources`**: Define the source type and optional condition and mapping rules.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `created_by` (String)
-- `from_type` (String)
-- `to_type` (String)
-- `type_of_relation` (String)
-- `sources` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `from_role` (String)
-- `to_role` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `sources.source`
-- `source_type` (String) — Required
-- `condition` (String) — Optional
-- `mapping_rules` (Block List, Max: 1) — Optional
-
-#### Nested: `mapping_rules.mapping_rule`
-- `source_property` (String)
-- `source_transformation` (String)
-- `destination_property` (String)
-- `destination_transformation` (String)
+This documentation provides a detailed and user-friendly explanation of each module, resource, and input variable used in the Dynatrace Terraform setup. It ensures clarity, accuracy, and usability so that any user can easily understand what each resource does, how variables are used, and how to configure them.
 
 ---
 
-## `dynatrace_generic_types`
+## Module: `dynatrace_generic_relationships`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+### Purpose
 
-### How to Determine tfvars Values
-- **`name`**: Unique identifier for the custom entity type.
-- **`display_name`**: Human-readable name.
-- **`created_by`**: Identifier for the creator.
-- **`enabled`**: Set to `true` to activate.
-- **`rules`**: Define how entities are extracted from data sources.
+Defines **custom relationships** between Dynatrace entities (e.g., hosts, services). These relationships help visualize entity dependencies and roles within Dynatrace.
 
-### Schema
+### Resources
 
-#### Required
-- `name` (String)
-- `display_name` (String)
-- `created_by` (String)
-- `enabled` (Boolean)
-- `rules` (Block List, Min: 1, Max: 1)
+* **`dynatrace_generic_relationships`**: Configures a directional relationship between two Dynatrace entities with roles, types, and optional source filtering.
 
-#### Optional
-- `insert_after` (String)
+### Variables
 
-#### Read-Only
-- `id` (String)
+| Variable                                    | Description                                                          | Type     | Example                  | Default               |
+| ------------------------------------------- | -------------------------------------------------------------------- | -------- | ------------------------ | --------------------- |
+| `generic_relationships_enabled`             | Enables or disables creation of the relationship.                    | `bool`   | `true`                   | `true`                |
+| `generic_relationships_created_by`          | Identifier for team or automation that created the rule.             | `string` | `"Terraform"`            | `"automation-team"`   |
+| `generic_relationships_from_role`           | Logical role of the source entity (e.g., owner, initiator).          | `string` | `"terraformrole"`        | `"owner"`             |
+| `generic_relationships_from_type`           | Dynatrace entity type for the source node (e.g., host, os\:service). | `string` | `"os:service"`           | `"host"`              |
+| `generic_relationships_to_role`             | Logical role of the destination entity (e.g., dependency, backend).  | `string` | `"terraformrole"`        | `"backend"`           |
+| `generic_relationships_to_type`             | Entity type of the destination node (e.g., service, database).       | `string` | `"terraformdestination"` | `"service"`           |
+| `generic_relationships_type_of_relation`    | Relationship type label (e.g., PART\_OF, COMMUNICATES\_WITH).        | `string` | `"PART_OF"`              | `"communicates_with"` |
+| `generic_relationships_sources_condition`   | Condition expression for filtering sources (e.g., `$eq(terraform)`). | `string` | `"$eq(terraform)"`       | `"key == 'region'"`   |
+| `generic_relationships_sources_source_type` | Where the condition applies: `METADATA`, `ENTITY`, `Metrics`.        | `string` | `"Metrics"`              | `"METADATA"`          |
 
-#### Nested: `rules.rule`
-- `id_pattern` (String) — Required
-- `sources` (Block List, Min: 1, Max: 1) — Required
-- `icon_pattern` (String) — Optional
-- `instance_name_pattern` (String) — Optional
-- `attributes` (Block List, Max: 1) — Optional
-- `required_dimensions` (Block List, Max: 1) — Optional
-- `role` (String) — Optional
+### Output
 
-#### Nested: `sources.source`
-- `source_type` (String) — Required
-- `condition` (String) — Optional
-
-#### Nested: `attributes.attribute`
-- `key` (String)
-- `pattern` (String)
-- `display_name` (String) — Optional
-
-#### Nested: `required_dimensions.required_dimension`
-- `key` (String)
-- `value_pattern` (String) — Optional
+| Output                     | Description                                         |
+| -------------------------- | --------------------------------------------------- |
+| `generic_relationships_id` | ID of the created generic relationship in Dynatrace |
 
 ---
 
-## `dynatrace_grail_security_context`
+## Module: `dynatrace_generic_types`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+### Purpose
 
-### How to Determine tfvars Values
-- **`entity_type`**: Specify the type of entity whose security context is being overridden.
-- **`destination_property`**: The property name to be used for the override.
+Defines a **custom entity type** within Dynatrace, allowing tailored representations of logical or technical components, including matching rules, attributes, and display properties.
 
-### Schema
+### Resources
 
-#### Required
-- `entity_type` (String)
-- `destination_property` (String)
+* **`dynatrace_generic_types`**: Registers a new custom entity type and matching rules.
 
-#### Optional
-- `insert_after` (String)
+### Variables
 
-#### Read-Only
-- `id` (String)
+| Variable                                      | Description                                               | Type     | Example                     | Default                         |
+| --------------------------------------------- | --------------------------------------------------------- | -------- | --------------------------- | ------------------------------- |
+| `generic_types_name`                          | Unique identifier for the custom type.                    | `string` | `"terraform:type"`          | `"custom_host_type"`            |
+| `generic_types_enabled`                       | Enable or disable the custom type.                        | `bool`   | `true`                      | `true`                          |
+| `generic_types_created_by`                    | Creator or automation name.                               | `string` | `"Terraform"`               | `"terraform-module"`            |
+| `generic_types_display_name`                  | Display name in the Dynatrace UI.                         | `string` | `"TerraformTest"`           | `"Custom Host Type"`            |
+| `generic_types_rules_icon_pattern`            | Icon identifier or pattern.                               | `string` | `"{TerraformIcon}"`         | `"os:linux"`                    |
+| `generic_types_rules_id_pattern`              | Pattern that defines the entity ID (e.g., `{host.name}`). | `string` | `"{TerraformPlaceholder}"`  | `"{host.name}"`                 |
+| `generic_types_rules_instance_name_pattern`   | Custom instance label.                                    | `string` | `"{TerraformInstance}"`     | `"{host.name} - {environment}"` |
+| `generic_types_rules_attributes_key`          | Metadata key for an attribute.                            | `string` | `"TerraformAttribute"`      | `"environment"`                 |
+| `generic_types_rules_attributes_pattern`      | Pattern for matching attribute value.                     | `string` | `"{TerraformExtraction}"`   | `".*prod.*"`                    |
+| `generic_types_rules_required_dimensions_key` | Required metadata key to recognize entity.                | `string` | `"TerraformDimension"`      | `"region"`                      |
+| `generic_types_rules_sources_condition`       | Rule condition for selection.                             | `string` | `"$eq(TerraformCondition)"` | `"environment == 'prod'"`       |
+| `generic_types_rules_sources_source_type`     | Source data type (e.g., `METADATA`, `LOGS`, `EVENTS`).    | `string` | `"Events"`                  | `"METADATA"`                    |
+
+### Output
+
+| Output             | Description                                       |
+| ------------------ | ------------------------------------------------- |
+| `generic_types_id` | ID of the defined custom entity type in Dynatrace |
 
 ---
 
-## Data Source Usage
+## Module: `dynatrace_grail_security_context`
 
-These resources do not have dedicated data sources. Use the following command to retrieve existing configurations:
+### Purpose
 
-```bash
-terraform-provider-dynatrace -export dynatrace_generic_relationships
-terraform-provider-dynatrace -export dynatrace_generic_types
-terraform-provider-dynatrace -export dynatrace_grail_security_context
+Defines a **security context** mapping in Dynatrace Grail to enforce access scoping using entity types and metadata fields.
+
+### Resources
+
+* **`dynatrace_grail_security_context`**: Maps a user or system field to an entity type in Grail for security enforcement.
+
+### Variables
+
+| Variable                                      | Description                                         | Type     | Example             | Default   |
+| --------------------------------------------- | --------------------------------------------------- | -------- | ------------------- | --------- |
+| `grail_security_context_entity_type`          | Entity type for which the security context applies. | `string` | `"exampletype"`     | `"user"`  |
+| `grail_security_context_destination_property` | Metadata field for scoping (e.g., email, tenantId). | `string` | `"exampleproperty"` | `"email"` |
+
+### Output
+
+| Output                      | Description                                            |
+| --------------------------- | ------------------------------------------------------ |
+| `grail_security_context_id` | ID of the created Grail security context configuration |
+
+---
+
+## Usage Example (Root Module)
+
+```hcl
+module "grail_relationship" {
+  source = "./modules/dynatrace_generic_relationships"
+  generic_relationships_enabled = true
+  generic_relationships_created_by = "Terraform"
+  generic_relationships_from_role = "terraformrole"
+  generic_relationships_from_type = "os:service"
+  generic_relationships_to_role = "terraformrole"
+  generic_relationships_to_type = "terraformdestination"
+  generic_relationships_type_of_relation = "PART_OF"
+  generic_relationships_sources_condition = "$eq(terraform)"
+  generic_relationships_sources_source_type = "Metrics"
+}
+
+module "grail_entity_type" {
+  source = "./modules/dynatrace_generic_types"
+  generic_types_name = "terraform:type"
+  generic_types_enabled = true
+  generic_types_created_by = "Terraform"
+  generic_types_display_name = "TerraformTest"
+  generic_types_rules_icon_pattern = "{TerraformIcon}"
+  generic_types_rules_id_pattern = "{TerraformPlaceholder}"
+  generic_types_rules_instance_name_pattern = "{TerraformInstance}"
+  generic_types_rules_attributes_key = "TerraformAttribute"
+  generic_types_rules_attributes_pattern = "{TerraformExtraction}"
+  generic_types_rules_required_dimensions_key = "TerraformDimension"
+  generic_types_rules_sources_condition = "$eq(TerraformCondition)"
+  generic_types_rules_sources_source_type = "Events"
+}
+
+module "grail_security_context" {
+  source = "./modules/dynatrace_grail_security_context"
+  grail_security_context_entity_type = "exampletype"
+  grail_security_context_destination_property = "exampleproperty"
+}
 ```
 
 ---
 
+## Notes
+
+* No secrets or credentials are used or stored in this configuration.
+* All modules are designed to be reusable, configurable via variables, and easily testable.
+* Use `terraform plan` to validate inputs before applying.
+
+---
+## How to Use
+
+1. Update or use the provided `sample.tfvars` file in the root directory to supply values for the modules.
+2. All modules are already called in the `main.tf` file in the root.
+3. You only need to run the following commands to deploy:
+
+```bash
+terraform init
+terraform plan -var-file="readme.md/sample.tfvars"
+terraform apply -var-file="readme.md/sample.tfvars"
+```
+
+---

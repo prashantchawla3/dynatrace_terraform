@@ -1,352 +1,277 @@
+# Dynatrace Terraform Modules - Detailed README
 
+This Terraform configuration manages a wide range of Dynatrace services and detection rules using reusable modules. This README offers an in-depth explanation of each resource, variable, and their usage, making it easier for users to compare the code with the documentation.
 
-## Resource: `dynatrace_custom_service`
+---
 
-### Required API Token Scopes
-- `ReadConfig`
-- `WriteConfig`
+## Table of Contents
 
-### How to Determine Values for `tfvars`
-- **name**: Unique name for the custom service.
-- **technology**: Technology type (e.g., `java`, `dotNet`).
-- **enabled**: Set to `true` or `false`.
-- **queue_entry_point**: Set to `true` if this is a messaging service.
-- **rules**: Define instrumentation rules including class, method, and annotations.
+* [Overview](#overview)
+* [Modules and Resources](#modules-and-resources)
 
-### Full Schema
+  * [Custom Services](#custom-services)
+  * [Custom Service Order](#custom-service-order)
+  * [Management Zones](#management-zones)
+  * [External Web Requests](#external-web-requests)
+  * [External Web Services](#external-web-services)
+  * [Full Web Requests](#full-web-requests)
+  * [Full Web Services](#full-web-services)
+  * [Unified Services Metrics](#unified-services-metrics)
+  * [Unified Services OpenTelemetry](#unified-services-opentelemetry)
+  * [Service Detection Rules](#service-detection-rules)
+  * [Service Splitting Rules](#service-splitting-rules)
+* [Usage](#usage)
+* [Examples](#examples)
+* [Outputs](#outputs)
 
-#### Required
-- `name` (String)
-- `technology` (String)
-- `enabled` (Boolean)
+---
 
-#### Optional
-- `process_groups` (Set of String)
-- `queue_entry_point` (Boolean)
-- `queue_entry_point_type` (String)
-- `rule` (Block List)
-  - `enabled` (Boolean)
-  - `class` (Block)
-    - `name` (String)
-    - `match` (String)
-  - `method` (Block List)
-    - `name` (String)
-    - `arguments` (List of String)
-    - `returns` (String)
-    - `modifiers` (List of String)
-    - `visibility` (String)
-  - `annotations` (Set of String)
+## Overview
 
-#### Read-Only
-- `id` (String)
+This set of Terraform modules provisions Dynatrace monitoring configurations including:
 
-### Using a `data` Block
-```bash
-terraform-provider-dynatrace -export dynatrace_custom_service
+* Custom service definitions (Java/.NET)
+* Management zones
+* Service detection and splitting rules
+* Web request and service classification
+* Unified service telemetry and metric integration
+
+---
+
+## Modules and Resources
+
+### Custom Services
+
+Creates custom service detection based on specified class and method rules per technology (e.g., Java or .NET).
+
+**Resource:** `dynatrace_custom_service`
+
+**Variables:**
+
+```hcl
+variable "custom_services" {
+  type = list(object({
+    name             = string
+    technology       = string
+    enabled          = bool
+    queue_entry_point = bool
+    rules = list(object({
+      enabled     = bool
+      class_name  = string
+      class_match = string
+      annotations = optional(list(string))
+      methods     = list(object({
+        name      = string
+        arguments = optional(list(string))
+        returns   = string
+      }))
+    }))
+  }))
+}
+```
+
+**Example:**
+
+```hcl
+custom_services = [
+  {
+    name = "java-first",
+    technology = "java",
+    enabled = true,
+    queue_entry_point = false,
+    rules = [
+      {
+        enabled = true,
+        class_name = "com.example.MyClass",
+        class_match = "EQUALS",
+        methods = [
+          {
+            name = "myMethod",
+            arguments = ["java.lang.String"],
+            returns = "void"
+          }
+        ]
+      }
+    ]
+  }
+]
 ```
 
 ---
 
-## Resource: `dynatrace_custom_service_order`
+### Custom Service Order
 
-### Required API Token Scopes
-- `ReadConfig`
-- `WriteConfig`
+Specifies the priority of custom service detection rules per technology.
 
-### How to Determine Values for `tfvars`
-- Provide ordered lists of custom service IDs per technology (e.g., `dotnet`, `java`).
+**Resource:** `dynatrace_custom_service_order`
 
-### Full Schema
+**Variable:**
 
-#### Optional
-- `dotnet`, `java`, `golang`, `nodejs`, `php` (List of String)
+```hcl
+variable "custom_service_order" {
+  type = object({
+    dotnet = list(string),
+    java   = list(string)
+  })
+}
+```
 
-#### Read-Only
-- `id` (String)
+**Example:**
 
-### Using a `data` Block
-```bash
-terraform-provider-dynatrace -export dynatrace_custom_service_order
+```hcl
+custom_service_order = {
+  dotnet = ["dynatrace_custom_service.dotnet-first.id"],
+  java   = ["dynatrace_custom_service.java-first.id"]
+}
 ```
 
 ---
 
-## Resource: `dynatrace_service_detection_rules`
+### Management Zones
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Creates logical segmentation within Dynatrace using management zones with attribute-based rules.
 
-### How to Determine Values for `tfvars`
-- **enabled**: Enable or disable the rule.
-- **scope**: Scope of the rule (e.g., `environment`).
-- **rule**: Define detection logic using attributes and conditions.
+**Resource:** `dynatrace_management_zone_v2`
 
-### Full Schema
+**Variable:**
 
-#### Required
-- `enabled` (Boolean)
-- `rule` (Block List)
-  - `rule_name` (String)
-  - `service_name_template` (String)
-
-#### Optional
-- `insert_after` (String)
-- `scope` (String)
-- `rule.additional_required_attributes` (Set of String)
-- `rule.condition` (String)
-- `rule.description` (String)
-
-#### Read-Only
-- `id` (String)
-
-### Using a `data` Block
-```bash
-terraform-provider-dynatrace -export dynatrace_service_detection_rules
-```
-
-
-
-## Resource: `dynatrace_service_external_web_request`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine Values for `tfvars`
-- **name**: Unique name for the rule.
-- **enabled**: Enable or disable the rule.
-- **management_zones**: List of management zone IDs.
-- **conditions**: Define matching conditions using attributes and comparison types.
-- **id_contributors**: Specify how service identifiers are constructed (e.g., application ID, context root, public domain name).
-
-### Full Schema
-
-#### Required
-- `name` (String)
-- `enabled` (Boolean)
-- `id_contributors` (Block List)
-  - `port_for_service_id` (Boolean)
-  - `application_id`, `context_root`, `public_domain_name` (Block Lists)
-
-#### Optional
-- `description` (String)
-- `insert_after` (String)
-- `management_zones` (Set of String)
-- `conditions` (Block List)
-  - `condition` (Block List)
-    - `attribute` (String)
-    - `compare_operation_type` (String)
-    - `text_values`, `int_values`, `tag_values`, etc.
-
-#### Read-Only
-- `id` (String)
-
-### Using a `data` Block
-```bash
-terraform-provider-dynatrace -export dynatrace_service_external_web_request
+```hcl
+variable "management_zones" {
+  type = list(object({
+    name = string,
+    rules = list(object({
+      type            = string,
+      enabled         = bool,
+      entity_selector = string,
+      entity_type     = string,
+      condition = object({
+        case_sensitive = bool,
+        key            = string,
+        operator       = string,
+        string_value   = string
+      })
+    }))
+  }))
+}
 ```
 
 ---
 
-## Resource: `dynatrace_service_external_web_service`
+### External Web Requests
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Detects external web requests using conditions and ID contributor rules.
 
-### How to Determine Values for `tfvars`
-- **name**: Rule name.
-- **enabled**: Enable or disable the rule.
-- **management_zones**: List of management zone IDs.
-- **conditions**: Define matching conditions.
-- **id_contributors**: Define how the service ID is constructed (e.g., URL path).
+**Resource:** `dynatrace_service_external_web_request`
 
-### Full Schema
+**Variable:** `external_web_requests`
 
-#### Required
-- `name` (String)
-- `enabled` (Boolean)
-- `id_contributors` (Block List)
-  - `detect_as_web_request_service` (Boolean)
-  - `url_path` (Block List)
+---
 
-#### Optional
-- `description` (String)
-- `insert_after` (String)
-- `management_zones` (Set of String)
-- `conditions` (Block List)
+### External Web Services
 
-#### Read-Only
-- `id` (String)
+Maps external services to web requests using advanced conditions and ID contributor transformations.
 
-### Using a `data` Block
+**Resource:** `dynatrace_service_external_web_service`
+
+**Variable:** `external_web_services`
+
+---
+
+### Full Web Requests
+
+Identifies full web requests and extracts ID contributor information using multiple transformation techniques.
+
+**Resource:** `dynatrace_service_full_web_request`
+
+**Variable:** `full_web_requests`
+
+---
+
+### Full Web Services
+
+Classifies full web services with minimal configuration.
+
+**Resource:** `dynatrace_service_full_web_service`
+
+**Variable:** `full_web_services`
+
+---
+
+### Unified Services Metrics
+
+Enables endpoint metrics for services in Dynatrace Unified Service Monitoring.
+
+**Resource:** `dynatrace_unified_services_metrics`
+
+**Variable:** `unified_services_metrics`
+
+---
+
+### Unified Services OpenTelemetry
+
+Enables OpenTelemetry for unified services.
+
+**Resource:** `dynatrace_unified_services_opentel`
+
+**Variable:** `unified_services_opentel`
+
+---
+
+### Service Detection Rules
+
+Creates rule-based service detection logic mapped to a Dynatrace scope.
+
+**Resource:** `dynatrace_service_detection_rules`
+
+**Variable:** `service_detection_rules`
+
+---
+
+### Service Splitting Rules
+
+Splits detected services based on specified attribute keys.
+
+**Resource:** `dynatrace_service_splitting`
+
+**Variable:** `service_splitting_rules`
+
+---
+
+## How to Use
+
+1. Update or use the provided `sample.tfvars` file in the root directory to supply values for the modules.
+2. All modules are already called in the `main.tf` file in the root.
+3. You only need to run the following commands to deploy:
+
 ```bash
-terraform-provider-dynatrace -export dynatrace_service_external_web_service
+terraform init
+terraform plan -var-file="readme.md/sample.tfvars"
+terraform apply -var-file="readme.md/sample.tfvars"
 ```
 
 ---
 
-## Resource: `dynatrace_service_full_web_request`
+## Outputs
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine Values for `tfvars`
-- **name**: Rule name.
-- **enabled**: Enable or disable the rule.
-- **management_zones**: List of management zone IDs.
-- **conditions**: Define matching conditions.
-- **id_contributors**: Define how the service ID is constructed (e.g., application ID, context root, server name).
-
-### Full Schema
-
-#### Required
-- `name` (String)
-- `enabled` (Boolean)
-- `id_contributors` (Block List)
-  - `application_id`, `context_root`, `server_name` (Block Lists)
-
-#### Optional
-- `description` (String)
-- `insert_after` (String)
-- `management_zones` (Set of String)
-- `conditions` (Block List)
-
-#### Read-Only
-- `id` (String)
-
-### Using a `data` Block
-```bash
-terraform-provider-dynatrace -export dynatrace_service_full_web_request
-```
-
-
-## `dynatrace_service_full_web_service`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`name`**: Choose a descriptive name for the rule.
-- **`enabled`**: Set to `true` or `false` based on whether the rule should be active.
-- **`management_zones`**: Use the ID of an existing management zone.
-- **`conditions`**: Define matching logic using attributes like `HostName`.
-- **`id_contributors`**: Specify how service identifiers are calculated (e.g., `detect_as_web_request_service`).
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `name` (String)
-- `id_contributors` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `description` (String)
-- `conditions` (Block List, Max: 1)
-- `insert_after` (String)
-- `management_zones` (Set of String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `id_contributors`
-- `detect_as_web_request_service` (Boolean)
-- `application_id`, `context_root`, `server_name`, `web_service_name`, `web_service_namespace` (Optional blocks with nested transformation and override options)
-
-#### Data Source Usage
-Use a `data` block to retrieve existing service detection rules by schema ID `builtin:service-detection.full-web-service`.
+| Output Name                    | Description                           |
+| ------------------------------ | ------------------------------------- |
+| `custom_service_ids`           | IDs of the created custom services    |
+| `management_zone_ids`          | IDs of the management zones created   |
+| `external_web_request_ids`     | IDs of external web requests          |
+| `external_web_service_ids`     | IDs of external web services          |
+| `full_web_request_ids`         | IDs of full web requests              |
+| `full_web_service_ids`         | IDs of full web services              |
+| `service_detection_rule_ids`   | IDs of service detection rules        |
+| `service_splitting_rule_ids`   | IDs of service splitting rules        |
+| `unified_services_metrics_ids` | IDs of metrics-enabled services       |
+| `unified_services_opentel_ids` | IDs of OpenTelemetry-enabled services |
 
 ---
 
-## `dynatrace_service_splitting`
+## Notes
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` or `false`.
-- **`scope`**: Define the scope (`environment`, `CLOUD_APPLICATION_NAMESPACE`, etc.).
-- **`rule_name`**: Provide a unique name.
-- **`condition`**: Use DQL expressions to filter.
-- **`service_splitting_attributes`**: List of attribute keys to split services.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `rule` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `insert_after` (String)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `rule`
-- `rule_name` (String)
-- `condition` (String)
-- `description` (String)
-- `service_splitting_attributes` (Block List, Max: 1)
-
-#### Nested: `service_splitting_attributes.service_splitting_attribute`
-- `key` (String)
-
-#### Data Source Usage
-Use a `data` block to retrieve existing service splitting rules by schema ID `builtin:service-splitting-rules`.
+* This configuration does **not** include any sensitive information or secrets.
+* Ensure API tokens or environment configuration is managed securely outside this code base.
 
 ---
-
-## `dynatrace_unified_services_metrics`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enable_endpoint_metrics`**: Set to `true` to enable endpoint metrics (note billing implications).
-- **`service_id`**: Use `"environment"` for global scope or specify a service ID.
-
-### Schema
-
-#### Required
-- `enable_endpoint_metrics` (Boolean)
-
-#### Optional
-- `service_id` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Data Source Usage
-Use a `data` block to retrieve existing configurations by schema ID `builtin:unified-services-endpoint-metrics`.
-
----
-
-## `dynatrace_unified_services_opentel`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to enable OpenTelemetry-based unified services.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-
-#### Read-Only
-- `id` (String)
-
-#### Data Source Usage
-Use a `data` block to retrieve existing configurations by schema ID `builtin:unified-services-enablement`.
-
----
-
 

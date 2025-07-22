@@ -1,177 +1,116 @@
 
-#  Resource: `dynatrace_platform_slo`
+# Dynatrace SLO v2 Terraform Module
 
-##  Required OAuth Scopes
-- `slo:slos:read`
-- `slo:slos:write`
-
-##  How to Determine Values for `tfvars`
-- **name**: Choose a descriptive name for the SLO.
-- **description**: Optional description of the SLO.
-- **tags**: Optional tags to categorize the SLO.
-- **criteria**: Define `target`, `timeframe_from`, and optionally `timeframe_to` and `warning`.
-- **custom_sli**: Provide a custom SLI expression.
-- **sli_reference**: Use a template ID and define variables if using a predefined SLI template.
-
-##  Full Schema
-
-###  Required Fields
-- **name** (String)
-- **criteria** (Block List, Min: 1, Max: 1)
-  - **criteria_detail** (Block List, Min: 1)
-    - **target** (Number)
-    - **timeframe_from** (String)
-
-###  Optional Fields
-- **description** (String)
-- **tags** (Set of String)
-- **custom_sli** (Block List, Max: 1)
-  - **indicator** (String)
-  - **filter_segments** (Optional)
-    - **filter_segment**
-      - **id** (String)
-      - **variables**
-        - **filter_segment_variable**
-          - **name** (String)
-          - **values** (Set of String)
-- **sli_reference** (Block List, Max: 1)
-  - **template_id** (String)
-  - **variables**
-    - **sli_reference_variable**
-      - **name** (String)
-      - **value** (String)
-
-###  Read-Only Fields
-- **id** (String)
-
-##  Using a `data` Block
-Use `data "dynatrace_platform_slo_template"` or `dynatrace_platform_slo_templates` to retrieve template IDs.
+This Terraform module provisions a **Service-Level Objective (SLO)** in Dynatrace using the `dynatrace_slo_v2` resource. It includes support for burn rate visualization and custom metric evaluation.
 
 ---
 
-#  Resource: `dynatrace_slo_normalization`
+##  Module Features
 
-##  Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-##  How to Determine Values for `tfvars`
-- **normalize**: Set to `true` to show error budget left as a percentage.
-
-##  Full Schema
-
-###  Required Fields
-- **normalize** (Boolean)
-
-###  Read-Only Fields
-- **id** (String)
-
-##  Using a `data` Block
-Use the export utility with `-export dynatrace_slo_normalization` to retrieve existing configuration.
+*  Create Dynatrace SLOs with flexible metric expressions.
+* Supports error budget burn rate visualization.
+*  Supports STATIC and SLIDING evaluation types.
+*  Filters based on service tags or types.
 
 ---
 
-#  Resource: `dynatrace_slo_v2`
-##  Required API Token Scopes
-- `slo.read`
-- `slo.write`
-- `settings.read`
-- `settings.write`
+##  Module Structure
 
-##  How to Determine Values for `tfvars`
-- Define the SLO's name, metric expression, evaluation window, and thresholds.
-- Use `filter` to target specific services.
-- Configure `error_budget_burn_rate` settings.
+```hcl
+module "slo_module" {
+  source = "./modules/dynatrace_slo_v2"
+  count  = var.slo_enabled ? 1 : 0
 
-##  Full Schema
-
-###  Required Fields
-- **enabled** (Boolean)
-- **name** (String)
-- **evaluation_type** (String)
-- **evaluation_window** (String)
-- **filter** (String)
-- **metric_expression** (String)
-- **target_success** (Number)
-- **target_warning** (Number)
-- **error_budget_burn_rate** (Block List, Min: 1)
-  - **burn_rate_visualization_enabled** (Boolean)
-
-###  Optional Fields
-- **custom_description** (String)
-- **legacy_id** (String)
-- **metric_name** (String)
-- **fast_burn_threshold** (Number)
-
-###  Read-Only Fields
-- **id** (String)
-
-##  Using a `data` Block
-Use `-export dynatrace_slo_v2` to retrieve existing SLO configurations.
+  slo_name                         = var.slo_name
+  slo_description                  = var.slo_description
+  slo_evaluation_type              = var.slo_evaluation_type
+  slo_evaluation_window            = var.slo_evaluation_window
+  slo_filter                       = var.slo_filter
+  slo_metric_expression            = var.slo_metric_expression
+  slo_metric_name                  = var.slo_metric_name
+  slo_target_success               = var.slo_target_success
+  slo_target_warning               = var.slo_target_warning
+  slo_legacy_id                    = var.slo_legacy_id
+  burn_rate_visualization_enabled = var.burn_rate_visualization_enabled
+  fast_burn_threshold              = var.fast_burn_threshold
+}
+```
 
 ---
 
-#  Data Source: `dynatrace_platform_slo_template`
+## Input Variables
 
-##  Required OAuth Scopes
-- `slo:slos:read`
-- `slo:objective-templates:read`
-
-##  How to Determine Values for `tfvars`
-- Provide the name of the SLO objective template to retrieve its ID.
-
-##  Full Schema
-
-###  Required Fields
-- **name** (String)
-
-###  Read-Only Fields
-- **id** (String)
-
----
-
-#  Data Source: `dynatrace_platform_slo_templates`
-
-##  Required OAuth Scopes
-- `slo:slos:read`
-- `slo:objective-templates:read`
-
-##  How to Determine Values for `tfvars`
-- No input required. Use this to retrieve a list of all available templates.
-
-##  Full Schema
-
-###  Read-Only Fields
-- **id** (String)
-- **templates** (List of Object)
-  - **id** (String)
-  - **name** (String)
+| Name                              | Type   | Default Value                                                  | Description                          |
+| --------------------------------- | ------ | -------------------------------------------------------------- | ------------------------------------ |
+| `slo_name`                        | string | `"Availability SLO"`                                           | Logical name of the SLO.             |
+| `slo_enabled`                     | bool   | `true`                                                         | Toggle SLO provisioning.             |
+| `slo_description`                 | string | `"Tracks availability of key services based on error rate..."` | Human-readable description.          |
+| `slo_evaluation_type`             | string | `"STATIC"`                                                     | Evaluation type (STATIC or SLIDING). |
+| `slo_evaluation_window`           | string | `"LAST_7_DAYS"`                                                | Time window for evaluation.          |
+| `slo_filter`                      | string | `"type(SERVICE),tag([Team:Platform])"`                         | Entity selector filter.              |
+| `slo_metric_expression`           | string | `"(100 - builtin:service.errors.total.count:splitBy())"`       | Metric expression.                   |
+| `slo_metric_name`                 | string | `"synthetic_success_rate"`                                     | Name of metric.                      |
+| `slo_target_success`              | number | `99.95`                                                        | Target threshold %.                  |
+| `slo_target_warning`              | number | `99.0`                                                         | Warning threshold %.                 |
+| `slo_legacy_id`                   | string | `"slo-platform-core"`                                          | Optional legacy ID.                  |
+| `burn_rate_visualization_enabled` | bool   | `true`                                                         | Enable burn rate charts.             |
+| `fast_burn_threshold`             | number | `null`                                                         | Burn rate threshold (optional).      |
 
 ---
 
-#  Data Source: `dynatrace_slo`
+## Outputs
 
-##  How to Determine Values for `tfvars`
-- Provide the name of the SLO to retrieve its ID and metadata.
+| Name       | Description             |
+| ---------- | ----------------------- |
+| `slo_id`   | ID of the created SLO   |
+| `slo_name` | Name of the created SLO |
 
-##  Full Schema
+---
 
-###  Required Fields
-- **name** (String)
+##  Sample `sample.tfvars`
 
-###  Read-Only Fields
-- **id** (String)
-- **description** (String)
-- **enabled** (Boolean)
-- **evaluation_type** (String)
-- **evaluation_window** (String)
-- **filter** (String)
-- **metric_expression** (String)
-- **metric_name** (String)
-- **target_success** (Number)
-- **target_warning** (Number)
-- **legacy_id** (String)
-- **burn_rate_visualization_enabled** (Boolean)
-- **fast_burn_threshold** (Number)
+```hcl
+slo_name                         = "Your SLO Name"
+slo_enabled                      = true
+slo_description                  = "Description of your SLO"
+slo_evaluation_type              = "STATIC"
+slo_evaluation_window            = "LAST_7_DAYS"
+slo_filter                       = "type(SERVICE),tag([Team:Platform])"
+slo_metric_expression            = "(100 - builtin:service.errors.total.count:splitBy())"
+slo_metric_name                  = "synthetic_success_rate"
+slo_target_success               = 99.9
+slo_target_warning               = 95.0
+slo_legacy_id                    = "your-slo-id"
+burn_rate_visualization_enabled = true
+fast_burn_threshold              = 0.5
+```
+
+---
+## How to Use
+
+1. Update or use the provided `sample.tfvars` file in the root directory to supply values for the modules.
+2. All modules are already called in the `main.tf` file in the root.
+3. You only need to run the following commands to deploy:
+
+```bash
+terraform init
+terraform plan -var-file="readme.md/sample.tfvars"
+terraform apply -var-file="readme.md/sample.tfvars"
+```
+
+---
+
+##  Requirements
+
+* Terraform v1.0+
+* Dynatrace Provider (properly configured with API token)
+* A valid Dynatrace environment
+
+---
+
+##  Notes
+
+* `burn_rate_visualization_enabled` will conditionally render the `error_budget_burn_rate` block.
+* To disable burn rate threshold, set `fast_burn_threshold = null`.
 
 ---

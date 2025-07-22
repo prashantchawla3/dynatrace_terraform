@@ -3,7 +3,12 @@
 module "custom_services" {
   source                = "./modules/dynatrace_custom_service"
   custom_services       = var.custom_services
-  custom_service_order  = var.custom_service_order
+
+}
+
+module "custom_service_order" {
+  source               = "./modules/custom_service_order"
+  custom_service_order = var.custom_service_order
 }
 
 # ─── Management Zone Provisioning ───────────────────────────

@@ -1,19 +1,4 @@
-
-# ─── User Preference Profiles ──────────────────────────────
-module "user_preferences" {
-  for_each = var.user_settings
-
+module "user_settings" {
   source         = "./modules/dynatrace_user_settings"
-
-  auto_language  = each.value.auto_language
-  auto_region    = each.value.auto_region
-  auto_theme     = each.value.auto_theme
-  auto_timezone  = each.value.auto_timezone
-
-  language       = each.value.language
-  region         = each.value.region
-  theme          = each.value.theme
-  timezone       = each.value.timezone
-
-  scope          = each.value.scope
+  user_settings  = var.user_settings
 }

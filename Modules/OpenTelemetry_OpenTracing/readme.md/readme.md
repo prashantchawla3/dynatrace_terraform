@@ -1,233 +1,305 @@
+# Dynatrace Observability Terraform Module
 
-
-## `dynatrace_attribute_allow_list`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to allow the attribute.
-- **`key`**: Specify the attribute key to persist.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `key` (String)
-
-#### Read-Only
-- `id` (String)
+This Terraform module helps manage Dynatrace observability configurations, including attribute filtering, OpenTelemetry metrics enrichment, span behavior rules, and attribute persistence preferences.
 
 ---
 
-## `dynatrace_attribute_block_list`
+## Resources Defined in This Module
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+### 1. `dynatrace_attribute_allow_list`
 
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to block the attribute.
-- **`key`**: Specify the attribute key to block.
+Allows specific attributes to be **processed and retained** in observability data.
 
-### Schema
+*  **Inputs:**
 
-#### Required
-- `enabled` (Boolean)
-- `key` (String)
+  * `enabled`: Boolean to toggle the allow list rule.
+  * `key`: The attribute key to allow (e.g., `trace_id`, `user.id`).
 
-#### Read-Only
-- `id` (String)
+* **Terraform Resource Block:**
 
----
+```hcl
+resource "dynatrace_attribute_allow_list" "this" {
+  for_each = var.attribute_allow_list
+  enabled  = each.value.enabled
+  key      = each.value.key
+}
+```
 
-## `dynatrace_attribute_masking`
+### 2. `dynatrace_attribute_block_list`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Blocks specific attributes from being processed or displayed.
 
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to enable masking.
-- **`key`**: Attribute key to mask.
-- **`masking`**: Choose from `MASK_ENTIRE_VALUE`, `MASK_ONLY_CONFIDENTIAL_DATA`.
+*  **Inputs:**
 
-### Schema
+  * `enabled`: Boolean to toggle blocking.
+  * `key`: Attribute to be blocked (e.g., `internal_session_token`).
 
-#### Required
-- `enabled` (Boolean)
-- `key` (String)
-- `masking` (String)
+*  **Terraform Resource Block:**
 
-#### Read-Only
-- `id` (String)
+```hcl
+resource "dynatrace_attribute_block_list" "this" {
+  for_each = var.attribute_block_list
+  enabled  = each.value.enabled
+  key      = each.value.key
+}
+```
 
----
+### 3. `dynatrace_attribute_masking`
 
-## `dynatrace_attributes_preferences`
+Applies masking (e.g., SHA256, MASK\_ENTIRE\_VALUE) to sensitive attributes.
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+*  **Inputs:**
 
-### How to Determine tfvars Values
-- **`persistence_mode`**: Choose from `ALLOW_ALL_ATTRIBUTES`, `BLOCK_ALL_ATTRIBUTES`.
+  * `enabled`: Whether to mask this attribute.
+  * `key`: Attribute key (e.g., `email`, `ssn`).
+  * `masking`: Type of masking to apply (e.g., `MASK_ENTIRE_VALUE`).
 
-### Schema
+* **Terraform Resource Block:**
 
-#### Required
-- `persistence_mode` (String)
+```hcl
+resource "dynatrace_attribute_masking" "this" {
+  for_each = var.attribute_masking
+  enabled  = each.value.enabled
+  key      = each.value.key
+  masking  = each.value.masking
+}
+```
 
-#### Read-Only
-- `id` (String)
+### 4. `dynatrace_opentelemetry_metrics`
 
----
+Configures how OpenTelemetry metrics are enriched, including attribute handling.
 
-## `dynatrace_opentelemetry_metrics`
+*  **Inputs:**
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+  * `scope`: The environment or app scope (e.g., `env:default`).
+  * `additional_attributes_to_dimension_enabled`: Promote attributes to dimensions.
+  * `meter_name_to_dimension_enabled`: Promote meter name to dimension.
+  * `additional_attributes`: List of additional attributes to enrich metrics.
+  * `to_drop_attributes`: List of attributes to exclude from ingestion.
 
-### How to Determine tfvars Values
-- **`additional_attributes_to_dimension_enabled`**: Set to `true` to add attributes as dimensions.
-- **`meter_name_to_dimension_enabled`**: Set to `true` to include meter name and version as dimensions.
-- **`scope`**: Use `"environment"` or omit for global scope.
-- **`mode`**: Optional. Use `EXPLICIT` or `ADDITIVE`.
-- **`additional_attributes`**: List of attributes to include.
-- **`to_drop_attributes`**: List of attributes to exclude.
+*  **Terraform Resource Block:**
 
-### Schema
+```hcl
+resource "dynatrace_opentelemetry_metrics" "this" {
+  for_each = var.opentelemetry_metrics
+  additional_attributes_to_dimension_enabled = each.value.additional_attributes_to_dimension_enabled
+  meter_name_to_dimension_enabled           = each.value.meter_name_to_dimension_enabled
+  scope                                     = each.value.scope
 
-#### Optional
-- `additional_attributes_to_dimension_enabled` (Boolean)
-- `meter_name_to_dimension_enabled` (Boolean)
-- `scope` (String)
-- `mode` (String)
-- `additional_attributes` (Block List, Max: 1)
-- `to_drop_attributes` (Block List, Max: 1)
+  additional_attributes {
+    dynamic "additional_attribute" {
+      for_each = each.value.additional_attributes
+      content {
+        enabled       = additional_attribute.value.enabled
+        attribute_key = additional_attribute.value.attribute_key
+      }
+    }
+  }
 
-#### Read-Only
-- `id` (String)
+  to_drop_attributes {
+    dynamic "to_drop_attribute" {
+      for_each = each.value.to_drop_attributes
+      content {
+        enabled       = to_drop_attribute.value.enabled
+        attribute_key = to_drop_attribute.value.attribute_key
+      }
+    }
+  }
+}
+```
 
-#### Nested: `additional_attributes.additional_attribute`
-- `attribute_key` (String)
-- `enabled` (Boolean)
+### 5. `dynatrace_span_capture_rule`
 
-#### Nested: `to_drop_attributes.to_drop_attribute`
-- `attribute_key` (String)
-- `enabled` (Boolean)
+Controls which spans are captured based on matching rules.
 
----
+*  **Inputs:**
 
-## `dynatrace_span_capture_rule`
+  * `name`: A unique key identifying the rule.
+  * `action`: What to do with matched spans (`ALLOW`, `IGNORE`).
+  * `matches`: Conditions for matching spans (e.g., span name equals `foo`).
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+*  **Terraform Resource Block:**
 
-### How to Determine tfvars Values
-- **`name`**: Name of the rule.
-- **`action`**: Action to apply (e.g., `IGNORE`).
-- **`matches`**: Define matching criteria.
+```hcl
+resource "dynatrace_span_capture_rule" "this" {
+  for_each = var.span_capture_rules
+  name     = each.key
+  action   = each.value.action
 
-### Schema
-
-#### Required
-- `name` (String)
-- `action` (String)
-- `matches` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `insert_after` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `matches.match`
-- `comparison` (String)
-- `source` (String)
-- `value` (String) — Optional
-- `key` (String) — Optional
-- `case_sensitive` (Boolean) — Optional
-
----
-
-## `dynatrace_span_context_propagation`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`name`**: Name of the rule.
-- **`action`**: Action to apply (e.g., `PROPAGATE`).
-- **`matches`**: Define matching criteria.
-
-### Schema
-
-#### Required
-- `name` (String)
-- `action` (String)
-- `matches` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `insert_after` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `matches.match`
-- `comparison` (String)
-- `source` (String)
-- `value` (String) — Optional
-- `key` (String) — Optional
-- `case_sensitive` (Boolean) — Optional
+  matches {
+    dynamic "match" {
+      for_each = each.value.matches
+      content {
+        comparison = match.value.comparison
+        source     = match.value.source
+        value      = match.value.value
+      }
+    }
+  }
+}
+```
 
 ---
 
-## `dynatrace_span_entry_point`
+## Input Variables
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+### `attribute_allow_list`
 
-### How to Determine tfvars Values
-- **`name`**: Name of the rule.
-- **`action`**: Action to apply (e.g., `DONT_CREATE_ENTRYPOINT`).
-- **`matches`**: Define matching criteria.
+Allow processing of specific attribute keys.
 
-### Schema
+```hcl
+attribute_allow_list = {
+  trace_id = {
+    enabled = true
+    key     = "trace_id"
+  }
+}
+```
 
-#### Required
-- `name` (String)
-- `action` (String)
-- `matches` (Block List, Min: 1, Max: 1)
+### `attribute_block_list`
 
-#### Optional
-- `insert_after` (String)
+Block processing of sensitive/internal attribute keys.
 
-#### Read-Only
-- `id` (String)
+```hcl
+attribute_block_list = {
+  internal_token = {
+    enabled = true
+    key     = "internal_session_token"
+  }
+}
+```
 
-#### Nested: `matches.match`
-- `comparison` (String)
-- `source` (String)
-- `value` (String) — Optional
-- `key` (String) — Optional
-- `case_sensitive` (Boolean) — Optional
+### `attribute_masking`
+
+Apply masking strategies to sensitive attributes.
+
+```hcl
+attribute_masking = {
+  user_email = {
+    enabled = true
+    key     = "email"
+    masking = "SHA256"
+  }
+}
+```
+
+### `opentelemetry_metrics`
+
+Control OpenTelemetry metric ingestion and enrichment.
+
+```hcl
+opentelemetry_metrics = {
+  metrics_default = {
+    additional_attributes_to_dimension_enabled = true
+    meter_name_to_dimension_enabled           = false
+    scope                                     = "env:default"
+    additional_attributes = [
+      { enabled = true, attribute_key = "host" },
+      { enabled = false, attribute_key = "zone" }
+    ]
+    to_drop_attributes = [
+      { enabled = true, attribute_key = "debug_mode" }
+    ]
+  }
+}
+```
+
+### `span_capture_rules`
+
+Define which spans should be captured.
+
+```hcl
+span_capture_rules = {
+  capture_login = {
+    action = "ALLOW"
+    matches = [
+      {
+        comparison = "EQUALS"
+        source     = "url.path"
+        value      = "/auth/login"
+      }
+    ]
+  }
+}
+```
+
+### `span_context_propagation`
+
+Configure context propagation headers.
+
+```hcl
+span_context_propagation = {
+  propagate_trace = {
+    action = "INJECT"
+    matches = [
+      {
+        comparison = "CONTAINS"
+        source     = "http.headers"
+        value      = "x-trace-id"
+      }
+    ]
+  }
+}
+```
+
+### `span_entry_points`
+
+Define span entry point matching rules.
+
+```hcl
+span_entry_points = {
+  public_api = {
+    action = "ALLOW"
+    matches = [
+      {
+        case_sensitive = true
+        comparison     = "STARTS_WITH"
+        source         = "url.path"
+        value          = "/api/"
+      }
+    ]
+  }
+}
+```
+
+### `attributes_preferences`
+
+Configure attribute persistence behavior.
+
+```hcl
+attributes_preferences = {
+  telemetry_defaults = {
+    persistence_mode = "TRANSIENT"
+  }
+}
+```
 
 ---
 
-## Data Source Usage
+## Usage Example
 
-These resources do not have dedicated data sources. Use the `terraform-provider-dynatrace -export` command to retrieve existing configurations for:
+```hcl
+module "dynatrace_observability" {
+  source = "./modules/dynatrace"
 
-- Attribute allow/block/masking
-- OpenTelemetry metrics
-- Span capture/context/entry point rules
-- Attribute preferences
+  attribute_allow_list     = var.attribute_allow_list
+  attribute_block_list     = var.attribute_block_list
+  attribute_masking        = var.attribute_masking
+  opentelemetry_metrics    = var.opentelemetry_metrics
+  span_capture_rules       = var.span_capture_rules
+  span_context_propagation = var.span_context_propagation
+  span_entry_points        = var.span_entry_points
+  attributes_preferences   = var.attributes_preferences
+}
+```
+
+To apply:
+
+```bash
+terraform init
+terraform plan -var-file=readme.md/samples.tfvars
+terraform apply -var-file=readme.md/samples.tfvars
+```
 
 ---
 

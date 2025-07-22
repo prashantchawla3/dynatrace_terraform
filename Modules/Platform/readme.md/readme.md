@@ -1,131 +1,269 @@
-
-
-# Dynatrace Platform Configuration Resources
-
-This README documents Terraform resources used to configure generic settings, Grail metrics access, platform buckets, problem propagation, and security contexts in Dynatrace.
-
-
-## `dynatrace_grail_metrics_allowall`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`allow_all`**: Set to `true` to allow all metrics in Grail.
-
-### Schema
-
-#### Required
-- `allow_all` (Boolean)
+# Dynatrace Terraform Modules - Detailed Documentation
+Each module corresponds to a specific Dynatrace resource and uses input variables to customize behavior. This README provides a detailed overview of each module, the resources they manage, and the purpose of each variable, so users can easily understand and apply them in their environments.
 
 ---
 
-## `dynatrace_grail_metrics_allowlist`
+## Module: `dynatrace_grail_metrics_allowall`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+### Purpose
 
-### How to Determine tfvars Values
-- **`allow_rules`**: Define rules to allow specific metrics based on key and pattern.
+Configures Grail to allow all metrics ingestion by default based on a boolean flag.
 
-### Schema
+### Resource Used
 
-#### Nested: `allow_rules.allow_rule`
-- `enabled` (Boolean)
-- `metric_key` (String)
-- `pattern` (String)
-
----
-
-## `dynatrace_platform_bucket`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`name`**: Unique name of the bucket.
-- **`display_name`**: Human-readable name.
-- **`retention`**: Retention period in days.
-- **`table`**: Table name (e.g., `logs`).
-
-### Schema
-
-#### Required
-- `name` (String)
-- `display_name` (String)
-- `retention` (Number)
-- `table` (String)
-
----
-
-## `dynatrace_problem_fields`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Enable or disable the mapping.
-- **`event_field`**: Source event field.
-- **`problem_field`**: Target problem field.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `event_field` (String)
-- `problem_field` (String)
-
----
-
-## `dynatrace_problem_record_propagation_rules`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Enable or disable the rule.
-- **`source_attribute_key`**: Source attribute key.
-- **`target_attribute_key`**: Target attribute key.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `source_attribute_key` (String)
-- `target_attribute_key` (String)
-
----
-
-## `dynatrace_security_context`
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine tfvars Values
-- **`enabled`**: Enable or disable the security context.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-
----
-
-## Data Source Usage
-
-These resources do not have dedicated data sources. To retrieve existing configurations, use:
-
-```bash
-terraform-provider-dynatrace -export <resource_name>
+```hcl
+resource "dynatrace_grail_metrics_allowall" "this"
 ```
 
-Replace `<resource_name>` with the specific resource you want to export.
+### Input Variable: `grail_allowall`
+
+```hcl
+variable "grail_allowall" {
+  description = "Allow all configuration."
+  type = map(object({
+    allow_all = bool
+  }))
+}
+```
+
+#### Example Value
+
+```hcl
+grail_allowall = {
+  default = {
+    allow_all = true
+  }
+}
+```
+
+### Description
+
+* `allow_all`: Set to `true` to allow all metrics to be ingested without restrictions. Set to `false` to restrict metric ingestion.
+
+---
+
+## Module: `dynatrace_grail_metrics_allowlist`
+
+### Purpose
+
+Defines a list of specific metrics that are allowed into Grail, controlled by rules.
+
+### Resource Used
+
+```hcl
+resource "dynatrace_grail_metrics_allowlist" "this"
+```
+
+### Input Variable: `grail_allowlist`
+
+```hcl
+variable "grail_allowlist" {
+  description = "Allow list configuration for Grail."
+  type = map(object({
+    allow_rules = list(object({
+      enabled    = bool
+      metric_key = string
+      pattern    = string
+    }))
+  }))
+}
+```
+
+#### Example Value
+
+```hcl
+grail_allowlist = {
+  default = {
+    allow_rules = [
+      {
+        enabled    = false
+        metric_key = "terraform"
+        pattern    = "CONTAINS"
+      }
+    ]
+  }
+}
+```
+
+### Description
+
+* `allow_rules`: List of rules specifying which metrics to allow based on `metric_key` and `pattern`.
+
+  * `enabled`: Whether this rule is active.
+  * `metric_key`: The identifier of the metric.
+  * `pattern`: Matching pattern (e.g., CONTAINS, STARTS\_WITH, etc.) for metric names.
+
+---
+
+## Module: `dynatrace_platform_bucket`
+
+### Purpose
+
+Defines custom data buckets in Dynatrace Grail for storing log data or other telemetry.
+
+### Resource Used
+
+```hcl
+resource "dynatrace_platform_bucket" "this"
+```
+
+### Input Variable: `platform_buckets`
+
+```hcl
+variable "platform_buckets" {
+  description = "Custom bucket definitions for Grail data."
+  type = map(object({
+    display_name = string
+    retention    = number
+    table        = string
+  }))
+}
+```
+
+#### Example Value
+
+```hcl
+platform_buckets = {
+  logs_bucket = {
+    display_name = "Custom logs bucket playground"
+    retention    = 67
+    table        = "logs"
+  }
+}
+```
+
+### Description
+
+* `display_name`: User-friendly name for the bucket.
+* `retention`: Number of days to retain data in the bucket.
+* `table`: Table name where data will be stored (e.g., "logs").
+
+### Output
+
+```hcl
+output "platform_bucket_names" {
+  value = [for k, v in dynatrace_platform_bucket.this : v.name]
+}
+```
+
+Returns a list of bucket names.
+
+---
+
+## Module: `dynatrace_problem_fields`
+
+### Purpose
+
+Maps event fields to problem fields to enrich problem records for better troubleshooting.
+
+### Resource Used
+
+```hcl
+resource "dynatrace_problem_fields" "this"
+```
+
+### Input Variable: `problem_fields`
+
+```hcl
+variable "problem_fields" {
+  description = "Problem field mapping rules."
+  type = map(object({
+    enabled       = bool
+    event_field   = string
+    problem_field = string
+  }))
+}
+```
+
+#### Example Value
+
+```hcl
+problem_fields = {
+  example = {
+    enabled       = false
+    event_field   = "example_event"
+    problem_field = "example_problem"
+  }
+}
+```
+
+### Description
+
+* `enabled`: Whether the mapping rule is active.
+* `event_field`: Field name in the incoming event.
+* `problem_field`: Field in the Dynatrace problem record to map to.
+
+### Output
+
+```hcl
+output "problem_field_statuses" {
+  value = [for k, v in dynatrace_problem_fields.this : v.enabled]
+}
+```
+
+Returns enabled status for each problem field rule.
+
+---
+
+## Module: `dynatrace_problem_record_propagation_rules`
+
+### Purpose
+
+Defines rules to propagate attributes from source to target in Dynatrace problem records.
+
+### Resource Used
+
+```hcl
+resource "dynatrace_problem_record_propagation_rules" "this"
+```
+
+### Input Variable: `problem_propagation_rules`
+
+```hcl
+variable "problem_propagation_rules" {
+  description = "Rules for propagating problems across attributes."
+  type = map(object({
+    enabled              = bool
+    source_attribute_key = string
+    target_attribute_key = string
+  }))
+}
+```
+
+#### Example Value
+
+```hcl
+problem_propagation_rules = {
+  rule1 = {
+    enabled              = false
+    source_attribute_key = "terraformSource"
+    target_attribute_key = "terraformTarget"
+  }
+}
+```
+
+### Description
+
+* `enabled`: Whether propagation is enabled for this rule.
+* `source_attribute_key`: Source attribute name to propagate from.
+* `target_attribute_key`: Target attribute name to propagate to.
+
+---
+
+
+---
+
+## How to Use
+
+1. Update or use the provided `sample.tfvars` file in the root directory to supply values for the modules.
+2. All modules are already called in the `main.tf` file in the root.
+3. You only need to run the following commands to deploy:
+
+```bash
+terraform init
+terraform plan -var-file="readme.md/sample.tfvars"
+terraform apply -var-file="readme.md/sample.tfvars"
+```
 
 ---
 

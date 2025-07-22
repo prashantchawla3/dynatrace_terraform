@@ -32,3 +32,4 @@ resource "dynatrace_calculated_web_metric" "calculated_web_metric" {
       target_view_name_match_type       = user_action_filter.value.target_view_name_match_type
     }
   }
+}

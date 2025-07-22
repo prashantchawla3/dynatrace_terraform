@@ -1,3 +1,9 @@
+variable "service_id" {
+  description = "Logical service ID used for scoping rules and metrics."
+  type        = string
+  default     = "SERVICE-EASYTRADE-BUY"
+}
+
 variable "key_request_ids" {
   description = "Map of key request identifiers with their display names."
   type        = map(string)

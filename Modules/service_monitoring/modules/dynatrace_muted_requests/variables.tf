@@ -3,3 +3,8 @@ variable "muted_request_names" {
   type        = list(string)
   default     = []
 }
+variable "service_id" {
+  description = "The unique ID of the Dynatrace service to which the configuration will apply."
+  type        = string
+  sensitive   = true
+}
