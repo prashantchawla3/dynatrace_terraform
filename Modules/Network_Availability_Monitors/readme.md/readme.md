@@ -1,117 +1,96 @@
 
-## `dynatrace_network_monitor`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+#  Dynatrace Synthetic Network Monitoring Terraform Modules
 
-### How to Determine tfvars Values
-- **`name`**: Provide a unique name for the monitor.
-- **`type`**: Use `"MULTI_PROTOCOL"` for multi-protocol monitoring.
-- **`enabled`**: Set to `true` or `false` to enable or disable the monitor.
-- **`frequency_min`**: Set the frequency in minutes.
-- **`locations`**: Provide a list of synthetic location IDs.
-- **`steps`**: Define each step with request type, targets, and constraints.
-- **`outage_handling`**: Configure thresholds for global and local outages.
-- **`performance_thresholds`**: Define thresholds for performance alerts.
-- **`tags`**: Add tags for categorization.
+This module set provisions and configures synthetic network monitors and outage thresholds within Dynatrace to continuously validate network performance and availability across multiple geographic locations.
 
-### Schema
+It contains two distinct modules:
 
-#### Required
-- `name` (String)
-- `type` (String)
-- `locations` (Set of String)
-- `steps` (Block List, Min: 1)
-
-#### Optional
-- `description` (String)
-- `enabled` (Boolean)
-- `frequency_min` (Number)
-- `outage_handling` (Block List, Max: 1)
-- `performance_thresholds` (Block List, Max: 1)
-- `tags` (Block List)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `steps.step`
-- `name` (String)
-- `request_type` (String)
-- `target_list` (Set of String)
-- `properties` (Map of String)
-- `constraints` (Block List, Min: 1)
-- `request_configurations` (Optional Block List)
-- `target_filter` (Optional String)
-
-#### Nested: `steps.step.constraints.constraint`
-- `type` (String)
-- `properties` (Map of String)
-
-#### Nested: `steps.step.request_configurations.request_configuration.constraints.constraint`
-- `type` (String)
-- `properties` (Map of String)
-
-#### Nested: `outage_handling`
-- `global_consecutive_outage_count_threshold` (Number)
-- `global_outages` (Boolean)
-- `local_consecutive_outage_count_threshold` (Number)
-- `local_location_outage_count_threshold` (Number)
-- `local_outages` (Boolean)
-
-#### Nested: `performance_thresholds`
-- `enabled` (Boolean)
-- `thresholds` (Block List)
-
-#### Nested: `performance_thresholds.thresholds.threshold`
-- `aggregation` (String)
-- `dealerting_samples` (Number)
-- `samples` (Number)
-- `step_index` (Number)
-- `threshold` (Number)
-- `violating_samples` (Number)
-
-#### Nested: `tags.tag`
-- `key` (String)
-- `context` (Optional String)
-- `source` (Optional String)
-- `value` (Optional String)
-
-#### Data Source Usage
-Use `data "dynatrace_network_monitor"` to retrieve existing monitor configurations.
+- `dynatrace_network_monitor`: Defines synthetic monitors with step-by-step actions and performance rules.
+- `dynatrace_network_monitor_outage`: Configures global and location-level outage thresholds per monitor.
 
 ---
 
-## `dynatrace_network_monitor_outage`
+##  Module: `dynatrace_network_monitor`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
 
-### How to Determine tfvars Values
-- **`global_outages`**: Set to `true` to alert when all locations fail.
-- **`local_outages`**: Set to `true` to alert on local failures.
-- **`global_consecutive_outage_count_threshold`**: Number of consecutive failures across all locations.
-- **`local_consecutive_outage_count_threshold`**: Number of consecutive failures at any location.
-- **`local_location_outage_count_threshold`**: Number of failing locations.
-- **`scope`**: Use `"MULTIPROTOCOL_MONITOR"` or omit for environment-wide scope.
+Deploys synthetic monitors that simulate network actions such as `PING` or HTTP checks. Each monitor can:
 
-### Schema
+- Target multiple locations
+- Run on a schedule (defined in `frequency_min`)
+- Include validation steps (`steps`)
+- Define performance thresholds
+- Support tagging for filtering and ownership
 
-#### Required
-- `global_outages` (Boolean)
-- `local_outages` (Boolean)
+###  Required Variable: `network_monitors`
 
-#### Optional
-- `global_consecutive_outage_count_threshold` (Number)
-- `local_consecutive_outage_count_threshold` (Number)
-- `local_location_outage_count_threshold` (Number)
-- `scope` (String)
+A map of monitor configurations. Each key represents a monitor ID. The object defines its runtime behavior, detection parameters, and tagging.
 
-#### Read-Only
-- `id` (String)
 
-#### Data Source Usage
-Use `data "dynatrace_network_monitor_outage"` to retrieve existing outage handling settings.
+###  Outputs
+
+| Output Name             | Description                                |
+|-------------------------|--------------------------------------------|
+| `network_monitor_ids`   | Map of monitor keys to their Dynatrace IDs |
+| `network_monitor_names` | Map of monitor keys to their names         |
 
 ---
+
+##  Module: `dynatrace_network_monitor_outage`
+
+###  Purpose
+
+Defines outage thresholds for synthetic monitors, including:
+
+- Global outage detection: across all monitored locations
+- Local outage detection: per-location anomaly rules
+
+###  Required Variable: `network_monitor_outages`
+
+Map of outage configuration scoped to monitor IDs. Usually paired with monitors from `network_monitors`.
+
+
+###  Output
+
+| Output Name                         | Description                                               |
+|-------------------------------------|-----------------------------------------------------------|
+| `network_monitor_outage_thresholds` | Global/local outage thresholds by monitor key             |
+
+Example output:
+
+```hcl
+{
+  ping_global = {
+    global = 3
+    local  = 2
+  }
+}
+```
+
+---
+
+##  How to Use These Modules
+
+In your root Terraform configuration:
+
+```hcl
+module "network_monitor" {
+  for_each = var.network_monitors
+  source   = "./modules/dynatrace_network_monitor"
+  ...
+}
+
+module "network_monitor_outage" {
+  for_each = var.network_monitor_outages
+  source   = "./modules/dynatrace_network_monitor_outage"
+  ...
+}
+```
+
+Each entry in the input maps represents a single synthetic monitor or its outage settings. These are safely modular and can be extended for dynamic infrastructure coverage.
+
+---
+
+
+

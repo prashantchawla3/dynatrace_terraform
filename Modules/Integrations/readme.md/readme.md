@@ -1,81 +1,158 @@
 
-## `dynatrace_issue_tracking`
+#  Dynatrace Issue Tracking Configuration Module
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+This Terraform module provisions Dynatrace issue tracking integrations by connecting your Dynatrace environment to external issue tracking systems such as JIRA, GitHub, Azure DevOps, and others.
 
-### How to Determine tfvars Values
-- **`enabled`**: Set to `true` to activate the integration.
-- **`issuelabel`**: A label to categorize issues (e.g., `release_blocker`).
-- **`issuequery`**: Use placeholders like `{NAME}`, `{VERSION}` to dynamically populate issue content.
-- **`issuetheme`**: Choose from `ERROR`, `INFO`, or `RESOLVED`.
-- **`issuetrackersystem`**: Choose from `GITHUB`, `GITLAB`, `JIRA`, `JIRA_CLOUD`, `JIRA_ON_PREMISE`, `SERVICENOW`.
-- **`url`**: Provide the appropriate URL based on the tracker system.
-- **`username`**: Username for authentication.
-- **`token`**: Authentication token (sensitive).
-- **`insert_after`** and **`password`** are optional.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `issuelabel` (String)
-- `issuequery` (String)
-- `issuetheme` (String)
-- `issuetrackersystem` (String)
-- `url` (String)
-- `username` (String)
-
-#### Optional
-- `insert_after` (String)
-- `password` (String)
-- `token` (String, Sensitive)
-
-#### Read-Only
-- `id` (String)
-
-### Data Source Usage
-This resource does not have a dedicated data source. Use the `terraform-provider-dynatrace -export` command to retrieve existing configurations.
+It enables automatic issue creation, synchronization, and visibility into external tickets that relate to observability signals detected within Dynatrace.
 
 ---
 
-## `dynatrace_remote_environments`
+##  What This Module Does
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Each input variable represents part of the issue tracking configuration. The module binds these inputs into a single Dynatrace resource definition (such as a JIRA integration block), wiring authentication, filters, and issue formatting.
 
-### How to Determine tfvars Values
-- **`name`**: A unique name for the remote environment.
-- **`network_scope`**: Choose from `CLUSTER`, `EXTERNAL`, or `INTERNAL`.
-- **`token`**: A valid token from the remote environment.
-- **`uri`**: Full URI of the remote Dynatrace environment.
-
-### Schema
-
-#### Required
-- `name` (String)
-- `network_scope` (String)
-- `token` (String, Sensitive)
-- `uri` (String)
-
-#### Read-Only
-- `id` (String)
-
-### Data Source: `dynatrace_remote_environments`
-
-#### How to Use
-Use this data source to retrieve a list of all configured remote environments.
-
-#### Schema
-
-##### Read-Only
-- `id` (String)
-- `remote_environments` (List of Object)
-  - `name` (String)
-  - `network_scope` (String)
-  - `token` (String)
-  - `uri` (String)
+| Module Block                      | Purpose                                                  |
+|----------------------------------|----------------------------------------------------------|
+| `issue_tracking_enabled`         | Turns the issue tracking feature on or off              |
+| `issue_tracking_issuelabel`      | Adds labels/tags for issues created or fetched          |
+| `issue_tracking_issuequery`      | Filters the scope of visible or synchronized issues     |
+| `issue_tracking_issuetheme`      | Categorizes issues by theme or business domain          |
+| `issue_tracking_issuetrackersystem` | Specifies integration system name (e.g., JIRA, GitHub) |
+| `issue_tracking_token`           | API access token (used securely)                        |
+| `issue_tracking_url`             | API base URL of your issue tracking system              |
+| `issue_tracking_username`        | Integration username                                    |
+| `issue_tracking_insert_after`    | Optional insert ordering metadata for sequencing        |
+| `issue_tracking_password`        | Password for systems using basic authentication         |
 
 ---
+
+##  Variable Reference 
+###  `issue_tracking_enabled`
+
+- **Description**: Globally enables or disables issue tracking in Dynatrace.
+- **Type**: `bool`
+- **Default**: `true`
+
+
+---
+
+###  `issue_tracking_issuelabel`
+
+- **Description**: Tag applied to issues, useful for classification and filtering.
+- **Type**: `string`
+- **Default**: `"dynatrace-issue"`
+
+
+
+---
+
+###  `issue_tracking_issuequery`
+
+- **Description**: Query string used to pull relevant issues from the tracker.
+- **Type**: `string`
+- **Default**: `"project = SRE AND status != Done"`
+
+
+
+---
+
+###  `issue_tracking_issuetheme`
+
+- **Description**: Logical category/theme applied to the issue.
+- **Type**: `string`
+- **Default**: `"observability"`
+
+
+
+---
+
+###  `issue_tracking_issuetrackersystem`
+
+- **Description**: External tracking system being integrated.
+- **Type**: `string`
+- **Default**: `"JIRA"`
+
+
+
+---
+
+###  `issue_tracking_token`
+
+- **Description**: API token for authenticating with the issue tracker.
+- **Type**: `string` (sensitive)
+- **Default**: `"fake-token"`
+
+
+---
+
+###  `issue_tracking_url`
+
+- **Description**: Base API URL used for connection.
+- **Type**: `string`
+- **Default**: `"https://jira.company.com"`
+
+
+
+---
+
+###  `issue_tracking_username`
+
+- **Description**: Username used to authenticate with issue tracking system.
+- **Type**: `string`
+- **Default**: `"sre_bot"`
+
+
+
+---
+
+###  `issue_tracking_insert_after`
+
+- **Description**: Used to control ordering when creating multiple integrations.
+- **Type**: `string`
+- **Default**: `null`
+
+
+---
+
+###  `issue_tracking_password`
+
+- **Description**: Password for integrations requiring basic auth.
+- **Type**: `string` (sensitive)
+- **Default**: `null`
+
+
+
+---
+
+##  Outputs
+
+These outputs expose the IDs of created resources for downstream modules or debugging.
+
+| Output Name              | Description                                                 |
+|--------------------------|-------------------------------------------------------------|
+| `issue_tracking_id`      | Unique ID of the configured issue tracking resource         |
+| `remote_environment_id`  | ID of the associated remote environment (if created)        |
+
+---
+
+
+##  Usage
+
+Here is how you can wire it in `main.tf`:
+
+```hcl
+module "issue_tracking_enabled" {
+  source                 = "./modules/dynatrace_issue_tracking"
+  issue_tracking_enabled = true
+}
+
+module "issue_tracking_issuetrackersystem" {
+  source                        = "./modules/dynatrace_issue_tracking"
+  issue_tracking_issuetrackersystem = "JIRA"
+}
+```
+
+Each variable maps directly to its respective field in Dynatrace’s issue tracking resource.
+
+---
+

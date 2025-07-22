@@ -1,98 +1,102 @@
 
+#  Dynatrace Management Zone v2 Terraform Module
 
-## `dynatrace_management_zone_v2`
+This module provisions a **Dynatrace Management Zone v2**, allowing infrastructure and application monitoring teams to logically segment and filter monitored entities (hosts, services, process groups, applications, etc.) using powerful selector rules.
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
----
-
-### How to Determine tfvars Values
-
-- **`zone_name`**: Provide a unique name for the management zone.
-- **`zone_description`**: Describe the purpose or scope of the zone.
-- **`zone_legacy_id`**: Optional legacy identifier for backward compatibility.
-- **`entity_selector`**: Define the Dynatrace entity selector string to filter entities.
-- **`rules`**: Define one or more rules to include entities in the zone based on attributes or dimensions.
+Management zones are critical for:
+-  Scoping dashboards and alerts to teams or environments
+-  Enforcing data access boundaries
+-  Targeting synthetic monitoring and SLOs by logical partitions
 
 ---
 
-### Schema
+##  What This Module Does
 
-#### Required
-- `name` (String): Name of the management zone.
-- `rules` (Block List): List of rules defining the zone.
+Each module invocation represents a specific property for the zone, and collectively wires them into a single `dynatrace_management_zone_v2` resource under the hood.
 
-#### Optional
-- `description` (String): Description of the zone.
-- `legacy_id` (String): Legacy identifier.
+| Submodule Name         | Purpose                                                           |
+|------------------------|-------------------------------------------------------------------|
+| `zone_name`            | Sets the zone’s name identifier in Dynatrace                     |
+| `zone_description`     | Adds human-readable context about the zone’s purpose              |
+| `zone_legacy_id`       | References legacy IDs for migration or traceability               |
+| `entity_selector`      | Defines the filtering expression that selects entities into zone  |
 
-#### Read-Only
-- `id` (String): The ID of the resource.
-
----
-
-### Nested Schema: `rules.rule`
-
-#### Required
-- `type` (String): Rule type, e.g., `ME`, `DIMENSION`.
-- `enabled` (Boolean): Whether the rule is active.
-- `entity_selector` (String): Entity selector string.
-
-#### Optional
-- `attribute_rule` (Block): Defines attribute-based conditions.
-- `dimension_rule` (Block): Defines dimension-based conditions.
+> All modules source from `./modules/dynatrace_management_zone_v2`, ensuring consistent resource handling.
 
 ---
 
-### Nested Schema: `attribute_rule`
+##  Input Variables Explained
 
-#### Required
-- `entity_type` (String): Type of entity (e.g., `HOST`, `WEB_APPLICATION`).
-- `attribute_conditions` (Block): List of conditions.
+### `zone_name`
 
-#### Optional
-- `host_to_pgpropagation` (Boolean): Whether to propagate host attributes to process groups.
+- **Purpose**: Assigns a name to the management zone, shown in Dynatrace UI and used for referencing.
+- **Type**: `string`
+- **Default**: `"default-zone"`
 
----
 
-### Nested Schema: `attribute_conditions.condition`
-
-#### Required
-- `key` (String): Attribute key.
-- `operator` (String): Comparison operator (e.g., `EQUALS`, `CONTAINS`).
-
-#### Optional
-- `case_sensitive` (Boolean): Whether the match is case-sensitive.
-- `string_value` (String): String value to match.
-- `enum_value` (String): Enum value to match.
 
 ---
 
-### Nested Schema: `dimension_rule`
+### `zone_description`
 
-#### Required
-- `applies_to` (String): Scope of the dimension rule (e.g., `METRIC`).
-- `dimension_conditions` (Block): List of dimension conditions.
-
----
-
-### Nested Schema: `dimension_conditions.condition`
-
-#### Required
-- `condition_type` (String): Type of condition (e.g., `METRIC_KEY`).
-- `rule_matcher` (String): Matcher type (e.g., `BEGINS_WITH`).
-- `value` (String): Value to match.
+- **Purpose**: Provides additional textual context for the zone (what it scopes, who owns it, etc.).
+- **Type**: `string`
+- **Default**: `"Zone for grouped observability across environment scope"`
 
 ---
 
-### Data Source Usage
+### `zone_legacy_id`
 
-This resource does not have a dedicated data source. To retrieve existing configurations, use:
+- **Purpose**: Used for backwards compatibility when migrating or referencing pre-existing zones.
+- **Type**: `string`
+- **Default**: `"legacy-zone-001"`
 
-```bash
-terraform-provider-dynatrace -export dynatrace_management_zone_v2
+
+---
+
+### `entity_selector`
+
+- **Purpose**: Filter logic written in Dynatrace entity selector syntax used to include entities in the zone.
+- **Type**: `string`
+- **Default**: `"type(HOST),tag(\"env:prod\")"`
+
+
+---
+
+##  Outputs
+
+These can be consumed by other modules, alerts, or dashboards.
+
+| Output Variable        | Description                                            |
+|------------------------|--------------------------------------------------------|
+| `management_zone_id`   | Internal Dynatrace ID for this zone                    |
+| `management_zone_name` | Zone name as registered in Dynatrace                   |
+
+---
+
+##  Usage Pattern
+
+```hcl
+module "zone_name" {
+  source    = "./modules/dynatrace_management_zone_v2"
+  zone_name = "team-alpha-zone"
+}
+
+module "entity_selector" {
+  source          = "./modules/dynatrace_management_zone_v2"
+  entity_selector = "type(HOST),tag(\"owner:team-alpha\")"
+}
 ```
+
+
+---
+
+##  Module Use Cases
+
+Ideal for:
+- Breaking out observability by team or service owner
+- Scoping SLOs to services via zone filtering
+- Assigning synthetic tests or alert rules to scoped zones
+- Controlling dashboard visibility across environments
 
 ---

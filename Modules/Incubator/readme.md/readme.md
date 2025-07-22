@@ -1,153 +1,84 @@
 
+#  Dynatrace Golden State Governance Modules
 
-## `dynatrace_golden_state`
+This Terraform module set provisions governance policies for automated enforcement in Dynatrace using two modes:
 
->  **Warning**:  
-> This resource is currently **experimental** and **disabled by default**.  
-> To gain early access, you must request it via a GitHub ticket.  
-> **Dynatrace Support will not assist** with this resource at this time.  
->  
-> Additionally, this resource **does not represent an actual setting** in the Dynatrace environment or cluster. It is used to **detect and optionally delete** resources not managed by Terraform.
+- **Auto-Delete Mode**: Enforces deletion of stale or non-compliant resources based on preconfigured zone and alerting references.
+- **Warning Mode**: Generates warnings based on autotag triggers for visibility without enforcement.
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Each module supports fine-grained control over scoped configuration artifacts and operational policies within Dynatrace’s Golden State framework.
 
 ---
 
-### How to Determine tfvars Values
+##  Module: `dynatrace_golden_state_auto_delete`
 
-- **`mode`**: Set to `"WARN"` (default) to log unmanaged resources, or `"DELETE"` to automatically remove them.
-- **`dynatrace_management_zone_v2`**: List of IDs for management zones that are managed by Terraform.
-- **`dynatrace_alerting`**: List of alerting profile IDs managed by Terraform.
-- **`dynatrace_autotag_v2`**: List of auto tag IDs managed by Terraform.
+###  Purpose
 
-These values should reflect the **Terraform-managed state**. Any existing resources in Dynatrace not listed here will be flagged or deleted depending on the mode.
+Enforces deletion of outdated, misaligned, or unnecessary management zones and alerting profiles based on preset identifiers and operational mode.
 
----
+###  Input Variables
 
-### Schema
+| Variable | Type | Description | Default |
+|---------|------|-------------|---------|
+| `auto_delete_mode` | `string` | Defines behavior: `strict` (force deletion), `lazy` (mark for review only) | `"strict"` |
+| `auto_delete_management_zone_ids` | `list(string)` | List of management zone identifiers targeted for removal | `["mz-ops", "mz-legacy"]` |
+| `auto_delete_alerting_ids` | `list(string)` | Alerting configuration IDs flagged for deletion | `["alert-high-memory", "alert-old-sla"]` |
 
-#### Optional
-- `mode` (String) — Determines behavior for unmanaged resources. Possible values:
-  - `"WARN"`: Logs a warning for unmanaged resources (default).
-  - `"DELETE"`: Deletes unmanaged resources.
-- `dynatrace_management_zone_v2` (List of String) — List of Terraform-managed management zone IDs.
-- `dynatrace_alerting` (List of String) — List of Terraform-managed alerting profile IDs.
-- `dynatrace_autotag_v2` (List of String) — List of Terraform-managed auto tag IDs.
 
-#### Read-Only
-- `id` (String) — The ID of this resource.
 
----
 
-### Supported Resource Types
+###  Outputs
 
-The following resource types are currently supported by `dynatrace_golden_state`:
-
-- `dynatrace_management_zone_v2`
-- `dynatrace_alerting`
-- `dynatrace_autotag_v2`
-- `dynatrace_request_attribute`
-- `dynatrace_queue_manager`
-- `dynatrace_ims_bridges`
-- `dynatrace_custom_service`
-- `dynatrace_aws_credentials`
-- `dynatrace_azure_credentials`
-- `dynatrace_span_capture_rule`
-- `dynatrace_span_context_propagation`
-- `dynatrace_slo_v2`
-- `dynatrace_web_application`
-- `dynatrace_mobile_application`
-- `dynatrace_jira_notification`
-- `dynatrace_webhook_notification`
-- `dynatrace_ansible_tower_notification`
-- `dynatrace_email_notification`
-- `dynatrace_ops_genie_notification`
-- `dynatrace_pager_duty_notification`
-- `dynatrace_service_now_notification`
-- `dynatrace_slack_notification`
-- `dynatrace_trello_notification`
-- `dynatrace_victor_ops_notification`
-- `dynatrace_xmatters_notification`
-- `dynatrace_maintenance`
-- `dynatrace_metric_events`
-- `dynatrace_key_requests`
-- `dynatrace_credentials`
-- `dynatrace_calculated_service_metric`
-- `dynatrace_calculated_web_metric`
-- `dynatrace_calculated_mobile_metric`
-- `dynatrace_http_monitor`
-- `dynatrace_browser_monitor`
-- `dynatrace_calculated_synthetic_metric`
-- `dynatrace_host_naming`
-- `dynatrace_processgroup_naming`
-- `dynatrace_service_naming`
-- `dynatrace_request_naming`
-- `dynatrace_application_detection_rule`
-- `dynatrace_application_error_rules`
-- `dynatrace_synthetic_location`
-- `dynatrace_queue_sharing_groups`
-- `dynatrace_pg_alerting`
-- `dynatrace_database_anomalies_v2`
-- `dynatrace_process_monitoring_rule`
-- `dynatrace_disk_anomalies_v2`
-- `dynatrace_disk_specific_anomalies_v2`
-- `dynatrace_host_anomalies_v2`
-- `dynatrace_custom_app_anomalies`
-- `dynatrace_custom_app_crash_rate`
-- `dynatrace_process_monitoring`
-- `dynatrace_process_availability`
-- `dynatrace_process_group_detection`
-- `dynatrace_mobile_app_anomalies`
-- `dynatrace_mobile_app_crash_rate`
-- `dynatrace_web_app_anomalies`
-- `dynatrace_muted_requests`
-- `dynatrace_declarative_grouping`
-- `dynatrace_host_process_group_monitoring`
-- `dynatrace_rum_ip_locations`
-- `dynatrace_custom_app_enablement`
-- `dynatrace_mobile_app_enablement`
-- `dynatrace_web_app_enablement`
-- `dynatrace_process_group_rum`
-- `dynatrace_rum_provider_breakdown`
-- `dynatrace_web_app_resource_cleanup`
-- `dynatrace_update_windows`
-- `dynatrace_process_group_detection_flags`
-- `dynatrace_process_group_monitoring`
-- `dynatrace_process_group_simple_detection`
-- `dynatrace_log_metrics`
-- `dynatrace_browser_monitor_performance`
-- `dynatrace_session_replay_web_privacy`
-- `dynatrace_monitored_technologies_apache`
-- `dynatrace_monitored_technologies_dotnet`
-- `dynatrace_monitored_technologies_go`
-- `dynatrace_monitored_technologies_iis`
-- `dynatrace_monitored_technologies_java`
-- `dynatrace_monitored_technologies_nginx`
-- `dynatrace_monitored_technologies_nodejs`
-- `dynatrace_monitored_technologies_opentracing`
-- `dynatrace_monitored_technologies_php`
-- `dynatrace_monitored_technologies_varnish`
-- `dynatrace_monitored_technologies_wsmb`
-- `dynatrace_process_visibility`
-- `dynatrace_oneagent_features`
-- `dynatrace_rum_advanced_correlation`
-- `dynatrace_web_app_beacon_origins`
-- `dynatrace_web_app_resource_types`
-- `dynatrace_generic_types`
-- `dynatrace_data_privacy`
-- `dynatrace_service_failure`
-- `dynatrace_service_http_failure`
-- `dynatrace_disk_options`
-- `dynatrace_extension_execution_controller`
-- `dynatrace_nettracer`
-- `dynatrace_aix_extension`
-- `dynatrace_k8s_namespace_anomalies`
+| Name | Description |
+|------|-------------|
+| `auto_delete_management_zone_ids` | Returns applied zone IDs for deletion |
+| `auto_delete_alerting_ids` | Returns alerting configs flagged for removal |
 
 ---
 
-### Data Source Usage
-This resource does not support a data source block. It is used to **audit and optionally clean up** unmanaged resources in your Dynatrace environment.
+##  Module: `dynatrace_golden_state_warn`
+
+###  Purpose
+
+Scans autotags and configuration identifiers for governance misalignment, triggering soft warnings and visibility alerts without deleting resources.
+
+###  Input Variables
+
+| Variable | Type | Description | Default |
+|----------|------|-------------|---------|
+| `warn_mode` | `string` | Behavior mode: `notify` (logs/warnings) or `log-only` (no action taken) | `"notify"` |
+| `warn_autotag_ids` | `list(string)` | Autotag identifiers used to detect governance drift | `["tag-expired", "tag-risky"]` |
+
+
+
+###  Output
+
+| Name | Description |
+|------|-------------|
+| `warn_autotag_ids` | List of autotags used for warning enforcement |
+
+---
+
+##  Modular Composition
+
+Each module is sourced from a governance-specific subfolder:
+
+```hcl
+module "auto_delete_mode" {
+  source = "./modules/dynatrace_golden_state_auto_delete"
+  auto_delete_mode = "strict"
+}
+```
+
+You may invoke all fields together or split across modules for composability and layered enforcement.
+
+---
+
+##  Use Cases
+
+- Automated cleanup of legacy or deprecated configurations
+- Alerting zone decommission enforcement
+- Drift detection for resource tagging policies
+- Non-disruptive warning issuance to configuration owners
 
 ---

@@ -1,10 +1,4 @@
-terraform {
-  required_version = ">= 1.0"
-}
 
-provider "dynatrace" {
-  # Assume provider configuration is handled elsewhere
-}
 
 # ─── IAM Groups and Permissions ───────────────────────────
 module "iam_group_name" {

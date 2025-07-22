@@ -1,181 +1,109 @@
 
+#  Dynatrace Monitored Technologies Module
 
-## Dynatrace Monitored Technologies Resources
-
-Each of the following resources enables or disables monitoring for a specific technology on a host or across the environment.
-
-### Common Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### Common tfvars Guidance
-- **`enabled`**: Set to `true` to enable monitoring, or `false` to disable it.
-- **`host_id`**: Use `"environment"` to apply the setting globally, or specify a specific host ID.
+This Terraform module provisions per-host technology monitoring configurations in Dynatrace. It allows teams to declaratively define which technologies are enabled for each host and provides optional toggling for .NET Core monitoring.
 
 ---
 
-### `dynatrace_monitored_technologies_apache`
+##  What This Module Does
 
-#### Schema
+This module defines the following:
+- A `technologies_monitoring` block that maps host-level technology monitoring configuration
+- Per-host enablement of monitoring and optional .NET Core instrumentation
+- Output of configured technology keys for dynamic reuse
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+> This module does not make changes to external systems unless it is explicitly wired via provider modules such as `dynatrace_monitored_technologies`. Be sure your backend supports these resources if extending.
 
 ---
 
-### `dynatrace_monitored_technologies_dotnet`
+##  Module: `technologies_monitoring`
 
-#### Schema
+###  Resource Purpose
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `enabled_dot_net_core` (Boolean)
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+This module configures monitored technology settings for one or more hosts in Dynatrace. You can:
+- Enable or disable general technology monitoring
+- Optionally enable .NET Core monitoring (if applicable for that host type)
 
 ---
 
-### `dynatrace_monitored_technologies_go`
+##  Variables
 
-#### Schema
+### `technologies`
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `enabled_go_static_monitoring` (Boolean)
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+| Field                | Type       | Required | Description |
+|----------------------|------------|----------|-------------|
+| `enabled`            | `bool`     | ✅       | Enables or disables general technology monitoring on the host |
+| `host_id`            | `string`   | ✅       | Unique host identifier used to apply monitoring settings |
+| `enabled_dot_net_core` | `bool`   | Optional | Enables .NET Core monitoring extension if available |
 
----
+ **Structure**:
+```hcl
+technologies = {
+  <label> = {
+    enabled              = <bool>
+    host_id              = <string>
+    enabled_dot_net_core = <bool, optional>
+  }
+}
+```
 
-### `dynatrace_monitored_technologies_iis`
+ **Example**:
+```hcl
+technologies = {
+  java_host = {
+    enabled              = true
+    host_id              = "host-java-01"
+    enabled_dot_net_core = false
+  }
 
-#### Schema
+  dotnet_host = {
+    enabled              = true
+    host_id              = "host-dotnet-01"
+    enabled_dot_net_core = true
+  }
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+  php_host = {
+    enabled = false
+    host_id = "host-php-01"
+  }
+}
+```
 
----
-
-### `dynatrace_monitored_technologies_java`
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
-
----
-
-### `dynatrace_monitored_technologies_nginx`
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+>  This configuration would enable technology monitoring for `host-java-01` and `host-dotnet-01`, with additional .NET Core monitoring for the latter. The `host-php-01` would be skipped due to `enabled = false`.
 
 ---
 
-### `dynatrace_monitored_technologies_nodejs`
+##  Outputs
 
-#### Schema
+### `configured_technologies`
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+Returns a list of keys from the configured `technologies` map. Useful for debugging, validations, or chaining logic in other modules.
 
----
-
-### `dynatrace_monitored_technologies_opentracing`
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+ Example Output:
+```hcl
+["java_host", "dotnet_host", "php_host"]
+```
 
 ---
 
-### `dynatrace_monitored_technologies_php`
 
-#### Schema
+##  Usage Example in `main.tf`
 
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `enable_php_cli_server` (Boolean)
-  - `enabled_fast_cgi` (Boolean)
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
+```hcl
+module "technologies_monitoring" {
+  source       = "./modules/dynatrace_monitored_technologies"
+  technologies = var.technologies
+}
+```
+
 
 ---
 
-### `dynatrace_monitored_technologies_python`
+##  Testing Your Configuration
 
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
-
----
-
-### `dynatrace_monitored_technologies_varnish`
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
-
----
-
-### `dynatrace_monitored_technologies_wsmb`
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-- **Optional**
-  - `host_id` (String)
-- **Read-Only**
-  - `id` (String)
-
----
-
-## Data Source Usage
-
-These resources do not have dedicated data sources. Use the `terraform-provider-dynatrace -export` command to retrieve existing configurations for each monitored technology.
+After applying:
+- Use `terraform output configured_technologies` to confirm loaded values
+- Check Dynatrace UI or API (if wired) for monitoring status per host
+- Validate `.NET Core` toggle aligns with environment architecture
 
 ---

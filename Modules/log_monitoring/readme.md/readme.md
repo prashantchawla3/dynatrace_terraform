@@ -1,329 +1,256 @@
 
+#  Dynatrace Log Configuration Modules
 
-## Dynatrace Log Management Resources
+This Terraform module set configures end-to-end log ingestion, parsing, enrichment, masking, storage routing, and metric extraction within Dynatrace.
 
-Each resource below is related to Dynatrace log ingestion, processing, storage, and enrichment.
+These modules address:
 
----
+-  Log bucket creation
+-  Feature flags for agents
+-  Log filtering, masking, and enrichment
+-  Custom attributes, processing, and timestamp rules
+-  Metric extraction and event detection
 
-### `dynatrace_log_agent_feature_flags`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-#### How to Determine tfvars Values
-- **`scope`**: Specify the host or environment scope.
-- **`new_container_log_detector`**: Enable or disable the new container log detection.
-
-#### Schema
-
-- **Required**
-  - `scope` (String)
-  - `new_container_log_detector` (Boolean)
+The documentation below explains each module’s purpose, variables, and outputs in a clear and comparison-friendly format.
 
 ---
 
-### `dynatrace_log_buckets`
+##  Module: `dynatrace_log_agent_feature_flags`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Enable container-specific log detection features for targeted scopes.
 
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable the log bucket.
-- **`bucket_name`**: Name of the log bucket.
-- **`matcher`**: Query to match logs.
-- **`rule_name`**: Name of the rule.
+###  Variable: `log_agent_feature_flags`
 
-#### Schema
+| Field                      | Type    | Description                                  |
+|---------------------------|---------|----------------------------------------------|
+| `scope`                   | string  | Target scope (e.g., host, container ID)      |
+| `new_container_log_detector` | bool | Enables newer detection logic                |
 
-- **Required**
-  - `enabled` (Boolean)
-  - `bucket_name` (String)
-  - `matcher` (String)
-  - `rule_name` (String)
+
 
 ---
 
-### `dynatrace_log_custom_attribute`
+##  Module: `dynatrace_log_buckets`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Create logical groupings of logs using matchers and rules.
 
-#### How to Determine tfvars Values
-- **`sidebar`**: Show attribute in sidebar.
-- **`key`**: Attribute key.
+###  Variable: `log_buckets`
 
-#### Schema
+| Field        | Type    | Description                             |
+|--------------|---------|-----------------------------------------|
+| `enabled`     | bool   | Whether the bucket is active            |
+| `bucket_name` | string | Display name of the bucket              |
+| `matcher`     | string | Filter criteria used for inclusion      |
+| `rule_name`   | string | Reference identifier for the rule       |
 
-- **Required**
-  - `sidebar` (Boolean)
-  - `key` (String)
 
----
-
-### `dynatrace_log_custom_source`
-
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-#### How to Determine tfvars Values
-- **`name`**: Name of the custom source.
-- **`enabled`**: Enable or disable the source.
-- **`scope`**: Scope of the source.
-- **`custom_log_source`**: Define type and enrichment.
-
-#### Schema
-
-- **Required**
-  - `name` (String)
-  - `enabled` (Boolean)
-  - `scope` (String)
-
-- **Nested: `custom_log_source`**
-  - `type` (String)
-  - `values_and_enrichment` (List)
-
-- **Nested: `custom_log_source_with_enrichment`**
-  - `path` (String)
-  - `enrichment` (List of key-value pairs)
 
 ---
 
-### `dynatrace_log_debug_settings`
+##  Module: `dynatrace_log_custom_attribute`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Add custom key-value attributes to the Dynatrace log sidebar.
 
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable debug logging.
+###  Variable: `log_custom_attribute`
 
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
+| Field     | Type    | Description                             |
+|-----------|---------|-----------------------------------------|
+| `sidebar` | bool    | If true, attribute is shown in sidebar  |
+| `key`     | string  | Key for the custom attribute            |
 
 ---
 
-### `dynatrace_log_events`
+##  Module: `dynatrace_log_custom_source`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Register custom log sources with enrichment fields.
 
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable event generation.
-- **`query`**: Log query.
-- **`summary`**: Event summary.
-- **`event_template`**: Define event metadata.
+###  Variable: `log_custom_source`
 
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-  - `query` (String)
-  - `summary` (String)
-
-- **Nested: `event_template`**
-  - `description` (String)
-  - `event_type` (String)
-  - `title` (String)
-  - `metadata` (List of key-value pairs)
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Name of the custom source |
+| `enabled` | bool | Toggle |
+| `scope` | string | Target resource |
+| `custom_log_source.type` | string | Source type (file, json, etc.) |
+| `values_and_enrichment[].custom_log_source_with_enrichment.path` | string | Log source path |
+| `enrichment[].type`, `key`, `value` | string | Enrichment key/value injection |
 
 ---
 
-### `dynatrace_log_metrics`
+##  Module: `dynatrace_log_debug_settings`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Globally toggle Dynatrace debug logging features.
 
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable metric extraction.
-- **`dimensions`**: List of dimensions.
-- **`key`**: Metric key.
-- **`measure`**: Type of measure.
-- **`measure_attribute`**: Attribute to measure.
-- **`query`**: Log query.
+###  Variable: `log_debug_settings`
 
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-  - `dimensions` (List of String)
-  - `key` (String)
-  - `measure` (String)
-  - `measure_attribute` (String)
-  - `query` (String)
+| Field    | Type  | Description              |
+|----------|-------|--------------------------|
+| `enabled` | bool | Enable global debug logs |
 
 ---
 
-### `dynatrace_log_oneagent`
+##  Module: `dynatrace_log_events`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Extract structured events from logs and publish them in Dynatrace as problem cards.
 
-#### How to Determine tfvars Values
-- Configure various OneAgent log detection and parsing settings.
+###  Variable: `log_events`
 
-#### Schema
-
-- **Required**
-  - `scope` (String)
-  - Multiple Boolean and numeric fields for detection and limits
-
----
-
-### `dynatrace_log_processing`
-
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable processing.
-- **`query`**: Log query.
-- **`rule_name`**: Name of the rule.
-- **`processor_definition`**: Define parsing logic.
-- **`rule_testing`**: Provide sample log.
-
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-  - `query` (String)
-  - `rule_name` (String)
-
-- **Nested: `processor_definition`**
-  - `rule` (String)
-
-- **Nested: `rule_testing`**
-  - `sample_log` (String)
+| Field           | Type     | Description |
+|-----------------|----------|-------------|
+| `enabled`       | bool     | Toggle for the rule |
+| `query`         | string   | Log query expression |
+| `summary`       | string   | Short summary for the event |
+| `event_template.description` | string | Full event description |
+| `event_template.title`      | string | Event title |
+| `event_template.event_type` | string | Type (e.g., CUSTOM_ALERT) |
+| `metadata.items[].metadata_key/metadata_value` | string | Key-value pairs attached to event metadata |
 
 ---
 
-### `dynatrace_log_security_context`
+##  Module: `dynatrace_log_metrics`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Extract and aggregate log-based metrics.
 
-#### How to Determine tfvars Values
-- Define security context rules for logs.
+###  Variable: `log_metrics`
 
-#### Schema
-
-- **Nested: `security_context_rule`**
-  - `query` (String)
-  - `rule_name` (String)
-  - `value_source_field` (String)
-  - `value_source` (String)
+| Field                | Type     | Description |
+|----------------------|----------|-------------|
+| `enabled`            | bool     | Toggle |
+| `dimensions`         | list     | Dimensions used for metric separation |
+| `key`, `measure`, `measure_attribute` | string | Metric config |
+| `query`              | string   | Filter query used for metric extraction |
 
 ---
 
-### `dynatrace_log_sensitive_data_masking`
+##  Module: `dynatrace_log_oneagent`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Configure detailed OneAgent log behavior and limits.
 
-#### How to Determine tfvars Values
-- **`name`**: Rule name.
-- **`enabled`**: Enable or disable masking.
-- **`scope`**: Scope of the rule.
-- **`masking`**: List of masking rules.
-- **`matchers`**: List of matchers.
+###  Variable: `log_oneagent`
 
-#### Schema
+Includes fields like:
+- `containers_logs_detection_enabled`
+- `monitor_own_logs_enabled`
+- `default_timezone`
+- `log_scanner_linux_nfs_enabled`
+- `event_log_query_timeout_sec`
+- `scope`
 
-- **Required**
-  - `name` (String)
-  - `enabled` (Boolean)
-  - `scope` (String)
-
-- **Nested: `masking`**
-  - `type` (String)
-  - `expression` (String)
-
-- **Nested: `matchers.matcher`**
-  - `attribute` (String)
-  - `operator` (String)
-  - `values` (List of String)
+These apply at agent level for container log visibility and log indexing thresholds.
 
 ---
 
-### `dynatrace_log_storage`
+##  Module: `dynatrace_log_processing`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Define log processing rules, regex parsing, and inline validation.
 
-#### How to Determine tfvars Values
-- **`name`**: Rule name.
-- **`enabled`**: Enable or disable storage.
-- **`scope`**: Scope of the rule.
-- **`send_to_storage`**: Boolean flag.
-- **`matchers`**: List of matchers.
+###  Variable: `log_processing`
 
-#### Schema
-
-- **Required**
-  - `name` (String)
-  - `enabled` (Boolean)
-  - `scope` (String)
-  - `send_to_storage` (Boolean)
-
-- **Nested: `matchers.matcher`**
-  - `attribute` (String)
-  - `operator` (String)
-  - `values` (List of String)
+| Field                   | Type     | Description |
+|-------------------------|----------|-------------|
+| `enabled`               | bool     | Toggle |
+| `query`                 | string   | Selector |
+| `rule_name`             | string   | Identifier |
+| `processor_definition.rule` | string | Regex or rule |
+| `rule_testing.sample_log` | string | Sample used for validation |
 
 ---
 
-### `dynatrace_log_timestamp`
+##  Module: `dynatrace_log_security_context`
 
-#### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Purpose
+Detect security-relevant context from logs (e.g. user ID, role, action).
 
-#### How to Determine tfvars Values
-- **`enabled`**: Enable or disable timestamp parsing.
-- **`config_item_title`**: Title of the config.
-- **`date_time_pattern`**: Pattern for parsing.
-- **`scope`**: Scope of the rule.
-- **`timezone`**: Timezone.
-- **`matchers`**: List of matchers.
+###  Variable: `log_security_context`
 
-#### Schema
-
-- **Required**
-  - `enabled` (Boolean)
-  - `config_item_title` (String)
-  - `date_time_pattern` (String)
-  - `scope` (String)
-  - `timezone` (String)
-
-- **Nested: `matchers.matcher`**
-  - `attribute` (String)
-  - `operator` (String)
-  - `values` (List of String)
+| Field                      | Type    | Description |
+|----------------------------|---------|-------------|
+| `query`                    | string  | Filter |
+| `rule_name`                | string  | Identifier |
+| `value_source_field`       | string  | Field used for extracting values |
+| `value_source`             | string  | Source method (e.g. header, field) |
 
 ---
 
-## Data Source Usage
+##  Module: `dynatrace_log_sensitive_data_masking`
 
-These resources do not have dedicated data sources. Use the following command to retrieve existing configurations:
+###  Purpose
+Mask sensitive information such as API keys, tokens, or customer identifiers from log output.
 
-```bash
-terraform-provider-dynatrace -export <resource_name>
-```
+###  Variable: `log_sensitive_data_masking`
 
-Replace `<resource_name>` with the specific resource you want to export.
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Rule name |
+| `enabled` | bool | Toggle |
+| `scope` | string | Where it applies |
+| `masking[].type` | string | Masking type (REGEX, HASH, etc.) |
+| `masking[].expression` | string | Regex or match pattern |
+| `matchers[].matcher[].attribute`, `operator`, `values` | string/list | Conditional filters |
+
+---
+
+##  Module: `dynatrace_log_storage`
+
+###  Purpose
+Route logs to storage targets based on conditional filters.
+
+###  Variable: `log_storage`
+
+| Field              | Type   | Description |
+|--------------------|--------|-------------|
+| `name`, `scope`    | string | Target metadata |
+| `enabled`, `send_to_storage` | bool | Flags |
+| `matchers[].matcher[].attribute/operator/values` | string/list | Filter logic |
+
+---
+
+## Module: `dynatrace_log_timestamp`
+
+###  Purpose
+Extract timestamps from log lines using custom date formats.
+
+###  Variable: `log_timestamp`
+
+| Field                      | Type   | Description |
+|----------------------------|--------|-------------|
+| `enabled`                  | bool   | Toggle |
+| `config_item_title`        | string | Name |
+| `date_time_pattern`        | string | Date format string (e.g. `yyyy-MM-dd HH:mm:ss.SSS`) |
+| `scope`, `timezone`        | string | Where rule applies |
+| `matchers[].matcher[].attribute/operator/values` | string/list | Filtering conditions |
+
+---
+
+##  Outputs
+
+These can be used for downstream modules or exported documentation:
+
+| Output Name | Description |
+|-------------|-------------|
+| `log_agent_feature_flags` | Resources for agent feature toggles |
+| `log_buckets` | Bucket config |
+| `log_custom_attribute` | Sidebar attributes |
+| `log_custom_source` | Source definitions with enrichment |
+| `log_debug_settings` | Debug toggles |
+| `log_events` | Extracted event resources |
+| `log_metrics` | Log-based metric resources |
+| `log_oneagent` | Agent-level scan and parsing logic |
+| `log_processing` | Parser and pre-processing logic |
+| `log_security_context` | Context rules |
+| `log_sensitive_data_masking` | Masking definitions |
+| `log_storage` | Storage routing logic |
+| `log_timestamp` | Timestamp extraction patterns |
 
 ---
 

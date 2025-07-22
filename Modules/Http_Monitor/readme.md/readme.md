@@ -1,210 +1,119 @@
 
+#  Dynatrace HTTP Synthetic Monitoring Terraform Modules
 
-# Terraform Modules Documentation
-
----
-
-## Resource: `dynatrace_http_monitor`
-
-### Required API Token Scopes
-- `ExternalSyntheticIntegration` – Create and read synthetic monitors, locations, and nodes
-
-### How to Determine `tfvars` Values
-- `name`: Unique name for the monitor.
-- `frequency`: Monitoring interval in minutes (5, 10, 15, 30, 60).
-- `locations`: List of location entity IDs.
-- `script`: Define HTTP requests, headers, and post-processing logic.
-- `anomaly_detection`: Configure thresholds and outage handling.
-- `tags`: Define tags with context and key-value pairs.
-
-### Schema
-
-#### Required
-- `name` (String)
-- `frequency` (Number)
-
-#### Optional
-- `enabled` (Boolean)
-- `locations` (Set of String)
-- `manually_assigned_apps` (Set of String)
-- `no_script` (Boolean)
-- `script` (Block List, Max: 1)
-- `tags` (Block List)
-- `anomaly_detection` (Block List)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested Schema
-
-##### anomaly_detection
-- `loading_time_thresholds` (Block List)
-- `outage_handling` (Block List)
-
-##### anomaly_detection.loading_time_thresholds.thresholds.threshold
-- `value_ms` (Number) – Required
-- `event_index` (Number)
-- `request_index` (Number)
-- `type` (String)
-
-##### anomaly_detection.outage_handling.global_outage_policy
-- `consecutive_runs` (Number) – Required
-
-##### anomaly_detection.outage_handling.local_outage_policy
-- `affected_locations` (Number) – Required
-- `consecutive_runs` (Number) – Required
-
-##### script.request
-- `method` (String) – Required
-- `url` (String) – Required
-- `authentication` (Block List, Max: 1)
-- `body` (String)
-- `configuration` (Block List, Max: 1)
-- `description` (String)
-- `post_processing` (String)
-- `pre_processing` (String)
-- `request_timeout` (Number)
-- `validation` (Block List, Max: 1)
-
-##### script.request.configuration.headers.header
-- `name` (String) – Required
-- `value` (String) – Required
-
-##### script.request.validation.rule
-- `type` (String) – Required
-- `value` (String) – Required
-- `pass_if_found` (Boolean)
+This Terraform module suite configures Dynatrace HTTP synthetic monitors, enabling full-stack observability for key endpoints. It supports cookie injection, performance threshold detection, outage handling, and scripted validation for advanced monitoring workflows.
 
 ---
 
-## Resource: `dynatrace_http_monitor_cookies`
+##  What This Module Does
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- `scope`: Use the HTTP_CHECK ID.
-- `enabled`: Set to `true` or `false`.
-- `cookies`: Define cookie name, domain, and value.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `scope` (String)
-
-#### Optional
-- `cookies` (Block List, Max: 1)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested Schema
-
-##### cookies.cookie
-- `domain` (String) – Required
-- `name` (String) – Required
-- `value` (String) – Required
-- `path` (String)
+| Module                             | Purpose                                                                 |
+|-----------------------------------|-------------------------------------------------------------------------|
+| `http_monitor_cookies`            | Inject and scope cookies into HTTP synthetic monitor executions         |
+| `enable_outage_monitoring`        | Toggles global outage logic across all monitors                         |
+| `global_consecutive_outage_count_threshold` | Number of global failures before outage triggers              |
+| `global_outages`, `local_outages`| Enable detection at global and location levels                          |
+| `local_consecutive_outage_count_threshold` | Failures at location required for alert                    |
+| `local_location_outage_count_threshold`     | Number of locations failing to declare outage             |
+| `outage_scope`                    | Defines which monitor group outage logic applies to                     |
+| `performance_monitors`           | Applies performance threshold rules based on loading time events        |
+| `scripts`                        | Scripts used by synthetic monitors to validate and configure requests   |
+| `monitors`                       | Defines monitors including schedule, locations, outage policies, script |
 
 ---
 
-## Resource: `dynatrace_http_monitor_outage`
+##  Cookie Monitoring Configuration
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Variable: `http_monitor_cookies`
 
-### How to Determine `tfvars` Values
-- `scope`: Use `"environment"` or a specific HTTP_CHECK ID.
-- Set thresholds and enable/disable global/local outage alerts.
+Injects custom cookies into synthetic requests to simulate authenticated or user-context traffic.
 
-### Schema
+| Field     | Type        | Description                       |
+|-----------|-------------|-----------------------------------|
+| `enabled` | `bool`      | If true, enables cookie injection |
+| `scope`   | `string`    | Monitor reference (e.g. `monitor:id`) |
+| `cookies` | `list`      | List of cookies with `name`, `domain`, and `value` |
 
-#### Required
-- `global_outages` (Boolean)
-- `local_outages` (Boolean)
 
-#### Optional
-- `global_consecutive_outage_count_threshold` (Number)
-- `local_consecutive_outage_count_threshold` (Number)
-- `local_location_outage_count_threshold` (Number)
-- `scope` (String)
 
-#### Read-Only
-- `id` (String)
 
 ---
 
-## Resource: `dynatrace_http_monitor_performance`
+##  Outage Handling Configuration
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Key Variables
 
-### How to Determine `tfvars` Values
-- `scope`: Use the HTTP_CHECK ID.
-- `enabled`: Set to `true` or `false`.
-- `thresholds`: Define performance thresholds.
+| Variable | Description |
+|----------|-------------|
+| `enable_outage_monitoring` | Toggle to enable outage detection across monitors |
+| `global_outages`           | Enables global failure tracking |
+| `global_consecutive_outage_count_threshold` | Threshold to declare outage globally |
+| `local_outages`            | Enables per-location monitoring |
+| `local_consecutive_outage_count_threshold` | Location-level failure count |
+| `local_location_outage_count_threshold` | Number of failed locations required |
+| `outage_scope`             | Scope (e.g. `"monitor-group:frontend"`) where rules apply |
 
-### Schema
 
-#### Required
-- `enabled` (Boolean)
-- `scope` (String)
+##  Performance Threshold Monitors
 
-#### Optional
-- `thresholds` (Block List, Max: 1)
+###  Variable: `performance_monitors`
 
-#### Read-Only
-- `id` (String)
+Detect performance events such as time-to-first-byte (TTFB) and loading time violations.
 
-#### Nested Schema
+| Field      | Description |
+|------------|-------------|
+| `enabled`  | Enables monitoring |
+| `scope`    | Monitor scope (e.g. `monitor:checkout`) |
+| `thresholds` | List of `{ event, threshold }` definitions |
 
-##### thresholds.threshold
-- `event` (String) – Required
-- `threshold` (Number) – Required
+
+##  Synthetic Scripts
+
+###  Variable: `scripts`
+
+Defines request execution behavior inside synthetic monitors including headers, validation rules, and TLS settings.
+
+| Field                | Description |
+|----------------------|-------------|
+| `http_id`            | Unique script ID |
+| `requests`           | List of requests with `method`, `url`, `headers`, `validation`, etc. |
+
+
+##  Synthetic Monitor Definitions
+
+###  Variable: `monitors`
+
+Declares active synthetic monitors and optionally wires scripts and anomaly logic.
+
+| Field                    | Description |
+|--------------------------|-------------|
+| `name`                   | Monitor name |
+| `frequency`              | Execution interval (minutes) |
+| `locations`              | Geo locations for execution |
+| `no_script`              | If true, disables script execution |
+| `script`                 | Optional script definition block |
+| `anomaly_detection`      | Optional thresholds and outage rules |
+
+
+##  Outputs
+
+| Output Name            | Description |
+|------------------------|-------------|
+| `cookie_monitor_ids`   | List of IDs for cookie-enabled monitors |
+| `outage_monitor_id`    | ID of the monitor where outage rules apply |
+| `performance_monitor_ids` | IDs of performance threshold monitors |
+| `script_monitor_ids`   | IDs of monitors with script execution |
+| `http_monitor_ids`     | All defined synthetic monitor IDs |
 
 ---
 
-## Resource: `dynatrace_http_monitor_script`
 
-### Required API Token Scopes
-- `ExternalSyntheticIntegration`
 
-### How to Determine `tfvars` Values
-- `http_id`: Reference the ID of the `dynatrace_http_monitor`.
-- `script`: Define HTTP requests and configurations.
+##  Recommended Practices
 
-### Schema
-
-#### Required
-- `http_id` (String)
-- `script` (Block List, Min: 1, Max: 1)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested Schema
-
-##### script.request
-- `method` (String) – Required
-- `url` (String) – Required
-- `authentication` (Block List, Max: 1)
-- `body` (String)
-- `configuration` (Block List, Max: 1)
-- `description` (String)
-- `post_processing` (String)
-- `pre_processing` (String)
-- `request_timeout` (Number)
-- `validation` (Block List, Max: 1)
-
----
-
-## Data Block Usage
-
-To retrieve existing HTTP monitors or related configurations, use the `terraform-provider-dynatrace -export` command with the appropriate resource name. This will help populate your `tfvars` with accurate values.
+- Always tag monitors with `scope` and `anomaly_detection` so that alerting and dashboarding remain traceable.
+- Avoid hardcoded cookies/tokens in scripts; use secure runtime injection methods.
+- Use `outage_scope` to align monitoring rules with organizational structure.
 
 ---
 

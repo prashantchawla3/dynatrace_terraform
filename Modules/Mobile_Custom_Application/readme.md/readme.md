@@ -1,229 +1,154 @@
 
+#  Dynatrace Mobile Monitoring & RUM Modules
 
-## `dynatrace_calculated_mobile_metric`
+This Terraform module collection provisions Dynatrace mobile monitoring resources, enabling advanced Real User Monitoring (RUM), crash analysis, error tracking, and performance thresholding across mobile and custom apps.
 
-### Required API Token Scopes
-- `ReadConfig`
-- `WriteConfig`
+It is structured around composable modules for:
+- Calculated mobile metrics
+- RUM enablement
+- Key performance thresholds
+- Request error rules
+- Mobile app instrumentation
 
-### How to Determine tfvars Values
-- **`name`**: Display name for the metric.
-- **`enabled`**: Set to `true` or `false`.
-- **`app_identifier`**: Use the Dynatrace entity ID of the mobile application.
-- **`metric_key`**: Unique key for the metric (e.g., `calc:apps.mobile.metric1`).
-- **`metric_type`**: Choose from `REPORTED_ERROR_COUNT`, `USER_ACTION_DURATION`, `WEB_REQUEST_COUNT`, `WEB_REQUEST_ERROR_COUNT`.
-- **`dimensions`**: Define dimensions like `APP_VERSION` with `top_x` values.
-- **`user_action_filter`**: Optionally filter by attributes like duration, app version, location, etc.
 
-### Schema
 
-#### Required
-- `app_identifier` (String)
-- `enabled` (Boolean)
-- `metric_key` (String)
-- `metric_type` (String)
-- `name` (String)
+##  Modules Overview
 
-#### Optional
-- `description` (String)
-- `dimensions` (Block List)
-- `user_action_filter` (Block List, Max: 1)
+### 1. `dynatrace_calculated_mobile_metrics`
 
-#### Read-Only
-- `id` (String)
+####  What it does
+Creates calculated metrics for mobile apps using selected dimensions and thresholds, to track behaviors like crash rate, latency, or engagement across OS or regions.
 
-#### Nested: `dimensions.dimension`
-- `dimension` (String)
-- `top_x` (Number)
+####  Variable: `calculated_mobile_metrics`
 
-#### Nested: `user_action_filter`
-- Multiple optional filters including:
-  - `action_duration_from_milliseconds`, `action_duration_to_milliseconds`
-  - `apdex`, `app_version`, `carrier`, `city`, `country`, `device`, `isp`, `manufacturer`, `network_technology`, `orientation`, `os_family`, `os_version`, `region`, `resolution`, `user_action_name`
-  - `has_http_error`, `has_reported_error`
+| Field        | Type              | Description |
+|-------------|-------------------|-------------|
+| `enabled`        | `bool`           | Enable calculated metric |
+| `app_identifier` | `string`         | ID of mobile app (e.g. `MOBILE-APP-001`) |
+| `metric_key`     | `string`         | Logical identifier for the custom metric |
+| `metric_type`    | `string`         | Type of metric, like `CUSTOM`, `BUILTIN` |
+| `dimensions`     | `list(object)`   | Dimensions with top-X thresholds |
+
+
+
+####  Output
+- `calculated_mobile_metric_ids`: Map of metric IDs by key
 
 ---
 
-## `dynatrace_custom_app_enablement`
+### 2. `dynatrace_custom_app_enablement`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+####  What it does
+Enables RUM for non-standard applications like single-page or serverless apps.
 
-### How to Determine tfvars Values
-- **`scope`**: Use `"environment"` or a specific custom application scope.
-- **`rum.enabled`**: Enable or disable RUM.
-- **`rum.cost_and_traffic_control`**: Set the percentage of sessions to capture.
+####  Variable: `custom_app_enablements`
 
-### Schema
+| Field                         | Type       | Description |
+|------------------------------|------------|-------------|
+| `scope`                      | `string`   | Entity scope identifier |
+| `rum.enabled`                | `bool`     | Enable RUM |
+| `rum.cost_and_traffic_control` | `number` | Estimated traffic budget |
 
-#### Required
-- `rum` (Block List, Min: 1, Max: 1)
 
-#### Optional
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `rum`
-- `enabled` (Boolean)
-- `cost_and_traffic_control` (Number)
+####  Output
+- `custom_app_enablement_scopes`: App scopes enabled for RUM
 
 ---
 
-## `dynatrace_mobile_app_enablement`
+### 3. `dynatrace_mobile_app_key_performance`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+####  What it does
+Configures thresholds for frustrational and tolerable app behavior using APDEX-like measurements.
 
-### How to Determine tfvars Values
-- **`rum`**: Enable RUM and set session capture percentage.
-- **`session_replay.on_crash`**: Enable session replay on crash.
-- **`application_id`**: Optional scope for a specific mobile app.
+####  Variable: `mobile_app_key_performance`
 
-### Schema
+| Field   | Type         | Description |
+|--------|--------------|-------------|
+| `frustrating_if_reported_or_web_request_error` | `bool` | Flag failure state as frustration |
+| `scope`                                      | `string` | Target app |
+| `thresholds.frustrating_threshold_seconds`  | `number` | Time above which experience is "frustrating" |
+| `thresholds.tolerable_threshold_seconds`    | `number` | Time between tolerable and frustrating |
 
-#### Required
-- `rum` (Block List, Min: 1, Max: 1)
-- `session_replay` (Block List, Min: 1, Max: 1)
 
-#### Optional
-- `application_id` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `rum`
-- `enabled` (Boolean)
-- `cost_and_traffic_control` (Number)
-- `enabled_on_grail` (Optional Boolean)
-
-#### Nested: `session_replay`
-- `on_crash` (Boolean)
+####  Output
+- `mobile_app_key_performance_scopes`: App scopes with thresholds applied
 
 ---
 
-## `dynatrace_mobile_app_key_performance`
+### 4. `dynatrace_mobile_app_request_errors`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+####  What it does
+Defines error codes for mobile apps (e.g. HTTP 401, 404) to be tracked as problem indicators.
 
-### How to Determine tfvars Values
-- **`scope`**: Use a valid scope like `DEVICE_APPLICATION_METHOD`.
-- **`frustrating_if_reported_or_web_request_error`**: Set to `true` or `false`.
-- **`thresholds`**: Define Apdex thresholds in seconds.
+####  Variable: `mobile_app_request_errors`
 
-### Schema
+| Field       | Type               | Description |
+|------------|--------------------|-------------|
+| `scope`     | `string`           | App scope |
+| `error_rules` | `list(object)`   | List of error codes to monitor |
 
-#### Required
-- `frustrating_if_reported_or_web_request_error` (Boolean)
-- `scope` (String)
-- `thresholds` (Block List, Min: 1, Max: 1)
 
-#### Read-Only
-- `id` (String)
-
-#### Nested: `thresholds`
-- `frustrating_threshold_seconds` (Number)
-- `tolerable_threshold_seconds` (Number)
+####  Output
+- `mobile_app_request_error_scopes`: Scopes with error rules applied
 
 ---
 
-## `dynatrace_mobile_app_request_errors`
+### 5. `dynatrace_mobile_app_key_performance` (also reused under `mobile_app_enablements`)
 
-> ⚠️ **Warning**: This resource may not have full coverage of the required fields. Consider using `dynatrace_application_error_rules` instead.
+####  What it does
+This dual-use module also enables:
+- RUM with session sampling control
+- Session replay on crash
+####  Variable: `mobile_app_enablements`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+| Field        | Type               | Description |
+|-------------|--------------------|-------------|
+| `rum.enabled` | `bool`            | Enables RUM |
+| `rum.cost_and_traffic_control` | `number`     | Sampling % |
+| `session_replay.on_crash` | `bool`          | Enable replay when app crashes |
 
-### How to Determine tfvars Values
-- **`scope`**: Use the mobile or custom application ID.
-- **`error_rules`**: List of error codes to exclude.
 
-### Schema
 
-#### Required
-- `scope` (String)
-
-#### Optional
-- `error_rules` (Block List, Max: 1)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `error_rules.error_rule`
-- `error_codes` (String)
+####  Output
+- `mobile_app_enablement_status`: Shows whether each app has RUM enabled
 
 ---
 
-## `dynatrace_mobile_application`
+### 6. `dynatrace_mobile_application`
 
-> ⚠️ **Note**: If `application_id` is not specified, it will be generated by Dynatrace and must be updated in your `.tf` file.
+####  What it does
+Creates or configures a mobile app in Dynatrace with full instrumentation settings: endpoints, session % tracking, APDEX, and attribute extraction.
 
-### Required API Token Scopes
-- `ReadConfig`
-- `WriteConfig`
+####  Variable: `mobile_applications`
 
-### How to Determine tfvars Values
-- **`name`**: Name of the mobile application.
-- **`beacon_endpoint_type`**: Choose from `CLUSTER_ACTIVE_GATE`, `ENVIRONMENT_ACTIVE_GATE`, `INSTRUMENTED_WEB_SERVER`.
-- **`beacon_endpoint_url`**: Required for some endpoint types.
-- **`user_session_percentage`**: Set the percentage of sessions to analyze.
-- **`apdex`**: Define thresholds for user satisfaction.
-- **`properties`**: Define session and user action properties.
+| Field                    | Type       | Description |
+|--------------------------|------------|-------------|
+| `beacon_endpoint_type`   | `string`   | `CLUSTER`, `ENVIRONMENT`, etc. |
+| `beacon_endpoint_url`    | `string`   | App's data collection endpoint |
+| `user_session_percentage`| `number`   | % of users tracked |
+| `apdex.frustrated`       | `number`   | ms after which user is frustrated |
+| `apdex.tolerable`        | `number`   | ms for tolerable response |
+| `apdex.frustrated_on_error` | `bool` | If true, errors are treated as frustration |
+| `properties.api_values` | list(object) | Defines custom API metadata for tracking |
+| `properties.request_attributes` | list(object) | Session/user attributes to extract from requests |
 
-### Schema
 
-#### Required
-- `name` (String)
-- `beacon_endpoint_type` (String)
-- `apdex` (Block List, Min: 1, Max: 1)
-
-#### Optional
-- `application_id` (String)
-- `application_type` (String)
-- `beacon_endpoint_url` (String)
-- `icon_type` (String)
-- `key_user_actions` (Set of String)
-- `opt_in_mode` (Boolean)
-- `properties` (Block List, Max: 1)
-- `session_replay` (Boolean)
-- `session_replay_on_crash` (Boolean)
-- `user_session_percentage` (Number)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested: `apdex`
-- `frustrated` (Number)
-- `tolerable` (Number)
-- `frustrated_on_error` (Optional Boolean)
-
-#### Nested: `properties.api_value`
-- `key`, `type` (Required)
-- `aggregation`, `cleanup_rule`, `display_name`, `name`, `store_as_session_property`, `store_as_user_action_property` (Optional)
-
-#### Nested: `properties.request_attribute`
-- `id`, `key`, `type` (Required)
-- `aggregation`, `cleanup_rule`, `display_name`, `store_as_session_property`, `store_as_user_action_property` (Optional)
+####  Output
+- `mobile_application_names`: Registered Dynatrace mobile app names
 
 ---
 
-## Data Source: `dynatrace_mobile_application`
+##  How to Use
 
-### How to Use
-Use this data source to retrieve a mobile application ID by its name.
+Each module takes a `map(object)` input keyed by a unique identifier (`app1`, `custom1`, etc.). They are called independently in `main.tf`, so resources are modular.
 
-### Schema
-
-#### Required
-- `name` (String)
-
-#### Read-Only
-- `id` (String)
+Example in `main.tf`:
+```hcl
+module "calculated_mobile_metrics" {
+  source = "./modules/dynatrace_calculated_mobile_metrics"
+  calculated_mobile_metrics = var.calculated_mobile_metrics
+}
+```
 
 ---
+
