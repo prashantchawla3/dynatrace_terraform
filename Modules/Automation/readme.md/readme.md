@@ -1,194 +1,171 @@
 
+#  Dynatrace Automation Calendar & Connection Modules
 
-## dynatrace_automation_business_calendar
+This Terraform module suite provisions business calendars, scheduling rules, and external system integrations used in Dynatrace workflows and automations. It enables teams to define observability-aware schedules and connect third-party systems (e.g. AWS, Jira, Slack, Kubernetes) for integrated orchestration.
 
-**Required API Token Scopes:**
-- `automation:calendars:read`
-- `automation:calendars:write`
 
-**How to determine tfvars values:**
-- You can find or create business calendars in the Dynatrace UI under *Workflows > Calendars*. Use the calendar name, valid date ranges, and holiday definitions from your organization's calendar policies.
+---
 
-**Schema:**
-- **Required:**
-  - `title` (String): The title/name of the Business Calendar.
-- **Optional:**
-  - `description` (String): An optional description for the Business Calendar.
-  - `holidays` (Block List): A list of holidays valid in this calendar.
-  - `valid_from` (String): Start date of the calendar (e.g., `2023-07-04`).
-  - `valid_to` (String): End date of the calendar.
-  - `week_days` (Set of Number): Days considered as weekdays (1=Monday, ..., 7=Sunday).
-  - `week_start` (Number): First day of the week (1=Monday, 7=Sunday).
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-- **Nested:**
-  - `holidays.holiday`:
-    - `date` (String): Date of the holiday (e.g., `2023-12-25`).
-    - `title` (String): Name of the holiday.
+##  Module Overview
 
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_business_calendar` to retrieve existing calendar configurations.
+| Module                     | Resource                                 | Purpose                                                        |
+|----------------------------|------------------------------------------|----------------------------------------------------------------|
+| `calendar`                 | `dynatrace_automation_business_calendar` | Defines working days, holidays, and recurrence logic for workflows |
+| `scheduler`                | `dynatrace_automation_scheduling_rule`   | Creates rule-based recurrence logic for triggering automation |
+| `aws_connection`           | `dynatrace_automation_workflow_aws_connections` | Connects AWS IAM role to Dynatrace Automation               |
+| `jira_connection`          | `dynatrace_automation_workflow_jira`     | Creates a connection to Jira for ticket automation            |
+| `k8s_connection`           | `dynatrace_automation_workflow_k8s_connections` | Connects to Kubernetes clusters via token and namespace       |
+| `slack_connection`         | `dynatrace_automation_workflow_slack`    | Configures Slack webhook or API token for notifications        |
+
+---
+
+##  Module: `calendar`
+
+###  Purpose
+
+Creates a business calendar used to scope automated workflows (e.g. only trigger on business days, skip holidays).
+
+###  Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `calendar_name` | `string` | Display name in Dynatrace UI | `"Standard Calendar"` |
+| `valid_from` | `string` | ISO start date (`YYYY-MM-DD`) | `"2025-01-01"` |
+| `valid_to` | `string` | ISO end date | `"2025-12-31"` |
+| `week_days` | `list(number)` | Weekdays (1=Monday to 7=Sunday) to include | `[1,2,3,4,5]` |
+| `week_start` | `number` | Starting weekday (typically `1` for Monday) | `1` |
+| `holidays` | `list(object)` | List of holidays with date and title | See example below |
+
+ Example:
+```hcl
+holidays = [
+  { date = "2025-12-25", title = "Christmas Day" },
+  { date = "2025-01-01", title = "New Year's Day" }
+]
+```
+
+---
+
+##  Module: `scheduler`
+
+###  Purpose
+
+Defines recurrence rules to trigger workflows on a regular schedule.
+
+###  Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `rule_title` | `string` | Title of the scheduling rule | `"Monthly Rule"` |
+| `recurrence` | `object` | Recurrence definition including start date, intervals, and constraints | See below |
+
+ Example:
+```hcl
+recurrence = {
+  datestart     = "2025-01-01"
+  days_in_month = [1, 15]
+  frequency     = "monthly"
+  interval      = 1
+  weekdays      = ["Monday"]
+  workdays      = "true"
+}
+```
+
+---
+
+##  Module: `aws_connection`
+
+###  Purpose
+
+Connects Dynatrace to AWS using an IAM role for workflow-based access or automation.
+
+###  Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `name` | `string` | Friendly connection name | `"aws-default"` |
+| `type` | `string` | Connection type (`iam`) | `"iam"` |
+| `role_arn` | `string` | AWS role ARN to assume | `"arn:aws:iam::123456789012:role/example-role"` |
+
+---
+
+##  Module: `jira_connection`
+
+###  Purpose
+
+Establishes integration with Jira to automatically raise or close tickets based on Dynatrace findings.
+
+### Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `name` | `string` | Connection name | `"jira-default"` |
+| `type` | `string` | Auth type (`basic`, `oauth`) | `"basic"` |
+| `user` | `string` | Jira username | `"admin"` |
+| `url` | `string` | Jira base URL | `"https://jira.example.com"` |
+
+>  `password` is excluded from this README for security.
+
+---
+
+##  Module: `k8s_connection`
+
+###  Purpose
+
+Links Dynatrace workflows to Kubernetes clusters for service deployment or remediation automation.
+
+###  Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `name` | `string` | Connection label | `"k8s-default"` |
+| `uid` | `string` | Unique cluster identifier | `"cluster-uid-123"` |
+| `namespace` | `string` | Kubernetes namespace used by automation | `"default"` |
+
+>  `token` is excluded from this README for security.
+
+---
+
+##  Module: `slack_connection`
+
+###  Purpose
+
+Configures Slack connection for sending notifications via workflows or problem triggers.
+
+###  Variables
+
+| Name | Type | Description | Example |
+|------|------|-------------|---------|
+| `name` | `string` | Connection name | `"slack-default"` |
+
+>  `token` is excluded from this README for security.
+
+---
+
+##  Outputs
+
+| Output Name | Description |
+|-------------|-------------|
+| `calendar_id` | ID of the created business calendar |
+| `rule_id` | ID of the created scheduling rule |
+
+These can be passed to downstream modules or exported for documentation or reuse.
 
 ---
 
 
-## dynatrace_automation_scheduling_rule
 
-**Required API Token Scopes:**
-- `automation:rules:read`
-- `automation:rules:write`
+##  Usage Summary
 
-**How to determine tfvars values:**
-- You can define scheduling rules in Dynatrace under *Workflows > Scheduling Rules*. Use the calendar ID, recurrence patterns, and offsets based on your organization's scheduling needs.
+```hcl
+module "calendar" {
+  source        = "./modules/dynatrace_automation_business_calendar"
+  calendar_name = "Business Calendar"
+  valid_from    = "2025-01-01"
+  valid_to      = "2025-12-31"
+  week_days     = [1,2,3,4,5]
+  holidays      = [ ... ]
+}
+```
 
-**Schema:**
-- **Required:**
-  - `title` (String): The title/name of the scheduling rule.
-- **Optional:**
-  - `business_calendar` (String): ID of the associated business calendar.
-  - `description` (String): Optional description of the rule.
-  - `fixed_offset` (Block): Defines a rule offset by a number of days.
-  - `grouping` (Block): Combines, intersects, or subtracts other rules.
-  - `recurrence` (Block): Defines recurrence patterns.
-  - `relative_offset` (Block): Defines a rule relative to other rules.
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-- **Nested:**
-  - `fixed_offset`:
-    - `offset` (Number): Number of days to offset.
-    - `rule` (String): ID of the base rule.
-  - `grouping`:
-    - `combine` (Set of String): IDs of rules to combine.
-    - `intersect` (Set of String): IDs of rules to intersect.
-    - `subtract` (Set of String): IDs of rules to subtract.
-  - `recurrence`:
-    - **Required:**
-      - `datestart` (String): Start date of recurrence.
-      - `frequency` (String): Frequency type (e.g., DAILY, WEEKLY).
-      - `workdays` (String): Type of days (e.g., WORKING, HOLIDAYS).
-    - **Optional:**
-      - `days_in_month` (Set of Number)
-      - `days_in_year` (Set of Number)
-      - `easter` (Set of Number)
-      - `interval` (Number)
-      - `months` (Set of Number)
-      - `weekdays` (Set of String)
-      - `weeks` (Set of Number)
-  - `relative_offset`:
-    - `direction` (String): Direction of offset (e.g., previous).
-    - `source_rule` (String): ID of the source rule.
-    - `target_rule` (String): ID of the target rule.
-
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_scheduling_rule` to retrieve existing scheduling rule configurations.
-
----
-
-
-## dynatrace_automation_workflow_aws_connections
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- You can configure AWS connections in Dynatrace under *Workflows > AWS Integrations*. Use the AWS IAM role ARN and any optional policy ARNs as needed for your environment.
-
-**Schema:**
-- **Required:**
-  - `name` (String): Name of the AWS connection.
-  - `type` (String): Must be `webIdentity`.
-- **Optional:**
-  - `web_identity` (Block): Configuration for web identity authentication.
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-- **Nested:**
-  - `web_identity`:
-    - **Required:**
-      - `role_arn` (String, Sensitive): ARN of the AWS role to assume.
-    - **Optional:**
-      - `policy_arns` (List of String, Sensitive): Optional list of policy ARNs to restrict the role.
-
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_workflow_aws_connections` to retrieve existing AWS connection configurations.
-
----
-
-
-## dynatrace_automation_workflow_jira
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- You can configure Jira connections in Dynatrace under *Workflows > Jira Integrations*. Use your Jira server URL, authentication type (e.g., basic, cloud token, or PAT), and corresponding credentials.
-
-**Schema:**
-- **Required:**
-  - `name` (String): The name of the Jira connection.
-  - `type` (String): Authentication type. Possible values: `Basic`, `Cloud_token`, `Pat`.
-  - `url` (String): URL of the Jira server.
-- **Optional:**
-  - `insert_after` (String, Deprecated): Used for ordering resource instances.
-  - `password` (String, Sensitive): Password of the Jira user.
-  - `token` (String, Sensitive): Token for the selected authentication type.
-  - `user` (String): Username or email address.
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_workflow_jira` to retrieve existing Jira connection configurations.
-
-
-
-## dynatrace_automation_workflow_k8s_connections
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- You can configure Kubernetes connections in Dynatrace under *Workflows > Kubernetes Integrations*. Use the namespace and UID of the `kube-system` namespace from your Kubernetes cluster, and generate a token for authentication.
-
-**Schema:**
-- **Required:**
-  - `name` (String): The name of the EdgeConnect deployment.
-  - `namespace` (String): The namespace where EdgeConnect is deployed.
-  - `token` (String, Sensitive): Authentication token.
-  - `uid` (String): UID of the `kube-system` namespace.
-- **Optional:**
-  - `insert_after` (String, Deprecated): Used for ordering resource instances.
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_workflow_k8s_connections` to retrieve existing Kubernetes connection configurations.
-
----
-
-
-## dynatrace_automation_workflow_slack
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- You can configure Slack connections in Dynatrace under *Workflows > Slack Integrations*. The token is obtained from the Slack App Management UI after installing the Slack for Workflows app from the Dynatrace Hub.
-
-**Schema:**
-- **Required:**
-  - `name` (String): The name of the Slack connection.
-  - `token` (String, Sensitive): The bot token from Slack.
-- **Optional:**
-  - `insert_after` (String, Deprecated): Used for ordering resource instances.
-- **Read-Only:**
-  - `id` (String): The ID of this resource.
-
-**Data Block Usage:**
-- Use `terraform-provider-dynatrace -export dynatrace_automation_workflow_slack` to retrieve existing Slack connection configurations.
-
----
-
-
+Repeat similarly for all other modules.

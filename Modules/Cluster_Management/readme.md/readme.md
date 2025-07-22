@@ -1,237 +1,180 @@
 
+#  Dynatrace Environment Provisioning Module
 
-# Terraform Dynatrace Managed Cluster Modules
+This Terraform module provisions a Dynatrace environment in a managed cluster. It defines the environment's state, tags, trial status, data storage allocations, retention policies, and feature quotas. It can be paired with other managed configurations such as preferences, internet proxy settings, SMTP endpoints, and remote access.
 
----
-
-## dynatrace_environment
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- **`name`**: Choose a unique display name for the environment.
-- **`state`**: Use `"ENABLED"` or `"DISABLED"`.
-- **`storage`**: Define limits and retention settings based on your license and monitoring needs.
-- **`tags`**: Provide a list of tags (max 100 characters each).
-- **`trial`**: Set to `true` only if your license allows trial environments.
-
-### Schema
-
-#### Required
-- `name` (String)
-- `state` (String)
-- `storage` (Block)
-
-#### Optional
-- `quotas` (Block)
-- `tags` (Set of String)
-- `trial` (Boolean)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested Blocks
-- `storage`
-  - `transactions` (Number)
-  - `user_actions` (Number)
-  - `limits` (Block)
-    - `logs`, `session_replay`, `symbol_files`, `transactions` (Number)
-  - `retention` (Block)
-    - `rum`, `service_code_level`, `service_request_level`, `session_replay`, `synthetic`, `logs` (Number)
-
-- `quotas`
-  - `host_units` (Number)
-  - `ddus`, `dem_units`, `logs`, `synthetic`, `user_sessions` (Block)
-    - `annual`, `monthly` (Number)
 
 ---
 
-## dynatrace_managed_backup
+##  What This Module Provisions
 
-**Note:** HTTP DELETE method not available. Terraform will no longer manage this resource on destroy, but the configuration will remain on the Dynatrace cluster.
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- **`datacenter`**: Specify the datacenter name.
-- **`include_*`**: Set to `true` to include RUM, LMv2, or time series data.
-- **`bandwidth_limit_mbits`**: Set a bandwidth limit for Cassandra backups.
-- **`cassandra_scheduled_time`**: Set the hour (0–23) for daily backups.
-
-### Schema
-
-#### Required
-- `cassandra_scheduled_time` (Number)
-
-#### Optional
-- `bandwidth_limit_mbits`, `current_state`, `datacenter`, `enabled`, `include_lm20_data`, `include_rum_data`, `include_ts_metric_data`, `max_es_snapshots_to_clean`, `pause_backups`, `storage_path` (Various types)
-
-#### Read-Only
-- `id` (String)
+| Resource                          | Description                                                |
+|----------------------------------|------------------------------------------------------------|
+| `dynatrace_environment`          | Main environment instance created via Dynatrace Managed    |
+| `dynatrace_managed_preferences`  | Global preferences applied to the environment              |
+| `dynatrace_managed_backup`       | Backup status and configuration                           |
+| `dynatrace_managed_internet_proxy` | Proxy configuration for outbound communication          |
+| `dynatrace_managed_network_zones` | Network zone definition for traffic routing              |
+| `dynatrace_managed_public_endpoints` | Public UI endpoints for access                        |
+| `dynatrace_managed_remote_access` | Remote access user configuration                        |
+| `dynatrace_managed_smtp`         | SMTP server configuration for alerting/email              |
 
 ---
 
-## dynatrace_managed_internet_proxy
+##  Core Environment Inputs
 
-### Required API Token Scopes
-- One of: `ControlManagement`, `ServiceProviderAPI`, `UnattendedInstall`
+### `environment_name`  
+- **Type**: `string`  
+- **Description**: Unique identifier for the Dynatrace environment  
+- **Example**: `"prod-environment"`
 
-### How to Determine `tfvars` Values
-- **`server`**: Use the proxy server address.
-- **`port`**: Use the proxy port number.
-- **`user` / `password`**: Provide credentials if required.
-- **`non_proxy_hosts`**: List of hosts to bypass the proxy.
+### `environment_state`  
+- **Type**: `string`  
+- **Description**: Status of environment lifecycle (`active`, `paused`)  
+- **Example**: `"active"`
 
-### Schema
+### `environment_trial`  
+- **Type**: `bool`  
+- **Description**: Flags whether environment is a trial instance  
+- **Example**: `false`
 
-#### Required
-- `port` (Number)
-- `scheme` (String)
-- `server` (String)
-
-#### Optional
-- `non_proxy_hosts` (Set of String)
-- `password` (String, Sensitive)
-- `user` (String)
-
-#### Read-Only
-- `id` (String)
+### `environment_tags`  
+- **Type**: `set(string)`  
+- **Description**: Set of metadata tags assigned to the environment  
+- **Example**: `["monitoring", "cloud"]`
 
 ---
 
-## dynatrace_managed_network_zones
+##  Storage Allocation
 
-### Required API Token Scopes
-- `ServiceProviderAPI`
+### `storage_transactions`  
+- **Description**: Allocated GB for transactional tracing storage  
+- **Example**: `100`
 
-### How to Determine `tfvars` Values
-- **`name`**: Unique name for the network zone.
-- **`description`**: Optional description.
-- **`alternative_zones`**: List of fallback zones.
-- **`fallback_mode`**: Choose from `ANY_ACTIVE_GATE`, `NONE`, `ONLY_DEFAULT_ZONE`.
+### `storage_user_actions`  
+- **Description**: GB allocated for real user monitoring (RUM) data  
+- **Example**: `50`
 
-### Schema
-
-#### Optional
-- `alternative_zones` (List of String)
-- `description` (String)
-- `fallback_mode` (String)
-- `name` (String)
-- `num_of_configured_activegates`, `num_of_configured_oneagents`, `num_of_oneagents_from_other_zones`, `num_of_oneagents_using` (Number)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_managed_preferences
-
-**Note:** HTTP DELETE method not available. Terraform will no longer manage this resource on destroy, but the configuration will remain on the Dynatrace cluster.
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- Set preferences for monitoring, support, telemetry, and remote access according to your organization’s policies.
-
-### Schema
-
-#### Required
-- `ruxit_monitors_ruxit`, `support_send_billing`, `support_send_cluster_health`, `suppress_non_billing_relevant_data` (Boolean)
-
-#### Optional
-- `certificate_management_enabled`, `certificate_management_possible`, `community_create_user`, `community_external_search`, `help_chat_enabled`, `read_only_remote_access_allowed`, `remote_access_on_demand_only`, `support_allow_remote_access`, `support_send_events`, `telemetry_sharing` (Boolean)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_managed_public_endpoints
-
-**Note:** HTTP DELETE method not available. Terraform will no longer manage this resource on destroy, but the configuration will remain on the Dynatrace cluster.
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- Provide the main and additional web UI addresses, beacon forwarder, and CDN addresses used in your cluster.
-
-### Schema
-
-#### Optional
-- `additional_web_ui_addresses` (Set of String)
-- `beacon_forwarder_address`, `cdn_address`, `web_ui_address` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_managed_remote_access
-
-**Note:** HTTP DELETE method not available. Terraform will no longer manage this resource on destroy, but the configuration will remain on the Dynatrace cluster.
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- **`user_id`**: Email of the user requesting access.
-- **`reason`**: Justification for access.
-- **`requested_days`**: Duration of access.
-- **`role`**: Role to be assigned (e.g., `devops-admin`).
-
-### Schema
-
-#### Required
-- `reason`, `requested_days`, `role`, `user_id` (Various types)
-
-#### Optional
-- `state` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_managed_smtp
-
-**Note:** HTTP DELETE method not available. Terraform will no longer manage this resource on destroy, but the configuration will remain on the Dynatrace cluster.
-
-### Required API Token Scopes
-- `ServiceProviderAPI`
-
-### How to Determine `tfvars` Values
-- Provide SMTP server details including host, port, credentials, and sender address.
-
-### Schema
-
-#### Required
-- `host_name`, `password`, `sender_email_address`, `user_name` (Various types)
-
-#### Optional
-- `allow_fallback_via_mission_control`, `connection_security`, `is_password_configured`, `port`, `use_smtp_server` (Various types)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## Using Data Blocks to Retrieve Existing Information
-
-To retrieve existing configuration from Dynatrace, use Terraform `data` blocks. For example:
+### `storage_limits`  
+Structured optional limits for other data types:
 
 ```hcl
-data "dynatrace_tenant" "tenant" {}
-```
-
-This allows you to dynamically reference the current environment ID, which can be used in other resources like:
-
-```hcl
-scope = data.dynatrace_tenant.tenant.id
+storage_limits = {
+  logs           = 500
+  session_replay = 200
+  symbol_files   = 100
+  transactions   = 300
+}
 ```
 
 ---
 
+##  Retention Policies
+
+Defines how long data is retained (in days).
+
+```hcl
+storage_retention = {
+  rum                   = 30
+  service_code_level    = 14
+  service_request_level = 14
+  session_replay        = 7
+  synthetic             = 30
+  logs                  = 90
+}
+```
+
+---
+
+##  Quotas Configuration
+
+Specifies annual and monthly limits for key Dynatrace capabilities:
+
+```hcl
+quotas = {
+  host_units = 10
+  ddus = {
+    annual  = 12000
+    monthly = 1000
+  }
+  dem_units = {
+    annual  = 6000
+    monthly = 500
+  }
+  logs = {
+    annual  = 3000
+    monthly = 250
+  }
+  synthetic = {
+    annual  = 1200
+    monthly = 100
+  }
+  user_sessions = {
+    annual  = 24000
+    monthly = 2000
+  }
+}
+```
+
+These quotas reflect limits for licensing and data ingestion.
+
+---
+
+##  Outputs
+
+| Output Name         | Description                                           |
+|---------------------|-------------------------------------------------------|
+| `environment_id`    | ID of the provisioned Dynatrace environment           |
+| `preferences_id`    | ID of global preferences applied                      |
+| `backup_enabled`    | Backup feature toggle status                          |
+| `proxy_server`      | Hostname or address of the internet proxy             |
+| `network_zone_name` | Name of the network zone used                         |
+| `web_ui_address`    | Public URL for accessing Dynatrace UI                 |
+| `remote_access_user`| User ID configured for remote access                  |
+| `smtp_host`         | Hostname of SMTP server for outbound communication    |
+
+---
+
+
+##  Example Usage
+
+```hcl
+module "dynatrace_environment" {
+  source = "./modules/dynatrace_environment"
+
+  environment_name     = "prod-env"
+  environment_state    = "active"
+  environment_trial    = false
+  environment_tags     = ["monitoring", "region:us"]
+
+  storage_transactions = 150
+  storage_user_actions = 60
+
+  storage_limits = {
+    logs           = 600
+    session_replay = 250
+    symbol_files   = 120
+    transactions   = 350
+  }
+
+  storage_retention = {
+    rum                   = 45
+    service_code_level    = 14
+    service_request_level = 14
+    session_replay        = 7
+    synthetic             = 30
+    logs                  = 90
+  }
+
+  quotas = {
+    host_units = 12
+    ddus = {
+      annual  = 15000
+      monthly = 1250
+    }
+    ...
+  }
+}
+```
+
+---

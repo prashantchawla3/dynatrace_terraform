@@ -1,23 +1,19 @@
-
-resource "dynatrace_activegate_token" "example" {
-  auth_token_enforcement_manually_enabled = var.activegate_token_config.auth_token_enforcement_manually_enabled
-  expiring_token_notifications_enabled    = var.activegate_token_config.expiring_token_notifications_enabled
+module "activegate_token" {
+  source = "./modules/dynatrace_activegate_token"
+  config = var.activegate_token_config
 }
 
-resource "dynatrace_ag_token" "example" {
-  type            = var.ag_token_config.type
-  expiration_date = var.ag_token_config.expiration_date
-  name            = var.ag_token_config.name
+module "ag_token" {
+  source = "./modules/dynatrace_ag_token"
+  config = var.ag_token_config
 }
 
-resource "dynatrace_api_token" "example" {
-  name    = var.api_token_config.name
-  enabled = var.api_token_config.enabled
-  scopes  = var.api_token_config.scopes
+module "api_token" {
+  source = "./modules/dynatrace_api_token"
+  config = var.api_token_config
 }
 
-resource "dynatrace_token_settings" "example" {
-  new_token_format = var.token_settings_config.new_token_format
-  personal_tokens  = var.token_settings_config.personal_tokens
+module "token_settings" {
+  source = "./modules/dynatrace_token_settings"
+  config = var.token_settings_config
 }
-

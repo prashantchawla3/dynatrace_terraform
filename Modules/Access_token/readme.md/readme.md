@@ -1,182 +1,148 @@
 
+#  Dynatrace Token Management Modules
 
-# Terraform Dynatrace Resources Reference
+This Terraform module suite provisions and configures token entities within Dynatrace. It includes:
+
+-  ActiveGate token policy enforcement and expiry handling
+-  Creation of standard ActiveGate (AG) tokens
+-  API tokens with scoped access control
+-  Global token format and user token toggles
+
 
 ---
 
-## `dynatrace_activegate_token`
+##  Module Breakdown
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+| Module Name              | Resource Provisioned                        | Purpose                                              |
+|--------------------------|---------------------------------------------|------------------------------------------------------|
+| `activegate_token`       | `dynatrace_activegate_token`                | Configures ActiveGate token behavior and expiry      |
+| `ag_token`               | `dynatrace_ag_token`                        | Creates AG token with name and expiration            |
+| `api_token`              | `dynatrace_api_token`                       | Generates API token with scopes                      |
+| `token_settings`         | `dynatrace_token_settings`                  | Applies global token format and user token settings  |
 
-### How to Provide Values in `tfvars`
-You can determine the values for this resource based on your organization's ActiveGate token policy. These settings are typically configured by Dynatrace administrators or security teams.
+---
 
-Use the following structure in your `tfvars` file:
+##  Inputs & Examples
+
+###  `activegate_token_config`
+
+Configures behavior of token enforcement across ActiveGate agents.
+
+| Field                                 | Type  | Description |
+|--------------------------------------|-------|-------------|
+| `auth_token_enforcement_manually_enabled` | `bool` | Enables manual enforcement of token policy |
+| `expiring_token_notifications_enabled`    | `bool` | Enables email/UI warnings for expiring tokens |
+
+ Example:
 ```hcl
 activegate_token_config = {
-  auth_token_enforcement_manually_enabled = <true_or_false>
-  expiring_token_notifications_enabled    = <true_or_false>
+  auth_token_enforcement_manually_enabled = true
+  expiring_token_notifications_enabled    = true
 }
 ```
 
-### Schema
-
-**Required**
-- `auth_token_enforcement_manually_enabled` (Boolean): Manually enforce ActiveGate token authentication.
-- `expiring_token_notifications_enabled` (Boolean): Enable notifications for expiring tokens.
-
-**Read-Only**
-- `id` (String): The ID of this resource.
-
 ---
 
-## `dynatrace_ag_token`
+###  `ag_token_config`
 
-### Required API Token Scopes
-- `activeGateTokenManagement.create`
-- `activeGateTokenManagement.read`
-- `activeGateTokenManagement.write`
+Creates a token used by ActiveGate agents to authenticate.
 
-### How to Provide Values in `tfvars`
-These values are defined when creating a new ActiveGate token. You can choose the type (`ENVIRONMENT` or `CLUSTER`), set a name, and define an expiration policy.
+| Field            | Type    | Description |
+|------------------|---------|-------------|
+| `type`           | `string`| Typically `"AG"` or other AG token types |
+| `expiration_date`| `string`| ISO-formatted expiration date |
+| `name`           | `string`| Display name for the token |
 
-Use the following structure in your `tfvars` file:
+ Example:
 ```hcl
 ag_token_config = {
-  type            = "ENVIRONMENT"
-  expiration_date = "now+3d"
-  name            = "your_token_name"
+  type            = "AG"
+  expiration_date = "2025-12-31"
+  name            = "default-ag-token"
 }
 ```
 
-### Schema
-
-**Required**
-- `name` (String): The name of the token.
-- `type` (String): Type of ActiveGate. Values: `ENVIRONMENT`, `CLUSTER`.
-
-**Optional**
-- `expiration_date` (String): Token expiration in UTC timestamp, ISO 8601, or relative format (e.g., `now+3d`).
-- `seed` (Boolean): Whether the token is a seed token.
-
-**Read-Only**
-- `id` (String): The ID of this resource.
-- `tenant_token` (String, Sensitive): Tenant token (requires `InstallerDownload` permission).
-- `token` (String, Sensitive): The secret of the token.
-
 ---
 
-## `dynatrace_api_token`
+###  `api_token_config`
 
-### Required API Token Scopes
-- `apiTokens.read`
-- `apiTokens.write`
+Declares API token with scope-based permission granularity.
 
-### How to Provide Values in `tfvars`
-You can define the name, scopes, and enablement status of the API token. Scopes should match the permissions required for your use case.
-
-Use the following structure in your `tfvars` file:
+| Field    | Type            | Description |
+|----------|-----------------|-------------|
+| `name`   | `string`        | Token identifier used in Dynatrace |
+| `enabled`| `bool`          | Activates the token for use |
+| `scopes` | `list(string)`  | List of permission scopes assigned to the token |
+ Example:
 ```hcl
 api_token_config = {
-  name    = "your_token_name"
+  name    = "default-api-token"
   enabled = true
-  scopes  = ["scope1", "scope2"]
+  scopes  = [
+    "DataExport",
+    "ReadConfig",
+    "WriteConfig"
+  ]
 }
 ```
 
-### Schema
-
-**Required**
-- `name` (String): The name of the token.
-- `scopes` (Set of String): List of scopes assigned to the token.
-
-**Optional**
-- `creation_date` (String): ISO 8601 format.
-- `enabled` (Boolean): Whether the token is enabled.
-- `expiration_date` (String): Expiration date in ISO 8601.
-- `last_used_date` (String): Last used date.
-- `last_used_ip_address` (String): Last used IP.
-- `modified_date` (String): Last modified date.
-- `owner` (String): Owner of the token.
-- `personal_access_token` (Boolean): Whether it's a personal access token.
-
-**Read-Only**
-- `id` (String): The ID of this resource.
-- `token` (String, Sensitive): The secret of the token.
+>  Scope names must match valid Dynatrace API scope declarations (e.g. `LogViewer`, `UserManagement`, `EntityMetadataRead`).
 
 ---
 
-## `dynatrace_token_settings`
+###  `token_settings_config`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+Controls token format consistency and user token allowances across environments.
 
-### How to Provide Values in `tfvars`
-These settings are typically managed by Dynatrace administrators to enforce token policies.
+| Field            | Type   | Description |
+|------------------|--------|-------------|
+| `new_token_format` | `bool` | Enables updated token format (UUID-based or structured) |
+| `personal_tokens`  | `bool` | Enables/disables creation of personal tokens by users |
 
-Use the following structure in your `tfvars` file:
+ Example:
 ```hcl
 token_settings_config = {
   new_token_format = true
-  personal_tokens  = true
+  personal_tokens  = false
 }
 ```
 
-### Schema
+---
 
-**Required**
-- `new_token_format` (Boolean): Enable new Dynatrace API token format.
-- `personal_tokens` (Boolean): Allow generation of personal access tokens.
+##  Outputs
 
-**Read-Only**
-- `id` (String): The ID of this resource.
+| Output Name          | Description                                      |
+|----------------------|--------------------------------------------------|
+| `activegate_token`   | Full resource object from ActiveGate token configuration |
+| `ag_token`           | Sensitive token object from AG token creation         |
+| `api_token`          | Sensitive token object containing API scopes        |
+| `token_settings`     | Final token setting policy applied across the tenant |
+
+All token objects can be used for authentication workflows, logging pipelines, or integrations — but be careful not to expose sensitive outputs in version-controlled files or CI logs.
 
 ---
 
-## `dynatrace_api_token` (Data Source)
+##  Example Composition in `main.tf`
 
-### How to Provide Values in `tfvars`
-Specify the name of the token you want to retrieve. This is useful for referencing existing tokens.
+```hcl
+module "activegate_token" {
+  source = "./modules/dynatrace_activegate_token"
+  config = var.activegate_token_config
+}
 
-### Schema
+module "ag_token" {
+  source = "./modules/dynatrace_ag_token"
+  config = var.ag_token_config
+}
 
-**Required**
-- `name` (String): Name of the token to retrieve.
+module "api_token" {
+  source = "./modules/dynatrace_api_token"
+  config = var.api_token_config
+}
 
-**Read-Only**
-- `creation_date` (String)
-- `enabled` (Boolean)
-- `expiration_date` (String)
-- `id` (String)
-- `owner` (String)
-- `personal_access_token` (Boolean)
-- `scopes` (Set of String)
+module "token_settings" {
+  source = "./modules/dynatrace_token_settings"
+  config = var.token_settings_config
+}
+```
 
----
-
-## `dynatrace_api_tokens` (Data Source)
-
-### How to Provide Values in `tfvars`
-No input is required. This data source retrieves all tokens available in the environment.
-
-### Schema
-
-**Read-Only**
-- `api_tokens` (List of Object):
-  - `creation_date` (String)
-  - `enabled` (Boolean)
-  - `expiration_date` (String)
-  - `last_used_date` (String)
-  - `last_used_ip_address` (String)
-  - `modified_date` (String)
-  - `name` (String)
-  - `owner` (String)
-  - `personal_access_token` (Boolean)
-  - `scopes` (Set of String)
-  - `token` (String)
-- `id` (String)
-
----

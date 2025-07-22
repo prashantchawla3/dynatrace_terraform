@@ -10,21 +10,25 @@ variable "notifications" {
     accept_any_certificate = bool
     url                    = string
   }))
+  default = []
 }
 
 variable "attack_alerting_names" {
   description = "List of attack alerting configuration names"
   type        = list(string)
+  default     = []
 }
 
 variable "attack_alerting_enabled" {
   description = "Enable or disable attack alerting"
   type        = bool
+  default     = false
 }
 
 variable "enabled_attack_mitigations" {
   description = "List of enabled attack mitigations"
   type        = list(string)
+  default     = []
 }
 
 variable "attack_allowlists" {
@@ -46,6 +50,7 @@ variable "attack_allowlists" {
       value   = string
     }))
   }))
+  default = []
 }
 
 variable "attack_rules" {
@@ -56,6 +61,7 @@ variable "attack_rules" {
     comment           = string
     blocking_strategy = string
   }))
+  default = []
 }
 
 variable "attack_settings" {
@@ -64,6 +70,7 @@ variable "attack_settings" {
     enabled                = bool
     blocking_strategy_java = string
   }))
+  default = []
 }
 
 variable "kubernetes_spm" {
@@ -72,6 +79,7 @@ variable "kubernetes_spm" {
     scope                                  = string
     configuration_dataset_pipeline_enabled = bool
   }))
+  default = []
 }
 
 variable "management_zones" {
@@ -87,6 +95,7 @@ variable "management_zones" {
     operator        = string
     string_value    = string
   }))
+  default = []
 }
 
 variable "vulnerability_alerting" {
@@ -97,6 +106,7 @@ variable "vulnerability_alerting" {
     enabled_risk_levels    = list(string)
     enabled_trigger_events = list(string)
   }))
+  default = []
 }
 
 variable "vulnerability_code" {
@@ -106,6 +116,7 @@ variable "vulnerability_code" {
     comment         = string
     monitoring_mode = string
   }))
+  default = []
 }
 
 variable "vulnerability_settings" {
@@ -124,6 +135,7 @@ variable "vulnerability_settings" {
     enable_node_js_runtime                    = bool
     enable_php                                = bool
   }))
+  default = []
 }
 
 variable "vulnerability_third_party" {
@@ -135,4 +147,5 @@ variable "vulnerability_third_party" {
     property = string
     value    = string
   }))
+  default = []
 }

@@ -1,192 +1,141 @@
 
+#  Dynatrace Automation & Discovery Configuration Modules
 
-##  dynatrace_automation_controller_connections
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- `url`: Obtain from your Ansible Automation Controller instance (e.g., `https://ansible.yourdomain.com/api/v2/`)
-- `token`: Generate an API token from the Ansible Automation Controller.
-
-**Schema:**
-- **Required:**
-  - `name` (String): Unique connection name.
-  - `type` (String): Must be `api-token`.
-  - `url` (String): API endpoint URL.
-- **Optional:**
-  - `token` (String, Sensitive): API access token.
-- **Read-Only:**
-  - `id` (String)
-
-**Data Block Usage:**
-Use the `terraform-provider-dynatrace -export` command to retrieve existing connections.
+This Terraform module suite provisions automation controller connections, discovery rule sets, app-level feature flags, and network saturation parameters in Dynatrace. It covers advanced configuration used in infrastructure observability, service discovery, and policy-triggered automation.
 
 ---
 
-##  dynatrace_db_app_feature_flags
+##  Module Overview
 
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- Only configure under guidance from Dynatrace ONE.
-- `name`, `type`, and value fields should be based on the feature flag configuration in Dynatrace.
-
-**Schema:**
-- **Required:**
-  - `name` (String)
-  - `type` (String): `Boolean`, `Number`, or `String`
-- **Optional:**
-  - `boolean_value` (Boolean)
-  - `number_value` (Number)
-  - `string_value` (String)
-- **Read-Only:**
-  - `id` (String)
-
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing feature flag configurations.
+| Module Name        | Resource(s) Created                                | Purpose                                                        |
+|--------------------|-----------------------------------------------------|----------------------------------------------------------------|
+| `connections`      | `dynatrace_automation_controller_connections`       | Defines external integration endpoints for automation          |
+| `default_rules`    | `dynatrace_discovery_default_rules`                | Enables default service and host discovery logic               |
+| `actions`          | `dynatrace_event_driven_actions`                   | Creates automation actions tied to event triggers              |
+| `discovery_settings` | `dynatrace_discovery_feature_flags`              | Configures granular discovery parameters and thresholds        |
 
 ---
 
-## dyatrace_discovery_default_rules
+##  Input Variables & Examples
 
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
+###  Module: `connections`
 
-**How to determine tfvars values:**
-- Review existing discovery rules in Dynatrace UI under Discovery & Coverage.
+Creates one or more Dynatrace automation controller connections.
 
-**Schema:**
-- **Required:**
-  - `rule` (Block List)
-    - `category` (String)
-    - `description` (String)
-    - `environment_scope` (Boolean)
-    - `id` (String)
-    - `priority` (String)
-    - `query` (String)
-    - `title` (String)
-- **Optional:**
-  - `rule.actions` (Block List)
-    - `action`
-      - `name` (String)
-      - `instant_action` (Boolean)
-      - `parameters`
-        - `parameter`
-          - `name` (String)
-          - `value` (String)
-  - `rule.zero_rated` (Boolean)
-- **Required:**
-  - `settings`
-    - `muted` (Boolean)
-- **Read-Only:**
-  - `id` (String)
+| Variable | Type | Description |
+|----------|------|-------------|
+| `resource_count` | `number` | Number of connections to create |
+| `resource_names` | `list(string)` | Names for the connections |
+| `url` | `string` | Target endpoint for integration |
+| `token` | `string` | API token or integration token _(should be passed securely)_ |
+| `type` | `string` | Connection type identifier (e.g., `ansible`, `webhook`, `custom`) |
 
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing discovery rules.
+ Example:
+```hcl
+resource_count = 2
+resource_names = ["control-plane", "edge-node"]
+url            = "https://automation.company.com"
+token          = "secure-token" # use Terraform input or vault in practice
+type           = "ansible"
+```
+
+>  Connections support count-based provisioning to create multiple indexed resources.
 
 ---
 
-## dynatrace_discovery_feature_flags
+###  Module: `default_rules`
 
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
+Defines discovery rule sets used in service detection and environment mapping.
 
-**How to determine tfvars values:**
-- Check the Discovery & Coverage section in Dynatrace for available feature flags.
+| Variable | Type | Description |
+|----------|------|-------------|
+| `description` | `string` | Rule metadata shown in UI |
+| `category` | `string` | Functional category (e.g., `host`, `service`, `infra`) |
+| `environment_scope` | `bool` | If `true`, rule applies only within current environment |
+| `priority` | `string` | Rule priority: `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |
+| `query` | `string` | Selector query (e.g., `"status:active"` or `"type:SERVICE"`) |
+| `title` | `string` | Display name for rule |
+| `muted` | `bool` | If `true`, rule is active but does not generate discovery events |
 
-**Schema:**
-- **Required:**
-  - `name` (String)
-  - `type` (String): `Boolean`, `Number`, or `String`
-- **Optional:**
-  - `boolean_value` (Boolean)
-  - `number_value` (Number)
-  - `string_value` (String)
-- **Read-Only:**
-  - `id` (String)
-
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing feature flags.
-
----
-
-##  dynatrace_event_driven_ansible_connections
-
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
-
-**How to determine tfvars values:**
-- `url`: Get from your Event-Driven Ansible source plugin webhook.
-- `token`: Generate from the Event-Driven Ansible Controller.
-
-**Schema:**
-- **Required:**
-  - `name` (String)
-  - `type` (String): Must be `api-token`
-  - `url` (String)
-- **Optional:**
-  - `token` (String, Sensitive)
-- **Read-Only:**
-  - `id` (String)
-
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing connections.
+ Example:
+```hcl
+description        = "Detect all active services with production tags"
+category           = "service"
+environment_scope  = true
+priority           = "HIGH"
+query              = "tag:Environment=Production AND status:active"
+title              = "Production Service Rule"
+muted              = false
+```
 
 ---
 
-## dynatrace_infraops_app_feature_flags
+###  Module: `actions`
 
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
+Creates reusable event-driven automation actions.
 
-**How to determine tfvars values:**
-- Only configure under guidance from Dynatrace ONE.
-- Check Infrastructure & Operations section in Dynatrace.
+| Variable | Type | Description |
+|----------|------|-------------|
+| `action_name` | `string` | Unique name for the automation action |
+| `mode` | `string` | Execution mode: `ENABLED`, `DISABLED`, `DRY_RUN` |
 
-**Schema:**
-- **Required:**
-  - `name` (String)
-  - `type` (String): `Boolean`, `Number`, or `String`
-- **Optional:**
-  - `boolean_value` (Boolean)
-  - `number_value` (Number)
-  - `string_value` (String)
-- **Read-Only:**
-  - `id` (String)
+ Example:
+```hcl
+action_name = "restart-nginx"
+mode        = "ENABLED"
+```
 
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing feature flags.
+>  These actions can be bound to workflows or alerting triggers later.
 
 ---
 
-##  dynatrace_infraops_app_settings
+###  Module: `discovery_settings`
 
-**Required API Token Scopes:**
-- `settings.read`
-- `settings.write`
+Sets global and scoped discovery behavior, including interface utilization thresholds.
 
-**How to determine tfvars values:**
-- Review Infrastructure & Operations settings in Dynatrace.
+| Variable | Type | Description |
+|----------|------|-------------|
+| `boolean_value` | `bool` | Toggles main discovery feature flag |
+| `show_monitoring_candidates` | `bool` | If `true`, shows discoverable entities not yet monitored |
+| `show_standalone_hosts` | `bool` | Displays hosts with no known services |
+| `interface_saturation_threshold` | `number` | % threshold above which network saturation is flagged |
 
-**Schema:**
-- **Required:**
-  - `show_monitoring_candidates` (Boolean)
-  - `show_standalone_hosts` (Boolean)
-- **Optional:**
-  - `interface_saturation_threshold` (Number)
-- **Read-Only:**
-  - `id` (String)
-
-**Data Block Usage:**
-Use `terraform-provider-dynatrace -export` to retrieve existing app settings.
+ Example:
+```hcl
+boolean_value                 = true
+show_monitoring_candidates   = true
+show_standalone_hosts        = false
+interface_saturation_threshold = 90
+```
 
 ---
+
+##  Outputs
+
+| Output Name                | Description |
+|----------------------------|-------------|
+| `connection_ids`           | IDs for provisioned controller connection resources |
+| `feature_flag_ids`         | App-level feature flag identifiers |
+| `default_rule_ids`         | IDs for the default discovery rules applied |
+| `discovery_flag_ids`       | Resource IDs for discovery parameter toggles |
+| `ansible_connection_ids`   | Resource IDs for event-driven Ansible connections |
+| `infraops_setting_ids`     | IDs for infrastructure operations-related settings |
+
+---
+
+
+##  Terraform Usage Summary
+
+```hcl
+module "connections" {
+  source  = "./modules/dynatrace_automation_controller_connections"
+  count   = var.resource_count
+  name    = var.resource_names[count.index]
+  url     = var.url
+  token   = var.token
+  type    = var.type
+}
+```
+
+Repeat similar structure for the remaining modules.
 

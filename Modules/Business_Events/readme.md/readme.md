@@ -1,214 +1,161 @@
 
+# 📘 Dynatrace Business Events Automation Module
 
-# Terraform Dynatrace Business Events Modules
+This module provisions a fully scoped business event rule in Dynatrace Automation. It handles:
+-  Event ingestion from buckets
+-  Metric extraction, transformation, and enrichment
+-  OneAgent-based in-process visibility
+-  Event forwarding and rule-based trigger logic
+-  Security filtering and suppression conditions
 
----
-
-## dynatrace_business_events_buckets
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`bucket_name`**: Use the name of an existing business events bucket. You can find this in the Dynatrace UI under *Business Analytics > Buckets*.
-- **`matcher`**: Define a condition using Dynatrace’s matcher syntax (e.g., `matchesValue(event.type, "com.example.event")`).
-- **`rule_name`**: Choose a unique name for the rule.
-
-### Schema
-
-#### Required
-- `bucket_name` (String)
-- `enabled` (Boolean)
-- `matcher` (String)
-- `rule_name` (String)
-
-#### Optional
-- `insert_after` (String)
-
-#### Read-Only
-- `id` (String)
 
 ---
 
-## dynatrace_business_events_capturing_variants
+##  What’s Created
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`content_type_matcher`**: Choose from `CONTAINS`, `ENDS_WITH`, `EQUALS`, `STARTS_WITH`.
-- **`content_type_value`**: Use the content-type header value (e.g., `application/json`).
-- **`parser`**: Choose from `JSON`, `Raw`, `Text`, `URLencoded`, `XML`.
-- **`scope`**: Use `"environment"` for global or `"HOST"`/`"HOST_GROUP"` for specific scopes.
-
-### Schema
-
-#### Required
-- `content_type_matcher` (String)
-- `content_type_value` (String)
-- `parser` (String)
-
-#### Optional
-- `insert_after` (String)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
+| Resource                                 | Purpose                                                  |
+|------------------------------------------|----------------------------------------------------------|
+| `dynatrace_automation_business_events`   | Defines a business event ingestion and transformation rule |
 
 ---
 
-## dynatrace_business_events_metrics
+##  Ingestion Configuration
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  Bucket Settings
 
-### How to Determine `tfvars` Values
-- **`key`**: Define a unique metric key (e.g., `bizevents.myApp.metricName`).
-- **`matcher`**: Use a valid event matcher expression.
-- **`measure`**: Choose `ATTRIBUTE` or `OCCURRENCE`.
-- **`measure_attribute`**: Specify the attribute name if `measure` is `ATTRIBUTE`.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `key` (String)
-- `matcher` (String)
-- `measure` (String)
-
-#### Optional
-- `dimensions` (Set of String)
-- `measure_attribute` (String)
-
-#### Read-Only
-- `id` (String)
+| Variable                | Description                                      | Example                  |
+|-------------------------|--------------------------------------------------|--------------------------|
+| `buckets_enabled`       | Enables ingestion from a business event bucket   | `true`                   |
+| `bucket_name`           | Bucket identifier                                | `"business-events-bucket"` |
+| `buckets_matcher`       | Matcher expression for filtering events          | `"contains(eventType)"` |
 
 ---
 
-## dynatrace_business_events_oneagent
+##  Parsing & Rule Metadata
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`rule_name`**: Unique name for the rule.
-- **`scope`**: Use `"environment"` or specify `"HOST"`/`"HOST_GROUP"`.
-- **`event`**: Define metadata including `category`, `provider`, `type`, and optional `data`.
-- **`triggers`**: Define trigger conditions using supported types like `STARTS_WITH`, `EQUALS`, etc.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `event` (Block)
-- `rule_name` (String)
-- `triggers` (Block)
-
-#### Optional
-- `insert_after` (String)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
+| Variable             | Description                                | Example                    |
+|----------------------|--------------------------------------------|----------------------------|
+| `rule_name`          | Internal name of the business event rule   | `"BusinessEventsRule"`     |
+| `content_type_matcher` | How to match content type (e.g. `EQUALS`) | `"EQUALS"`                |
+| `content_type_value` | Expected content type (e.g. JSON)           | `"application/json"`       |
+| `parser`             | Format parser (`JSON`, `CSV`, etc.)        | `"JSON"`                   |
+| `scope`              | Ingestion scope (`ENVIRONMENT`, `HOST`)    | `"ENVIRONMENT"`            |
 
 ---
 
-## dynatrace_business_events_oneagent_outgoing
+##  Metrics Extraction
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- Similar to `dynatrace_business_events_oneagent`, but for outgoing HTTP requests.
-- Define `event` metadata and `triggers` for outgoing traffic.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `event` (Block)
-- `rule_name` (String)
-- `triggers` (Block)
-
-#### Optional
-- `insert_after` (String)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
+| Variable             | Description                                 | Example                        |
+|----------------------|---------------------------------------------|--------------------------------|
+| `metrics_enabled`    | Toggles metric extraction                   | `true`                         |
+| `metrics_key`        | Identifier key for the metric               | `"metric.event.key"`          |
+| `metrics_matcher`    | Condition for extracting metric              | `"eventType == \"transaction\""` |
+| `measure`            | Type of metric (`ATTRIBUTE`, `COUNT`, etc.) | `"ATTRIBUTE"`                 |
+| `measure_attribute`  | Source attribute to measure                 | `"duration"`                  |
 
 ---
 
-## dynatrace_business_events_processing
+##  OneAgent Enrichment
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+| Variable               | Description                                      | Example      |
+|------------------------|--------------------------------------------------|--------------|
+| `oneagent_enabled`     | Enables OneAgent to capture the event locally   | `true`       |
+| `category_source_type` | Category type source (`STATIC`, `DYNAMIC`)      | `"STATIC"`   |
+| `event_data_fields`    | Map of event fields and their sources           | See below    |
+| `provider_source`      | Provider label (e.g., `Dynatrace`)              | `"Dynatrace"`|
+| `provider_source_type` | Type of provider source                         | `"STATIC"`   |
+| `type_source`, `type_source_type` | Event type source                     | `"Transaction"`, `"STATIC"` |
 
-### How to Determine `tfvars` Values
-- **`matcher`**: Use a valid event matcher.
-- **`script`**: Define transformation logic (e.g., `FIELDS_ADD(trading_volume:price*amount)`).
-- **`rule_testing.sample_event`**: Provide a sample event in JSON format.
-- **`transformation_fields`**: Define fields used in the transformation.
-
-### Schema
-
-#### Required
-- `enabled` (Boolean)
-- `matcher` (String)
-- `rule_name` (String)
-- `rule_testing` (Block)
-- `script` (String)
-
-#### Optional
-- `insert_after` (String)
-- `transformation_fields` (Block)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_business_events_security_context
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`query`**: Define a matcher expression (e.g., `matchesPhrase(content, "value")`).
-- **`rule_name`**: Unique name for the rule.
-- **`value_source`**: Choose `FIELD` or `LITERAL`.
-- **`value_source_field`**: Specify the field name if using `FIELD`.
-
-### Schema
-
-#### Required
-- `security_context_rule` (Block)
-
-#### Optional
-- `insert_after` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## Using Data Blocks to Retrieve Existing Information
-
-To retrieve existing configuration from Dynatrace, use Terraform `data` blocks. For example:
-
+ Example:
 ```hcl
-data "dynatrace_business_events_metrics" "existing" {
-  key = "bizevents.myApp.metricName"
+event_data_fields = {
+  eventType = {
+    name = "eventType"
+    source = {
+      path        = "$.event.type"
+      source      = "BODY"
+      source_type = "JSON"
+    }
+  }
 }
 ```
 
-This allows you to reference existing resources and use their attributes in other modules or resources.
+---
+
+##  Trigger Matching
+
+| Variable                  | Description                                  | Example               |
+|---------------------------|----------------------------------------------|-----------------------|
+| `trigger_type`            | Type of trigger logic (`STARTS_WITH`, `EQUALS`) | `"STARTS_WITH"`     |
+| `trigger_case_sensitive`  | Enable case sensitivity                      | `false`               |
+| `trigger_value`           | Value to match for trigger                   | `"event-trigger"`     |
+| `trigger_data_source`     | Source to apply trigger matching (`BODY`)    | `"BODY"`              |
 
 ---
+
+##  Outgoing Event Settings
+
+If enabled, events are published externally from OneAgent.
+
+| Variable                      | Description                                        | Example             |
+|-------------------------------|----------------------------------------------------|---------------------|
+| `outgoing_enabled`            | Toggle external push                              | `true`              |
+| `outgoing_category_source`    | Category label                                     | `"Payment"`         |
+| `outgoing_category_source_type` | Source type                                      | `"STATIC"`          |
+| `outgoing_field_name`, `outgoing_field_path` | Field metadata                | `"outgoingField"`, `"$.outgoing.field"` |
+| `outgoing_provider_source`, `outgoing_provider_source_type` | Third-party label | `"ThirdParty"`, `"STATIC"` |
+| `outgoing_type_source`, `outgoing_type_source_type` | External event type        | `"Invoice"`, `"STATIC"` |
+| `outgoing_trigger_type`, `outgoing_trigger_value`, `outgoing_trigger_data_source` | Match condition | `"EQUALS"`, `"invoice-sent"`, `"BODY"` |
+
+---
+
+##  Processing Script Block
+
+Used for inline event filtering.
+
+| Variable              | Description                      | Example                                  |
+|-----------------------|----------------------------------|------------------------------------------|
+| `processing_enabled`  | Enables script evaluation        | `true`                                   |
+| `processing_matcher`  | Matcher expression               | `"status == \"complete\""`               |
+| `processing_script`   | Code logic used to evaluate event | `"return payload.status == 'complete';"` |
+| `sample_event`        | Event sample used in test UI     | `"{ \"status\": \"complete\" }"`         |
+
+---
+
+##  Transformation Fields
+
+Defines custom data types parsed from event payload.
+
+ Example:
+```hcl
+transformation_fields = {
+  amount = {
+    name     = "amount"
+    type     = "double"
+    array    = false
+    optional = true
+    readonly = false
+  }
+}
+```
+
+---
+
+##  Security Context Matching
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `security_query` | Query condition to filter secure events | `"user.role == 'admin'"` |
+| `security_value_source_field` | Field used for comparison | `"role"` |
+| `security_value_source` | Source of the field (`BODY`, `HEADER`, etc.) | `"BODY"` |
+
+---
+
+##  Outputs
+
+| Output Name | Description |
+|-------------|-------------|
+| `rule_name` | Name of the created event rule |
+
+---
+

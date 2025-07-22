@@ -1,179 +1,191 @@
 
+#  Dynatrace Platform Integrations: Cloud Foundry & Kubernetes
 
-# Terraform Dynatrace Infrastructure Modules
-
----
-
-## dynatrace_cloud_foundry
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`api_url`**: Use the Cloud Foundry API endpoint (e.g., `https://api.cf.example.com`).
-- **`login_url`**: Use the Cloud Foundry login endpoint (e.g., `https://login.cf.example.com`).
-- **`username` / `password`**: Use credentials with access to the Cloud Foundry environment.
-- **`active_gate_group`**: Optional. Use the name of the ActiveGate group configured in Dynatrace.
-
-### Schema
-
-#### Required
-- `api_url` (String)
-- `enabled` (Boolean)
-- `label` (String)
-- `login_url` (String)
-- `password` (String, Sensitive)
-- `username` (String)
-
-#### Optional
-- `active_gate_group` (String)
-
-#### Read-Only
-- `id` (String)
+This Terraform module suite provisions platform monitoring integrations for Cloud Foundry and Kubernetes (including app-level and enrichment configurations) using Dynatrace APIs. It enables visibility across clusters, applications, and enriched entity metadata by combining monitoring controls and label-driven mappings.
 
 ---
 
-## dynatrace_k8s_monitoring
+##  Modules & What They Do
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`scope`**: Use the Kubernetes cluster ID (e.g., `KUBERNETES_CLUSTER-xxxxxxxx`).
-- **`event_patterns`**: Define filters using Kubernetes field selectors (e.g., `involvedObject.kind=Node`).
-- **`open_metrics_*`**: Enable or disable based on your monitoring strategy and resource usage.
-
-### Schema
-
-#### Required
-- `cloud_application_pipeline_enabled` (Boolean)
-- `event_processing_active` (Boolean)
-- `open_metrics_builtin_enabled` (Boolean)
-- `open_metrics_pipeline_enabled` (Boolean)
-
-#### Optional
-- `event_patterns` (Block)
-- `filter_events` (Boolean)
-- `include_all_fdi_events` (Boolean)
-- `pvc_monitoring_enabled` (Boolean, Deprecated)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
-#### Nested Schema for `event_patterns`
-- `event_pattern` (Block)
-  - `active` (Boolean)
-  - `label` (String)
-  - `pattern` (String)
+| Module Name                    | Resource Provisioned                        | Description |
+|-------------------------------|---------------------------------------------|-------------|
+| `cloud_foundry_module`        | `dynatrace_cloud_foundry`                  | Connects Dynatrace to a Cloud Foundry environment via ActiveGate |
+| `k8s_monitoring_module`       | `dynatrace_k8s_monitoring`                 | Configures high-level K8s monitoring options, event patterns, metrics |
+| `kubernetes_module`           | `dynatrace_kubernetes`                     | Sets up cluster-level Dynatrace integration for Kubernetes |
+| `kubernetes_app_module`       | `dynatrace_kubernetes_app`                 | Enables app-level K8s monitoring scoped by namespace or workload |
+| `kubernetes_enrichment_module`| `dynatrace_kubernetes_enrichment`          | Maps entity labels to environments or metadata for enriched observability |
 
 ---
 
-## dynatrace_kubernetes
+##  Module: `cloud_foundry_module`
 
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
+###  What It Does
 
-### How to Determine `tfvars` Values
-- **`cluster_id`**: Use the unique ID of the Kubernetes cluster.
-- **`endpoint_url`**: Use the Kubernetes API server URL.
-- **`auth_token`**: Use a bearer token with access to the Kubernetes API.
-- **`scope`**: Use the cluster scope (e.g., `KUBERNETES_CLUSTER-xxxxxx`).
+Establishes a Cloud Foundry integration that allows Dynatrace to monitor CF foundations via ActiveGate and API credentials.
 
-### Schema
+###  Variables
 
-#### Required
-- `cluster_id_enabled` (Boolean)
-- `enabled` (Boolean)
-- `label` (String)
+| Name              | Type    | Description |
+|-------------------|---------|-------------|
+| `enabled`         | `bool`  | Toggles the integration |
+| `active_gate_group` | `string` | ActiveGate group to use |
+| `api_url`         | `string` | Cloud Foundry API URL |
+| `label`           | `string` | Display label in Dynatrace |
+| `login_url`       | `string` | Cloud Foundry login endpoint |
+| `username`        | `string` | Login username _(secret excluded)_ |
 
-#### Optional
-- `active_gate_group` (String)
-- `auth_token` (String, Sensitive)
-- `certificate_check_enabled` (Boolean)
-- `cloud_application_pipeline_enabled` (Boolean, Deprecated)
-- `cluster_id` (String)
-- `endpoint_url` (String)
-- `event_patterns` (Block, Deprecated)
-- `event_processing_active` (Boolean, Deprecated)
-- `filter_events` (Boolean, Deprecated)
-- `hostname_verification_enabled` (Boolean)
-- `include_all_fdi_events` (Boolean, Deprecated)
-- `open_metrics_builtin_enabled` (Boolean, Deprecated)
-- `open_metrics_pipeline_enabled` (Boolean, Deprecated)
-- `pvc_monitoring_enabled` (Boolean, Deprecated)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_kubernetes_app
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`scope`**: Use the Kubernetes cluster scope (e.g., `KUBERNETES_CLUSTER-xxxxxx`).
-- **`enable_kubernetes_app`**: Set to `true` to enable the new Kubernetes experience.
-
-### Schema
-
-#### Required
-- `kubernetes_app_options` (Block)
-  - `enable_kubernetes_app` (Boolean)
-
-#### Optional
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## dynatrace_kubernetes_enrichment
-
-### Required API Token Scopes
-- `settings.read`
-- `settings.write`
-
-### How to Determine `tfvars` Values
-- **`rules`**: Define rules to map Kubernetes labels or annotations to Dynatrace metadata fields.
-  - **`type`**: Use `LABEL` or `ANNOTATION`
-  - **`source`**: Use a valid Kubernetes label or annotation key
-  - **`target`**: Use one of `dt.cost.product`, `dt.cost.costcenter`, or `dt.security_context`
-
-### Schema
-
-#### Optional
-- `rules` (Block)
-  - `rule` (Block)
-    - `source` (String)
-    - `target` (String)
-    - `type` (String)
-    - `enabled` (Boolean, Deprecated)
-- `scope` (String)
-
-#### Read-Only
-- `id` (String)
-
----
-
-## Using Data Blocks to Retrieve Existing Information
-
-To retrieve existing configuration from Dynatrace, use Terraform `data` blocks. For example:
-
+ Example:
 ```hcl
-data "dynatrace_kubernetes" "existing" {
-  label = "Production Cluster"
+cloud_foundry = {
+  default_cf = {
+    enabled           = true
+    active_gate_group = "cf-gate-group"
+    api_url           = "https://api.cf.example.com"
+    label             = "CF Integration"
+    login_url         = "https://login.cf.example.com"
+    username          = "admin"
+  }
 }
 ```
 
-This allows you to reference existing resources and use their attributes in other modules or resources.
+---
+
+##  Module: `k8s_monitoring_module`
+
+###  What It Does
+
+Configures global Kubernetes monitoring options, including metric pipelines, event filters, and scope settings.
+
+###  Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cloud_application_pipeline_enabled` | `bool` | Enables cloud application pipeline |
+| `event_processing_active`           | `bool` | Toggles event ingestion |
+| `filter_events`                     | `bool` | Filters out non-essential events |
+| `include_all_fdi_events`           | `bool` | Includes all FDI events |
+| `open_metrics_builtin_enabled`     | `bool` | Toggles built-in OpenMetrics |
+| `open_metrics_pipeline_enabled`    | `bool` | Enables pipeline processing of metrics |
+| `scope`                            | `string` | Resource scope identifier |
+| `event_patterns.active`            | `bool` | Enables custom event filter pattern |
+| `event_patterns.label`             | `string` | Label for event pattern |
+| `event_patterns.pattern`           | `string` | Regex or string matcher for event pattern |
+
+ Example:
+```hcl
+k8s_monitoring = {
+  default_k8s_monitoring = {
+    cloud_application_pipeline_enabled = true
+    event_processing_active            = true
+    filter_events                      = true
+    open_metrics_pipeline_enabled      = true
+    scope                              = "monitoring-scope"
+    event_patterns = {
+      active  = true
+      label   = "K8s Events"
+      pattern = ".*"
+    }
+  }
+}
+```
 
 ---
+
+##  Module: `kubernetes_module`
+
+###  What It Does
+
+Creates a full cluster-level integration between Dynatrace and Kubernetes, including certificate options and endpoint connection details.
+
+###  Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | `bool` | Toggles resource |
+| `cluster_id` | `string` | Cluster identifier |
+| `cluster_id_enabled` | `bool` | Whether ID is used or inferred |
+| `label` | `string` | Display name |
+| `scope` | `string` | Resource scope |
+| `active_gate_group` | `string` | ActiveGate used for ingestion |
+| `endpoint_url` | `string` | API server endpoint |
+| `certificate_check_enabled` | `bool` | Enables TLS certificate validation |
+| `hostname_verification_enabled` | `bool` | Controls host match checks |
+
+ Example:
+```hcl
+kubernetes = {
+  default_cluster = {
+    enabled = true
+    cluster_id = "k8s-cluster-01"
+    label = "Production Cluster"
+    scope = "cluster-scope"
+    active_gate_group = "k8s-gate-group"
+    endpoint_url = "https://k8s-api.example.com"
+    certificate_check_enabled = true
+    hostname_verification_enabled = true
+  }
+}
+```
+
+---
+
+##  Module: `kubernetes_app_module`
+
+###  What It Does
+
+Enables focused monitoring on Kubernetes application workloads within a scope.
+
+###  Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scope` | `string` | Namespace or workload reference |
+| `enable_kubernetes_app` | `bool` | Toggles the monitoring feature |
+
+---
+
+##  Module: `kubernetes_enrichment_module`
+
+###  What It Does
+
+Enriches monitored Kubernetes entities with metadata by applying label transformations.
+
+###  Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `scope` | `string` | Logical scope for enrichment |
+| `rules.type` | `string` | Type of rule (`label`, `annotation`) |
+| `rules.source` | `string` | Metadata field to reference |
+| `rules.target` | `string` | Target dimension or tag to enrich |
+
+ Example:
+```hcl
+kubernetes_enrichment = {
+  enrichment_rule = {
+    scope = "enrichment-scope"
+    rules = {
+      type   = "label"
+      source = "namespace"
+      target = "environment"
+    }
+  }
+}
+```
+
+---
+
+##  Outputs
+
+| Output Name | Description |
+|-------------|-------------|
+| `cloud_foundry_keys`         | Map keys used to configure Cloud Foundry resources |
+| `k8s_monitoring_keys`        | Keys for Kubernetes monitoring entries |
+| `kubernetes_keys`            | Cluster integration configuration keys |
+| `kubernetes_app_keys`        | App-level configuration keys |
+| `kubernetes_enrichment_keys` | Label enrichment configuration keys |
+
+All outputs allow chaining to dashboards, validation checks, or dynamic Terraform references.
+
+---
+
