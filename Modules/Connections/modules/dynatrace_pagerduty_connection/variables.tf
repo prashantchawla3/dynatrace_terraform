@@ -5,11 +5,5 @@ variable "pagerduty_connections" {
     token = string
     url   = string
   }))
-  default = [
-    {
-      name  = "pagerduty-main"
-      token = "pd-token-xyz987"
-      url   = "https://api.pagerduty.com"
-    }
-  ]
+  sensitive = true
 }

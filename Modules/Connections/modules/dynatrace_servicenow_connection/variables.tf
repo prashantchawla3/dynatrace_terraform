@@ -7,13 +7,5 @@ variable "servicenow_connections" {
     user     = optional(string)
     password = optional(string)
   }))
-  default = [
-    {
-      name     = "servicenow-main"
-      url      = "https://servicenow.example.com"
-      type     = "basic"
-      user     = "admin"
-      password = "servicenow-password"
-    }
-  ]
+  sensitive = true
 }

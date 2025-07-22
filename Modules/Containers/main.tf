@@ -8,13 +8,7 @@ resource "dynatrace_container_builtin_rule" "this" {
   ignore_open_shift_sdn_namespace   = var.ignore_open_shift_sdn_namespace
 }
 
-# Container registry configuration
-# resource "dynatrace_container_registry" "this" {
- #  count              = var.registry_enabled ? 1 : 0
- #  container_registry = var.container_registry
-# }
 
-# Container rule
 resource "dynatrace_container_rule" "this" {
   count    = var.container_rule_enabled ? 1 : 0
   enabled  = var.container_rule_enabled

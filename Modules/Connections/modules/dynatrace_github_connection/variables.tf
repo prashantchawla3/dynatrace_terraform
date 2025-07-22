@@ -5,11 +5,5 @@ variable "github_connections" {
     type  = string
     token = string
   }))
-  default = [
-    {
-      name  = "github-main"
-      type  = "Pat"
-      token = "ghp_abcdef1234567890"
-    }
-  ]
+  sensitive = true
 }

@@ -5,9 +5,6 @@ ignore_kubernetes_pause_container = true
 ignore_open_shift_build_pod_name  = false
 ignore_open_shift_sdn_namespace   = false
 
-# Container registry
-# registry_enabled     = true
-# container_registry   = "docker.io/myregistry"
 
 # Container rule
 container_rule_enabled = true

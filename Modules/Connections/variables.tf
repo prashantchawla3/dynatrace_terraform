@@ -8,7 +8,6 @@ variable "dynatrace_api_token" {
   description = "API token for Dynatrace (sensitive)."
   type        = string
   sensitive   = true
-  default     = "dt0c01.token.value.abcdef123456"
 }
 
 variable "jenkins_connections" {
@@ -19,14 +18,7 @@ variable "jenkins_connections" {
     username = string
     password = string
   }))
-  default = [
-    {
-      name     = "jenkins-main"
-      url      = "https://jenkins.example.com"
-      username = "admin"
-      password = "jenkins-api-token"
-    }
-  ]
+  sensitive = true
 }
 
 variable "github_connections" {
@@ -36,13 +28,7 @@ variable "github_connections" {
     type  = string
     token = string
   }))
-  default = [
-    {
-      name  = "github-main"
-      type  = "Pat"
-      token = "ghp_abcdef1234567890"
-    }
-  ]
+  sensitive = true
 }
 
 variable "gitlab_connections" {
@@ -52,13 +38,7 @@ variable "gitlab_connections" {
     url   = string
     token = string
   }))
-  default = [
-    {
-      name  = "gitlab-main"
-      url   = "https://gitlab.example.com"
-      token = "glpat-abcdef123456"
-    }
-  ]
+  sensitive = true
 }
 
 variable "ms365_email_connections" {
@@ -71,16 +51,7 @@ variable "ms365_email_connections" {
     type          = string
     client_secret = string
   }))
-  default = [
-    {
-      name          = "ms365-main"
-      client_id     = "client-id-123"
-      tenant_id     = "tenant-id-456"
-      from_address  = "noreply@example.com"
-      type          = "client_secret"
-      client_secret = "ms365-secret"
-    }
-  ]
+  sensitive = true
 }
 
 variable "msentraid_connections" {
@@ -92,15 +63,7 @@ variable "msentraid_connections" {
     client_secret   = string
     description     = optional(string)
   }))
-  default = [
-    {
-      name            = "entra-main"
-      application_id  = "app-id-789"
-      directory_id    = "dir-id-012"
-      client_secret   = "entra-secret"
-      description     = "Azure AD app for SSO"
-    }
-  ]
+  sensitive = true
 }
 
 variable "msteams_connections" {
@@ -111,14 +74,7 @@ variable "msteams_connections" {
     team_name    = optional(string)
     channel_name = optional(string)
   }))
-  default = [
-    {
-      name         = "teams-monitoring"
-      webhook      = "https://teams.example.com/webhook"
-      team_name    = "DevOps"
-      channel_name = "Alerts"
-    }
-  ]
+  sensitive = true
 }
 
 variable "pagerduty_connections" {
@@ -128,13 +84,7 @@ variable "pagerduty_connections" {
     token = string
     url   = string
   }))
-  default = [
-    {
-      name  = "pagerduty-main"
-      token = "pd-token-xyz987"
-      url   = "https://api.pagerduty.com"
-    }
-  ]
+  sensitive = true
 }
 
 variable "servicenow_connections" {
@@ -146,13 +96,5 @@ variable "servicenow_connections" {
     user     = optional(string)
     password = optional(string)
   }))
-  default = [
-    {
-      name     = "servicenow-main"
-      url      = "https://servicenow.example.com"
-      type     = "basic"
-      user     = "admin"
-      password = "servicenow-password"
-    }
-  ]
+  sensitive = true
 }

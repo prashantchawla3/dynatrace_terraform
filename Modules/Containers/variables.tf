@@ -1,3 +1,6 @@
+# -------------------------------
+# Built-in Container Rule Variables
+# -------------------------------
 
 variable "builtin_rule_enabled" {
   description = "Enable or disable creation of dynatrace_container_builtin_rule"
@@ -29,24 +32,10 @@ variable "ignore_open_shift_sdn_namespace" {
   default     = false
 }
 
-#############################
-# Container Registry Variables
-#############################
-variable "registry_enabled" {
-  description = "Enable or disable creation of dynatrace_container_registry"
-  type        = bool
-  default     = true
-}
-
-variable "container_registry" {
-  description = "Container registry to configure"
-  type        = string
-  default     = ""
-}
-
-##########################
+# -------------------------------
 # Container Rule Variables
-##########################
+# -------------------------------
+
 variable "container_rule_enabled" {
   description = "Enable or disable creation of dynatrace_container_rule"
   type        = bool
@@ -77,9 +66,10 @@ variable "container_rule_value" {
   default     = ""
 }
 
-##############################
+# -------------------------------
 # Container Technology Variables
-##############################
+# -------------------------------
+
 variable "technology_enabled" {
   description = "Enable or disable creation of dynatrace_container_technology"
   type        = bool

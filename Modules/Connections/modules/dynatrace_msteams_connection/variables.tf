@@ -6,12 +6,5 @@ variable "msteams_connections" {
     team_name    = optional(string)
     channel_name = optional(string)
   }))
-  default = [
-    {
-      name         = "teams-monitoring"
-      webhook      = "https://teams.example.com/webhook"
-      team_name    = "DevOps"
-      channel_name = "Alerts"
-    }
-  ]
+  sensitive = true
 }

@@ -5,11 +5,5 @@ variable "gitlab_connections" {
     url   = string
     token = string
   }))
-  default = [
-    {
-      name  = "gitlab-main"
-      url   = "https://gitlab.example.com"
-      token = "glpat-abcdef123456"
-    }
-  ]
+  sensitive = true
 }

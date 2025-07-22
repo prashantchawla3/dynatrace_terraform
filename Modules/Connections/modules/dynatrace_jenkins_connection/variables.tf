@@ -6,12 +6,5 @@ variable "jenkins_connections" {
     username = string
     password = string
   }))
-  default = [
-    {
-      name     = "jenkins-main"
-      url      = "https://jenkins.example.com"
-      username = "admin"
-      password = "jenkins-api-token"
-    }
-  ]
+  sensitive = true
 }

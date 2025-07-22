@@ -8,14 +8,5 @@ variable "ms365_email_connections" {
     type          = string
     client_secret = string
   }))
-  default = [
-    {
-      name          = "ms365-main"
-      client_id     = "client-id-123"
-      tenant_id     = "tenant-id-456"
-      from_address  = "noreply@example.com"
-      type          = "client_secret"
-      client_secret = "ms365-secret"
-    }
-  ]
+  sensitive = true
 }
