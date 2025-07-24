@@ -1,106 +1,34 @@
-resource "dynatrace_attribute_allow_list" "this" {
-  for_each = var.attribute_allow_list
-  enabled  = each.value.enabled
-  key      = each.value.key
+
+
+# ─── Attribute Allow List ────────────────────────────────
+module "attribute_allow_list" {
+  source               = "./modules/dynatrace_attribute_allow_list"
+  attribute_allow_list = var.attribute_allow_list
 }
 
-resource "dynatrace_attribute_block_list" "this" {
-  for_each = var.attribute_block_list
-  enabled  = each.value.enabled
-  key      = each.value.key
+# ─── Attribute Block List ────────────────────────────────
+module "attribute_block_list" {
+  source               = "./modules/dynatrace_attribute_block_list"
+  attribute_block_list = var.attribute_block_list
 }
 
-resource "dynatrace_attribute_masking" "this" {
-  for_each = var.attribute_masking
-  enabled  = each.value.enabled
-  key      = each.value.key
-  masking  = each.value.masking
+# ─── Attribute Masking Logic ─────────────────────────────
+module "attribute_masking" {
+  source             = "./modules/dynatrace_attribute_masking"
+  attribute_masking  = var.attribute_masking
 }
 
-resource "dynatrace_opentelemetry_metrics" "this" {
-  for_each = var.opentelemetry_metrics
-
-  additional_attributes_to_dimension_enabled = each.value.additional_attributes_to_dimension_enabled
-  meter_name_to_dimension_enabled           = each.value.meter_name_to_dimension_enabled
-  scope                                     = each.value.scope
-
-  additional_attributes {
-    dynamic "additional_attribute" {
-      for_each = each.value.additional_attributes
-      content {
-        enabled       = additional_attribute.value.enabled
-        attribute_key = additional_attribute.value.attribute_key
-      }
-    }
-  }
-
-  to_drop_attributes {
-    dynamic "to_drop_attribute" {
-      for_each = each.value.to_drop_attributes
-      content {
-        enabled       = to_drop_attribute.value.enabled
-        attribute_key = to_drop_attribute.value.attribute_key
-      }
-    }
-  }
+# ─── OpenTelemetry Metric Routing & Filtering ────────────
+module "opentelemetry_metrics" {
+  source                = "./modules/dynatrace_opentelemetry_metrics"
+  opentelemetry_metrics = var.opentelemetry_metrics
+  attributes_preferences = var.attributes_preferences
 }
 
-resource "dynatrace_span_capture_rule" "this" {
-  for_each = var.span_capture_rules
-
-  name   = each.key
-  action = each.value.action
-
-  matches {
-    dynamic "match" {
-      for_each = each.value.matches
-      content {
-        comparison = match.value.comparison
-        source     = match.value.source
-        value      = match.value.value
-      }
-    }
-  }
-}
-
-resource "dynatrace_span_context_propagation" "this" {
-  for_each = var.span_context_propagation
-
-  name   = each.key
-  action = each.value.action
-
-  matches {
-    dynamic "match" {
-      for_each = each.value.matches
-      content {
-        comparison = match.value.comparison
-        source     = match.value.source
-        value      = match.value.value
-      }
-    }
-  }
-}
-
-resource "dynatrace_span_entry_point" "this" {
-  for_each = var.span_entry_points
-
-  name   = each.key
-  action = each.value.action
-
-  matches {
-    dynamic "match" {
-      for_each = each.value.matches
-      content {
-        case_sensitive = match.value.case_sensitive
-        comparison     = match.value.comparison
-        source         = match.value.source
-        value          = match.value.value
-      }
-    }
-  }
-}
-
-resource "dynatrace_attributes_preferences" "this" {
-  for_each         = var.attributes_preferences
-  persistence_mode = each.value.persistence_mode
+# ─── Span Capture Rules ──────────────────────────────────
+module "span_capture_rule" {
+  source             = "./modules/dynatrace_span_capture_rule"
+  span_capture_rules = var.span_capture_rules
+  span_context_propagation = var.span_context_propagation
+  span_entry_points  = var.span_entry_points
 }
