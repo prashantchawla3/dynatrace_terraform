@@ -1,7 +1,7 @@
 resource "dynatrace_oneagent_features" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "oneagent_features" && r.settings.oneagent_features != null
+    for r in var.oneagent_features_resources : r.name => r
+    if r.settings.oneagent_features != null
   }
 
   enabled         = each.value.settings.oneagent_features.enabled

@@ -1,7 +1,7 @@
 resource "dynatrace_limit_outbound_connections" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "limit_outbound_connections" && r.settings.limit_outbound_connections != null
+    for r in var.outbound_connection_resources : r.name => r
+    if r.settings.limit_outbound_connections != null
   }
 
   allowed_outbound_connections {

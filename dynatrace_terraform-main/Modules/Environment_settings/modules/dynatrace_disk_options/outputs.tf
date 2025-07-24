@@ -1,6 +1,5 @@
-output "disk_exclusions" {
+output "disk_monitoring_exclusions" {
   value = [
-    for r in var.resources : try(r.settings.disk_options.exclusions, null)
-    if r.type == "disk_options"
+    for r in var.disk_options_resources : r.settings.disk_options.exclusions
   ]
 }

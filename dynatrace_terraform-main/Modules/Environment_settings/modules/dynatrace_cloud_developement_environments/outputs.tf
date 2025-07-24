@@ -1,6 +1,6 @@
-output "cloud_development_environments" {
+
+output "cloud_development_urls" {
   value = [
-    for r in var.resources : try(r.settings.cloud_development_environments, null)
-    if r.type == "cloud_development_environments"
+    for r in var.cloud_development_resources : r.settings.cloud_development_environments
   ]
 }

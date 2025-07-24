@@ -1,7 +1,7 @@
 resource "dynatrace_hub_subscriptions" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "hub_subscriptions" && r.settings.hub_subscriptions != null
+    for r in var.hub_subscriptions_resources : r.name => r
+    if r.settings.hub_subscriptions != null
   }
 
   token_subscriptions {

@@ -1,7 +1,7 @@
 resource "dynatrace_eula_settings" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "eula_settings" && r.settings.eula_settings != null
+    for r in var.eula_settings_resources : r.name => r
+    if r.settings.eula_settings != null
   }
 
   scope       = each.value.settings.eula_settings.scope

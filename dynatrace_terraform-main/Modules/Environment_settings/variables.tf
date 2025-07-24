@@ -2,8 +2,8 @@
 variable "app_monitoring_resources" {
   description = "App monitoring configuration resources."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       app_monitoring = object({
         default_log_level   = string
@@ -18,8 +18,8 @@ variable "app_monitoring_resources" {
 variable "audit_log_resources" {
   description = "Audit log settings and toggle per resource."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       audit_log = object({
         enabled = bool
@@ -33,8 +33,8 @@ variable "audit_log_resources" {
 variable "cloud_development_resources" {
   description = "Supported cloud development environments per resource."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       cloud_development_environments = list(string)
     })
@@ -46,8 +46,8 @@ variable "cloud_development_resources" {
 variable "data_privacy_resources" {
   description = "Data privacy settings including masking and tracking controls."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       data_privacy = object({
         application_id = string
@@ -74,8 +74,8 @@ variable "data_privacy_resources" {
 variable "disk_options_resources" {
   description = "Disk monitoring configurations including exclusions and NFS settings."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       disk_options = object({
         disable_nfs_disk_monitoring = bool
@@ -96,8 +96,8 @@ variable "disk_options_resources" {
 variable "eula_settings_resources" {
   description = "End-user license agreement acceptance settings."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       eula_settings = object({
         scope       = string
@@ -112,8 +112,8 @@ variable "eula_settings_resources" {
 variable "hub_permissions_resources" {
   description = "Hub permissions for user access management."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       hub_permissions = object({
         email       = string
@@ -128,8 +128,8 @@ variable "hub_permissions_resources" {
 variable "hub_subscriptions_resources" {
   description = "Hub subscription tokens used for integrations."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       hub_subscriptions = object({
         token_subscription = object({
@@ -148,8 +148,8 @@ variable "hub_subscriptions_resources" {
 variable "ip_masking_resources" {
   description = "IP masking configuration for privacy compliance."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       ip_address_masking = object({
         scope   = string
@@ -165,8 +165,8 @@ variable "ip_masking_resources" {
 variable "outbound_connection_resources" {
   description = "List of allowed outbound hosts and enforcement settings."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       limit_outbound_connections = object({
         allowed_outbound_connections = object({
@@ -183,8 +183,8 @@ variable "outbound_connection_resources" {
 variable "oneagent_default_mode_resources" {
   description = "OneAgent default operation mode settings."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       oneagent_default_mode = object({
         default_mode = string
@@ -198,8 +198,8 @@ variable "oneagent_default_mode_resources" {
 variable "oneagent_features_resources" {
   description = "List of OneAgent feature toggles and scope."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       oneagent_features = object({
         enabled         = bool
@@ -216,8 +216,8 @@ variable "oneagent_features_resources" {
 variable "oneagent_side_masking_resources" {
   description = "Side masking rules for sensitive data monitoring in OneAgent."
   type = list(object({
-    name     = string
-    type     = string
+    name = string
+    type = string
     settings = object({
       oneagent_side_masking = object({
         is_email_masking_enabled     = bool

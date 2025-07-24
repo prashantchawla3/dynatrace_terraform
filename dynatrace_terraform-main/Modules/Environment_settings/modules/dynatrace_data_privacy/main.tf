@@ -1,7 +1,7 @@
 resource "dynatrace_data_privacy" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "data_privacy" && r.settings.data_privacy != null
+    for r in var.data_privacy_resources : r.name => r
+    if r.settings.data_privacy != null
   }
 
   application_id = each.value.settings.data_privacy.application_id

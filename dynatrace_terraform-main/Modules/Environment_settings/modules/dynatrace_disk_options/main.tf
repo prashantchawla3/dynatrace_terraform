@@ -1,7 +1,7 @@
 resource "dynatrace_disk_options" "this" {
   for_each = {
-    for r in var.resources : r.name => r
-    if r.type == "disk_options" && r.settings.disk_options != null
+    for r in var.disk_options_resources : r.name => r
+    if r.settings.disk_options != null
   }
 
   disable_nfs_disk_monitoring = each.value.settings.disk_options.disable_nfs_disk_monitoring
@@ -11,13 +11,10 @@ resource "dynatrace_disk_options" "this" {
   dynamic "exclusions" {
     for_each = each.value.settings.disk_options.exclusions
     content {
-      dynamic "exclusion" {
-        for_each = [1]
-        content {
-          filesystem = exclusions.value.filesystem
-          mountpoint = exclusions.value.mountpoint
-          os         = exclusions.value.os
-        }
+      exclusion {
+        filesystem = exclusions.value.filesystem
+        mountpoint = exclusions.value.mountpoint
+        os         = exclusions.value.os
       }
     }
   }
