@@ -1,26 +1,20 @@
 variable "technologies" {
-  description = "Map of monitored technologies scoped per host, defining enablement flags and optional .NET Core monitoring support"
+  description = <<-EOT
+    Map of monitored technologies scoped per host.
+    This block configures enablement and host-level settings for supported technologies.
+    Includes Apache with flags to control activation and target host.
+  EOT
+
   type = map(object({
     enabled              = bool
     host_id              = string
-    enabled_dot_net_core = optional(bool)
+    enabled_dot_net_core = optional(bool) # Included for compatibility with .NET-style schemas
   }))
+
   default = {
-    java_host = {
-      enabled              = true
-      host_id              = "host-java-01"
-      enabled_dot_net_core = false
-    }
-
-    dotnet_host = {
-      enabled              = true
-      host_id              = "host-dotnet-01"
-      enabled_dot_net_core = true
-    }
-
-    php_host = {
-      enabled              = false
-      host_id              = "host-php-01"
+    apache = {
+      enabled = true
+      host_id = "host-apache-001"
     }
   }
 }
