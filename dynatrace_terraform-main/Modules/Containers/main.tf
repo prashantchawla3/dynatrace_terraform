@@ -1,7 +1,8 @@
-# Built-in container rules
-resource "dynatrace_container_builtin_rule" "this" {
-  count = var.builtin_rule_enabled ? 1 : 0
 
+module "container_builtin_rule" {
+  source = "./modules/dynatrace_container_builtin_rule"
+
+  builtin_rule_enabled              = var.builtin_rule_enabled
   ignore_docker_pause_container     = var.ignore_docker_pause_container
   ignore_kubernetes_pause_container = var.ignore_kubernetes_pause_container
   ignore_open_shift_build_pod_name  = var.ignore_open_shift_build_pod_name
@@ -9,26 +10,28 @@ resource "dynatrace_container_builtin_rule" "this" {
 }
 
 
-resource "dynatrace_container_rule" "this" {
-  count    = var.container_rule_enabled ? 1 : 0
-  enabled  = var.container_rule_enabled
-  mode     = var.container_rule_mode
-  operator = var.container_rule_operator
-  property = var.container_rule_property
-  value    = var.container_rule_value
+module "container_rule" {
+  source = "./modules/dynatrace_container_rule"
+
+  container_rule_enabled  = var.container_rule_enabled
+  container_rule_mode     = var.container_rule_mode
+  container_rule_operator = var.container_rule_operator
+  container_rule_property = var.container_rule_property
+  container_rule_value    = var.container_rule_value
 }
 
-# Container technology
-resource "dynatrace_container_technology" "this" {
-  count = var.technology_enabled ? 1 : 0
 
-  bosh_process_manager = var.bosh_process_manager
-  containerd           = var.containerd
-  crio                 = var.crio
-  docker               = var.docker
-  docker_windows       = var.docker_windows
-  garden               = var.garden
-  podman               = var.podman
-  scope                = var.scope
-  winc                 = var.winc
+module "container_technology" {
+  source = "./modules/dynatrace_container_technology"
+
+  technology_enabled    = var.technology_enabled
+  bosh_process_manager  = var.bosh_process_manager
+  containerd            = var.containerd
+  crio                  = var.crio
+  docker                = var.docker
+  docker_windows        = var.docker_windows
+  garden                = var.garden
+  podman                = var.podman
+  scope                 = var.scope
+  winc                  = var.winc
 }

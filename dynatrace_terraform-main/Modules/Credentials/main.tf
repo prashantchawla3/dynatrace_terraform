@@ -1,45 +1,33 @@
 
-module "label" {
-  source = "./modules/label"
-  label  = var.label
-}
+module "dynatrace_credentials" {
+  source = "./modules/dynatrace_credentials"
 
-module "partition_type" {
-  source         = "./modules/partition_type"
-  partition_type = var.partition_type
-}
-
-module "tagged_only" {
-  source      = "./modules/tagged_only"
-  tagged_only = var.tagged_only
-}
-
-module "credentials_enabled" {
-  source             = "./modules/credentials_enabled"
-  credentials_enabled = var.credentials_enabled
-}
-
-module "remove_defaults" {
-  source         = "./modules/remove_defaults"
-  remove_defaults = var.remove_defaults
-}
-
-module "running_on_dynatrace_infrastructure" {
-  source                            = "./modules/running_on_dynatrace_infrastructure"
+  label                           = var.label
+  partition_type                  = var.partition_type
+  tagged_only                     = var.tagged_only
+  credentials_enabled             = var.credentials_enabled
+  remove_defaults                 = var.remove_defaults
   running_on_dynatrace_infrastructure = var.running_on_dynatrace_infrastructure
 }
 
-module "authentication_data" {
-  source             = "./modules/authentication_data"
+module "dynatrace_aws_credentials" {
+  source              = "./modules/dynatrace_aws_credentials"
   authentication_data = var.authentication_data
+  tags_to_monitor     = var.tags_to_monitor
 }
 
-module "tags_to_monitor" {
-  source          = "./modules/tags_to_monitor"
-  tags_to_monitor = var.tags_to_monitor
+module "dynatrace_azure_credentials" {
+  source              = "./modules/dynatrace_azure_credentials"
+  authentication_data = var.authentication_data
+  tags_to_monitor     = var.tags_to_monitor
 }
 
-module "aws_services" {
-  source       = "./modules/aws_services"
+
+module "dynatrace_aws_service" {
+  source       = "./modules/dynatrace_aws_service"
   aws_services = var.aws_services
+}
+
+module "dynatrace_azure_service" {
+  source = "./modules/dynatrace_azure_service"
 }
