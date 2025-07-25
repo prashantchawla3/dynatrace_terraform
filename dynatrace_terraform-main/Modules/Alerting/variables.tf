@@ -31,7 +31,7 @@ variable "rules" {
 variable "enable_connectivity_alerts" {
   description = "Flag to enable or disable the connectivity alerts resource"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "connectivity_alerts" {

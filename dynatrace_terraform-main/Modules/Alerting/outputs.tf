@@ -1,14 +1,25 @@
+output "alerting_profile_id" {
+  description = "ID of the created Dynatrace alerting profile"
+  value       = module.alerting_profile.alerting_profile_id
+}
+
 output "alerting_profile_name" {
-  description = "The name of the Dynatrace alerting profile"
-  value       = dynatrace_alerting.this.name
+  description = "Name of the Dynatrace alerting profile"
+  value       = module.alerting_profile.alerting_profile_name
 }
 
-output "connectivity_alerts_enabled" {
-  description = "Whether connectivity alerts are enabled"
-  value       = var.enable_connectivity_alerts ? dynatrace_connectivity_alerts.this[0].connectivity_alerts : null
+output "connectivity_alerts_id" {
+  description = "ID of the Dynatrace connectivity alerts resource"
+  value       = var.enable_connectivity_alerts ? module.connectivity_alerts[0].connectivity_alerts_id : null
 }
 
-output "maintenance_window_name" {
-  description = "The name of the maintenance window"
-  value       = dynatrace_maintenance.this.general_properties[0].name
+
+output "maintenance_id" {
+  description = "ID of the Dynatrace maintenance window"
+  value       = module.maintenance_window.maintenance_id
+}
+
+output "maintenance_name" {
+  description = "Name of the Dynatrace maintenance window"
+  value       = module.maintenance_window.maintenance_name
 }

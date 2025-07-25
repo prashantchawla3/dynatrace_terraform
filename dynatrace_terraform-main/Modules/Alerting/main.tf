@@ -5,12 +5,15 @@ module "alerting_profile" {
   rules            = var.rules
 }
 
+
 module "connectivity_alerts" {
-  source                  = "./modules/dynatrace_connectivity_alerts"
-  enable_connectivity     = var.enable_connectivity_alerts
-  connectivity_alerts     = var.connectivity_alerts
-  process_group_id        = var.process_group_id
+  source ="./modules/dynatrace_connectivity_alerts" 
+
+  count               = var.enable_connectivity_alerts ? 1 : 0
+  connectivity_alerts = var.connectivity_alerts
+  process_group_id    = var.process_group_id
 }
+
 
 module "maintenance_window" {
   source                        = "./modules/dynatrace_maintenance"

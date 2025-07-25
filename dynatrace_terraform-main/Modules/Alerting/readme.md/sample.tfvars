@@ -41,7 +41,7 @@ rules = [
 ]
 
 enable_connectivity_alerts = true
-connectivity_alerts        = false
+connectivity_alerts        = true
 process_group_id           = "PROCESS_GROUP-1234567890000000"
 
 maintenance_enabled            = true
