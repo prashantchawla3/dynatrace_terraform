@@ -34,7 +34,7 @@ module "service_failure_toggle" {
 }
 
 module "service_http_failure" {
-  source = "./modules/dynatrace_service_failure"
+  source = "./modules/dynatrace_service_http_failure"
 
   service_http_failure_enabled = var.service_http_failure_enabled
   broken_link_domains          = var.broken_link_domains
