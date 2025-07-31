@@ -58,7 +58,7 @@ module "dynatrace_mobile_app_anomalies" {
 
 module "dynatrace_mobile_app_crash_rate" {
   source              = "./modules/dynatrace_mobile_app_crash_rate"
-  mobile_app_crash_rate = mobile_app_crash_rate
+  mobile_app_crash_rate = var.mobile_app_crash_rate
 }
 
 module "dynatrace_web_app_anomalies" {
@@ -68,7 +68,7 @@ module "dynatrace_web_app_anomalies" {
 
 module "dynatrace_service_anomalies_v2" {
   source               = "./modules/dynatrace_service_anomalies_v2"
-  service_anomaliese        = var.service_anomalies
+  service_anomalies        = var.service_anomalies
 }
 
 module "dynatrace_vmware_anomalies" {

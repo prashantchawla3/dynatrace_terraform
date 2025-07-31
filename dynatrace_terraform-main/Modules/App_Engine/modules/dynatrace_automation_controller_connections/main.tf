@@ -1,7 +1,7 @@
 resource "dynatrace_automation_controller_connections" "connections" {
-  count = var.resource_count
-  name  = var.resource_names[count.index]
-  url   = var.url
-  type  = var.type
-  token = var.token
+  count = var.automation_controller_count
+  name  = var.automation_controller_names[count.index]
+  url   = var.automation_controller_url
+  type  = var.automation_controller_type
+  token = var.automation_controller_token
 }

@@ -1,51 +1,50 @@
-variable "activegate_token_config" {
-  description = "Configuration for ActiveGate token"
-  type = object({
-    auth_token_enforcement_manually_enabled = bool
-    expiring_token_notifications_enabled    = bool
-  })
-  default = {
-    auth_token_enforcement_manually_enabled = true
-    expiring_token_notifications_enabled    = true
-  }
+variable "auth_token_enforcement_manually_enabled" {
+  description = "Whether to manually enforce auth token"
+  type        = bool
+  default     = false
 }
 
-variable "ag_token_config" {
-  description = "Configuration for AG token"
-  type = object({
-    type            = string
-    expiration_date = string
-    name            = string
-  })
-  default = {
-    type            = "AG"
-    expiration_date = "2025-12-31"
-    name            = "default-ag-token"
-  }
+variable "expiring_token_notifications_enabled" {
+  description = "Enable notifications for expiring tokens"
+  type        = bool
+  default     = true
+}
+variable "type" {
+  description = "Type of the AG token"
+  type        = string
 }
 
-variable "api_token_config" {
-  description = "Configuration for API token"
-  type = object({
-    name    = string
-    enabled = bool
-    scopes  = list(string)
-  })
-  default = {
-    name    = "default-api-token"
-    enabled = true
-    scopes  = ["DataExport", "ReadConfig", "WriteConfig"]
-  }
+variable "expiration_date" {
+  description = "Expiration date of the AG token"
+  type        = string
 }
 
-variable "token_settings_config" {
-  description = "Configuration for token settings"
-  type = object({
-    new_token_format = bool
-    personal_tokens  = bool
-  })
-  default = {
-    new_token_format = true
-    personal_tokens  = false
-  }
+variable "ag_name" {
+  description = "Name of the AG token"
+  type        = string
+}
+
+variable "api_name" {
+  description = "Name of the API token"
+  type        = string
+}
+
+variable "enabled" {
+  description = "Whether the token is enabled"
+  type        = bool
+}
+
+variable "scopes" {
+  description = "List of scopes for the token"
+  type        = list(string)
+}
+
+variable "new_token_format" {
+  description = "Enable the new token format"
+  type        = bool
+}
+
+variable "personal_tokens" {
+  description = "Allow personal access tokens"
+  type        = bool
 }

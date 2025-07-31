@@ -1,11 +1,11 @@
-variable "activegate_token_config" {
-  description = "Configuration for ActiveGate token"
-  type = object({
-    auth_token_enforcement_manually_enabled = bool
-    expiring_token_notifications_enabled    = bool
-  })
-  default = {
-    auth_token_enforcement_manually_enabled = true
-    expiring_token_notifications_enabled    = true
-  }
+variable "auth_token_enforcement_manually_enabled" {
+  description = "Enable manual enforcement of auth token"
+  type        = bool
+  default     = true
+}
+
+variable "expiring_token_notifications_enabled" {
+  description = "Enable notifications for expiring tokens"
+  type        = bool
+  default     = true
 }

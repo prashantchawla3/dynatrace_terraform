@@ -20,3 +20,5 @@ token_settings_config = {
   new_token_format = true
   personal_tokens  = true
 }
+
+
